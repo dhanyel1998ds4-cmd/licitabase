@@ -1,0 +1,8 @@
+.pricing-section button {
+  background-image: none !important;
+}
+
+.pricing-section .app-button--primary,
+.pricing-section .app-button--dark {
+  background-image: var(--button-primary-gradient) !important;
+}
