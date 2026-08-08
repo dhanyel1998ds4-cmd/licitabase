@@ -1,0 +1,1388 @@
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[2m19:15:15[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:15:18[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:36:05[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:36:39[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:40:22[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:40:44[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:43:29[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:46:35[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mInvalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mTypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://127.0.0.1:8080/node_modules/.vite/deps/react.js?v=1269e443:748:30)
+    at useUncontrolledState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:109:41)
+    at useControllableState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:81:63)
+    at CheckboxProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=6f7e124f:24:32)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:12864:12)
+    at renderWithHooks (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:4211:19)
+    at updateFunctionComponent (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:5567:16)
+    at beginWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:6138:20)
+    at runWithFiberInDEV (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:850:66)
+    at performUnitOfWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:8427:92)
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mTypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://127.0.0.1:8080/node_modules/.vite/deps/react.js?v=1269e443:748:30)
+    at useUncontrolledState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:109:41)
+    at useControllableState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:81:63)
+    at CheckboxProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=6f7e124f:24:32)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:12864:12)
+    at renderWithHooks (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:4211:19)
+    at updateFunctionComponent (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:5567:16)
+    at beginWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:6138:20)
+    at runWithFiberInDEV (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:850:66)
+    at performUnitOfWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:8427:92)
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mInvalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mTypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://127.0.0.1:8080/node_modules/.vite/deps/react.js?v=1269e443:748:30)
+    at useUncontrolledState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:109:41)
+    at useControllableState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:81:63)
+    at CheckboxProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=6f7e124f:24:32)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:12864:12)
+    at renderWithHooks (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:4211:19)
+    at updateFunctionComponent (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:5567:16)
+    at beginWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:6138:20)
+    at runWithFiberInDEV (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:850:66)
+    at performUnitOfWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:8427:92)
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mTypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://127.0.0.1:8080/node_modules/.vite/deps/react.js?v=1269e443:748:30)
+    at useUncontrolledState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:109:41)
+    at useControllableState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:81:63)
+    at CheckboxProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=6f7e124f:24:32)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:12864:12)
+    at renderWithHooks (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:4211:19)
+    at updateFunctionComponent (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:5567:16)
+    at beginWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:6138:20)
+    at runWithFiberInDEV (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:850:66)
+    at performUnitOfWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:8427:92)
+[2m19:47:02[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mTypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://127.0.0.1:8080/node_modules/.vite/deps/react.js?v=1269e443:748:30)
+    at useUncontrolledState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:109:41)
+    at useControllableState (http://127.0.0.1:8080/node_modules/.vite/deps/dist-BFjHCWrv.js?v=1269e443:81:63)
+    at CheckboxProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=6f7e124f:24:32)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:12864:12)
+    at renderWithHooks (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:4211:19)
+    at updateFunctionComponent (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:5567:16)
+    at beginWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:6138:20)
+    at runWithFiberInDEV (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:850:66)
+    at performUnitOfWork (http://127.0.0.1:8080/node_modules/.vite/deps/react-dom_client.js?v=ae6313b4:8427:92)
+
+The above error occurred in the <CheckboxProvider> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m19:47:02[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+Error: aborted
+    at abortIncoming (node:_http_server:838:17)
+    at socketOnClose (node:_http_server:832:3)
+    at Socket.emit (node:events:520:35)
+    at TCP.<anonymous> (node:net:346:12)
+Error: aborted
+    at abortIncoming (node:_http_server:838:17)
+    at socketOnClose (node:_http_server:832:3)
+    at Socket.emit (node:events:520:35)
+    at TCP.<anonymous> (node:net:346:12) (status 500)
+caused by: Error: aborted
+    at abortIncoming (node:_http_server:838:17)
+    at socketOnClose (node:_http_server:832:3)
+    at Socket.emit (node:events:520:35)
+    at TCP.<anonymous> (node:net:346:12)
+Error: aborted
+    at abortIncoming (node:_http_server:838:17)
+    at socketOnClose (node:_http_server:832:3)
+    at Socket.emit (node:events:520:35)
+    at TCP.<anonymous> (node:net:346:12) (status 500)
+caused by: Error: aborted
+    at abortIncoming (node:_http_server:838:17)
+    at socketOnClose (node:_http_server:832:3)
+    at Socket.emit (node:events:520:35)
+    at TCP.<anonymous> (node:net:346:12)
+[2m19:47:24[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:49:15[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:53:03[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:53:16[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m19:59:56[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+Error: Failed to load url /src/routes/dashboard.tsx (resolved id: D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routes/dashboard.tsx) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routeTree.gen.ts. Does the file exist?
+    at loadAndTransform (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31)
+    at async fetchModule (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:34251:15)
+    at async handleInvoke (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26817:21)
+    at async EventEmitter.listenerForInvokeHandler (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26872:13) (status 500)
+caused by: Error: Failed to load url /src/routes/dashboard.tsx (resolved id: D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routes/dashboard.tsx) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routeTree.gen.ts. Does the file exist?
+    at loadAndTransform (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31)
+    at async fetchModule (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:34251:15)
+    at async handleInvoke (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26817:21)
+    at async EventEmitter.listenerForInvokeHandler (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26872:13)
+Error: Failed to load url /src/routes/dashboard.tsx (resolved id: D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routes/dashboard.tsx) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routeTree.gen.ts. Does the file exist?
+    at loadAndTransform (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31)
+    at async fetchModule (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:34251:15)
+    at async handleInvoke (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26817:21)
+    at async EventEmitter.listenerForInvokeHandler (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26872:13) (status 500)
+caused by: Error: Failed to load url /src/routes/dashboard.tsx (resolved id: D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routes/dashboard.tsx) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/routeTree.gen.ts. Does the file exist?
+    at loadAndTransform (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31)
+    at async fetchModule (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:34251:15)
+    at async handleInvoke (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26817:21)
+    at async EventEmitter.listenerForInvokeHandler (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:26872:13)
+[2m20:01:47[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/routes/dashboard.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m20:01:51[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:02:58[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:03:07[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:08:19[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:19:43[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:22:54[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:25:59[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:28:47[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:29:18[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:33:07[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:35:38[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/auth/LoginPage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m20:35:38[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/auth/LoginPage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+Error in renderToReadableStream: Error: Failed to load url ./LoginPage.css (resolved id: ./LoginPage.css) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/components/auth/LoginPage.tsx. Does the file exist?
+    at loadAndTransform (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31) { componentStack: [Getter] }
+Error in renderToReadableStream: Error: Failed to load url ./LoginPage.css (resolved id: ./LoginPage.css) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/components/auth/LoginPage.tsx. Does the file exist?
+    at loadAndTransform (file:///D:/CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31) { componentStack: [Getter] }
+[2m20:38:38[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mError[22m: Switched to client rendering because the server rendering errored:
+
+Failed to load url ./LoginPage.css (resolved id: ./LoginPage.css) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/components/auth/LoginPage.tsx. Does the file exist?
+[39m > loadAndTransform ../../../../../CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31
+
+[2m20:38:39[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:38:39[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mError[22m: Switched to client rendering because the server rendering errored:
+
+Failed to load url ./LoginPage.css (resolved id: ./LoginPage.css) in D:/CRIATIVO PDF/criativo/Nova pasta/licitabase/licitabase pagina/src/components/auth/LoginPage.tsx. Does the file exist?
+[39m > loadAndTransform ../../../../../CRIATIVO%20PDF/criativo/Nova%20pasta/licitabase/licitabase%20pagina/node_modules/vite/dist/node/chunks/node.js:20608:31
+
+[2m20:38:55[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:43:48[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:49:37[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:53:49[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m20:56:21[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:02:34[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:06:01[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:11:22[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:21:45[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:28:40[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:31:01[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:31:45[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:31:48[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
+[2m21:34:53[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <StartClient>
+      <Await promise={Promise}>
+        <AwaitInner promise={Promise}>
+          <RouterProvider router={{...}}>
+            <RouterContextProvider router={{...}}>
+              <Matches>
+                <Transitioner>
+                <SafeFragment fallback={null}>
+                  <MatchesInner>
+                    <CatchBoundary getResetKey={function getResetKey} onCatch={function}>
+                      <CatchBoundaryImpl getResetKey={function getResetKey} onCatch={function}>
+                        <MatchImpl routeId="__root__">
+                          <MatchView router={{...}} match={{id:"__root__/", ...}}>
+                            <RootShell>
+                              <html
+                                lang="en"
+                                data-tsd-source="/src/routes/__root.tsx:120:5"
+-                               data-scribe-recorder-ready="true"
+                              >
+
