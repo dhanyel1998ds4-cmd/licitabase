@@ -23,14 +23,18 @@ export function BidBot() {
   }, []);
 
   return (
-    <section id="bot-de-lances" className="lp-bidbot-section">
+    <section id="bot-de-lances" className="lp-bidbot-section" aria-labelledby="bidbot-title">
       <div className="lp-bidbot-section__ambient" aria-hidden="true" />
       <div className="lp-bidbot-section__container">
         <div className="lp-bidbot-section__content">
           <BidBotMarketingCopy />
         </div>
         <div className="lp-bidbot-section__visual" ref={ref}>
-          {visible ? <BidBotProductComposition /> : <div className="bidbot-skeleton" aria-hidden="true" />}
+          {visible ? (
+            <BidBotProductComposition />
+          ) : (
+            <div className="bidbot-skeleton" aria-hidden="true" />
+          )}
         </div>
       </div>
     </section>

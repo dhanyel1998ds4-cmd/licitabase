@@ -1,276 +1,355 @@
+import type { ReactNode } from "react";
 import {
-  ArrowLeft,
   Bot,
+  Boxes,
   CheckCircle2,
-  Clock,
-  PlayCircle,
-  Search,
+  ChevronRight,
+  CircleDollarSign,
+  Gavel,
+  Radio,
+  ShieldCheck,
+  Sparkles,
   Timer,
+  TrendingDown,
+  Trophy,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
-import { MetricCard } from "@/components/bot/BotPageHeader";
-import { StatusPill, disputeStatusTone } from "@/components/bot/StatusPill";
-import { CardShell } from "@/components/shared/CardShell";
-import {
-  ConfigList,
-  DisputeItemsTable,
-  DisputeList,
-  DisputeTimelineList,
-  SupplierRankingTable,
-} from "@/components/bot/panels";
 import { bidBotMarketingDemoData as demo } from "@/lib/bid-bot-marketing-demo";
 import { cn } from "@/lib/utils";
 
-/** Wrapper that renders the real (light) dashboard surface in compact density. */
-function PreviewSurface({
-  children,
-  className,
+type MetricTone = "brand" | "navy" | "warn" | "info";
+
+function PreviewSurface({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("bidbot-preview-surface custom-scrollbar", className)}>{children}</div>;
+}
+
+function PreviewHeader({
+  eyebrow,
+  title,
+  description,
+  aside,
 }: {
-  children: React.ReactNode;
-  className?: string;
+  eyebrow: string;
+  title: string;
+  description?: string;
+  aside?: ReactNode;
 }) {
   return (
-    <div
-      className={cn(
-        "bidbot-preview-surface h-full bg-[#F8FAFC] p-4 font-sans overflow-y-auto custom-scrollbar",
-        className,
-      )}
-    >
+    <header className="bidbot-preview__header">
+      <div className="bidbot-preview__header-copy">
+        <p className="bidbot-preview__eyebrow">{eyebrow}</p>
+        <h3>{title}</h3>
+        {description ? <p className="bidbot-preview__description">{description}</p> : null}
+      </div>
+      {aside ? <div className="bidbot-preview__header-aside">{aside}</div> : null}
+    </header>
+  );
+}
+
+function PreviewStatus({ children, tone = "brand" }: { children: ReactNode; tone?: MetricTone }) {
+  return (
+    <span className={cn("bidbot-preview__status", `bidbot-preview__status--${tone}`)}>
+      <span aria-hidden="true" />
       {children}
+    </span>
+  );
+}
+
+function PreviewMetric({
+  label,
+  value,
+  icon: Icon,
+  tone = "navy",
+}: {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+  tone?: MetricTone;
+}) {
+  return (
+    <div className={cn("bidbot-preview__metric", `bidbot-preview__metric--${tone}`)}>
+      <span className="bidbot-preview__metric-icon">
+        <Icon aria-hidden="true" />
+      </span>
+      <div>
+        <p>{label}</p>
+        <strong>{value}</strong>
+      </div>
     </div>
   );
 }
 
+function PreviewConfigList({ rows }: { rows: { label: string; value: string }[] }) {
+  return (
+    <dl className="bidbot-preview__config-list">
+      {rows.map((row) => (
+        <div key={row.label}>
+          <dt>{row.label}</dt>
+          <dd>{row.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+const OVERVIEW_ICONS = [Gavel, Radio, Zap, Boxes] as const;
+
 export function BidBotOverviewPreview() {
   const { metrics, activeConfig, disputes } = demo.overview;
+  const latestDispute = disputes[0]!;
+
   return (
-    <PreviewSurface className="p-3 md:p-4">
-      <div className="flex items-center justify-between gap-3 mb-4 md:mb-6">
-        <div>
-          <p className="text-[8px] md:text-[9px] font-extrabold uppercase tracking-[0.2em] text-brand-strong/60">
-            Bot de Lances
-          </p>
-          <h3 className="text-[13px] md:text-[15px] font-bold tracking-tight text-navy">
-            Visão geral
-          </h3>
-        </div>
-        <div className="hidden sm:flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] text-slate-400 w-32 md:w-48">
-          <Search className="size-3" aria-hidden="true" />
-          <span className="truncate">Buscar...</span>
-        </div>
-      </div>
+    <PreviewSurface>
+      <PreviewHeader
+        eyebrow="Bot de Lances"
+        title="Visão geral"
+        description="Acompanhe a operação do robô em tempo real."
+        aside={<PreviewStatus>11 ativas</PreviewStatus>}
+      />
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 mb-6 md:mb-8">
-        {metrics.slice(0, 4).map((m) => (
-          <div
-            key={m.label}
-            className="flex flex-col rounded-xl border border-slate-100 bg-white p-2 md:p-3 shadow-sm"
-          >
-            <span className="text-[14px] md:text-[18px] font-bold text-navy tracking-tight">
-              {m.value}
-            </span>
-            <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">
-              {m.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
-        <div className="col-span-1 md:col-span-5">
-          <div className="rounded-xl md:rounded-2xl border border-slate-100 bg-white p-4 md:p-5 shadow-sm">
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-brand-strong mb-3 md:mb-4">
-              Configuração ativa
-            </p>
-            <ConfigList rows={activeConfig.slice(0, 5)} />
-          </div>
+      <div className="bidbot-preview__body">
+        <div className="bidbot-preview__metrics bidbot-preview__metrics--overview">
+          {metrics.slice(0, 4).map((metric, index) => {
+            const Icon = OVERVIEW_ICONS[index] ?? Sparkles;
+            return (
+              <PreviewMetric
+                key={metric.label}
+                label={metric.label}
+                value={metric.value}
+                icon={Icon}
+                tone={index === 1 ? "brand" : index === 2 ? "info" : "navy"}
+              />
+            );
+          })}
         </div>
-        <div className="col-span-1 md:col-span-7">
-          <div className="rounded-xl md:rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-            <div className="p-3 md:p-4 border-b border-slate-50">
-              <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-navy">
-                Últimas disputas
-              </p>
+
+        <section className="bidbot-preview__card" aria-labelledby="bidbot-active-config-title">
+          <div className="bidbot-preview__section-heading">
+            <div>
+              <p>Automação</p>
+              <h4 id="bidbot-active-config-title">Configuração ativa</h4>
             </div>
-            <DisputeList items={disputes.slice(0, 3)} linked={false} />
+            <span className="bidbot-preview__verified">
+              <CheckCircle2 aria-hidden="true" /> Ativa
+            </span>
           </div>
-        </div>
+          <PreviewConfigList rows={activeConfig.slice(0, 3)} />
+        </section>
+
+        <section className="bidbot-preview__card bidbot-preview__card--compact">
+          <div className="bidbot-preview__section-heading">
+            <div>
+              <p>Fila do robô</p>
+              <h4>Próxima disputa</h4>
+            </div>
+            <PreviewStatus tone="warn">Aguardando</PreviewStatus>
+          </div>
+          <div className="bidbot-preview__dispute-row">
+            <span className="bidbot-preview__dispute-icon">
+              <Bot aria-hidden="true" />
+            </span>
+            <div>
+              <strong>{latestDispute.agency}</strong>
+              <span>{latestDispute.object}</span>
+            </div>
+            <ChevronRight aria-hidden="true" />
+          </div>
+        </section>
       </div>
     </PreviewSurface>
   );
 }
 
 export function BidDisputeDetailPreview() {
-  const { header, performance, botConfig, items } = demo.dispute;
+  const { header, performance, items } = demo.dispute;
+  const item = items[0]!;
+
   return (
-    <PreviewSurface className="p-0 flex flex-col">
-      <div className="p-4 md:p-6 border-b border-slate-100 bg-white">
-        <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-              {header.uasg} · {header.notice}
-            </p>
-            <h3 className="text-[16px] md:text-[20px] font-extrabold leading-tight tracking-tight text-navy">
-              {header.agency}
-            </h3>
-            <p className="mt-2 text-[11px] md:text-[12px] font-medium text-slate-500 line-clamp-1">
-              {header.title}
-            </p>
+    <PreviewSurface>
+      <PreviewHeader
+        eyebrow={`${header.uasg} · ${header.notice}`}
+        title={header.agency}
+        description={header.title}
+        aside={<PreviewStatus>Em andamento</PreviewStatus>}
+      />
+
+      <div className="bidbot-preview__body">
+        <div className="bidbot-preview__automation-strip">
+          <span className="bidbot-preview__automation-icon">
+            <Bot aria-hidden="true" />
+          </span>
+          <div>
+            <strong>Bot operando</strong>
+            <span>Monitoramento automático a cada 20s</span>
           </div>
-          <div className="flex sm:shrink-0 flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
-            <StatusPill
-              tone="brand"
-              className="px-2 md:px-3 py-1 text-[10px] md:text-[11px] font-bold uppercase tracking-wider"
-            >
-              EM ANDAMENTO
-            </StatusPill>
-            <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-bold text-brand-strong bg-brand-tint px-2 md:px-2.5 py-1 rounded-full border border-brand-strong/10">
-              <Bot className="size-3" />
-              BOT OPERANDO
+          <span className="bidbot-preview__pulse" aria-hidden="true" />
+        </div>
+
+        <div className="bidbot-preview__metrics bidbot-preview__metrics--dispute">
+          <PreviewMetric label="Posição" value={performance.position} icon={Trophy} tone="brand" />
+          <PreviewMetric label="Nosso lance" value={performance.ourBid} icon={CircleDollarSign} />
+          <PreviewMetric
+            label="Desconto"
+            value={performance.discount}
+            icon={TrendingDown}
+            tone="warn"
+          />
+          <PreviewMetric
+            label="Lances dados"
+            value={String(performance.bidsGiven)}
+            icon={Gavel}
+            tone="info"
+          />
+        </div>
+
+        <section className="bidbot-preview__card bidbot-preview__item-card">
+          <div className="bidbot-preview__section-heading">
+            <div>
+              <p>Item em disputa</p>
+              <h4>Item {item.number}</h4>
+            </div>
+            <span className="bidbot-preview__verified">
+              <Radio aria-hidden="true" /> Ao vivo
+            </span>
+          </div>
+
+          <p className="bidbot-preview__item-description">{item.description}</p>
+
+          <div className="bidbot-preview__item-values">
+            <div>
+              <span>Melhor lance</span>
+              <strong>{item.bestBid}</strong>
+            </div>
+            <div>
+              <span>Próximo evento</span>
+              <strong>{item.nextEvent}</strong>
             </div>
           </div>
-        </div>
 
-        <div className="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          <div className="rounded-xl border border-slate-100 p-3 md:p-4 bg-slate-50/30">
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
-              Posição
-            </p>
-            <p className="text-[20px] md:text-[28px] font-black text-brand-strong leading-none">
-              {performance.position}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-100 p-3 md:p-4 bg-brand-tint/10">
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
-              Nosso lance
-            </p>
-            <p className="text-[16px] md:text-[22px] font-bold text-navy leading-none tracking-tight">
-              {performance.ourBid}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-100 p-3 md:p-4">
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
-              Desconto
-            </p>
-            <p className="text-[16px] md:text-[22px] font-bold text-warn leading-none tracking-tight">
-              {performance.discount}
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-100 p-3 md:p-4">
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
-              Lances
-            </p>
-            <p className="text-[16px] md:text-[22px] font-bold text-navy leading-none tracking-tight">
-              {performance.bidsGiven}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
-        <div className="hidden md:block col-span-4 p-6 border-r border-slate-100 bg-white">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-navy mb-5">
-            Configuração do bot
-          </p>
-          <ConfigList rows={botConfig.slice(0, 6)} />
-          <div className="mt-8 p-3.5 rounded-xl bg-brand-tint border border-brand-strong/10 flex items-center gap-3">
-            <Bot className="size-4 text-brand-strong" />
-            <p className="text-[11px] font-bold text-brand-strong">
-              Sessão {performance.sessionStart}
-            </p>
-          </div>
-        </div>
-        <div className="col-span-1 md:col-span-8 p-0 bg-white overflow-hidden flex flex-col">
-          <div className="px-4 md:px-6 py-4 border-b border-slate-50 flex items-center gap-4 md:gap-6">
-            <span className="text-[11px] md:text-[12px] font-bold text-brand-strong border-b-2 border-brand-strong pb-4 -mb-4">
-              Itens
+          <div className="bidbot-preview__item-footer">
+            <span>
+              <CheckCircle2 aria-hidden="true" /> Ganhando
             </span>
-            <span className="text-[11px] md:text-[12px] font-bold text-slate-400 pb-4 -mb-4 cursor-not-allowed">
-              Classificação
-            </span>
-            <span className="text-[11px] md:text-[12px] font-bold text-slate-400 pb-4 -mb-4 cursor-not-allowed">
-              Timeline
-            </span>
+            <span>{item.checks}</span>
           </div>
-          <div className="flex-1 overflow-x-auto overflow-y-auto">
-            <DisputeItemsTable items={items} />
-          </div>
-        </div>
+        </section>
       </div>
     </PreviewSurface>
-  );
-}
-
-function SessionInfo({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon: LucideIcon;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <Icon className="size-3.5 text-slate-300" />
-      <div>
-        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 leading-none">
-          {label}
-        </p>
-        <p className="text-[12px] font-bold text-navy mt-0.5">{value}</p>
-      </div>
-    </div>
   );
 }
 
 export function BidRankingPreview() {
   const { item, ourPosition, ourBid, bestBid, rows } = demo.ranking;
+
   return (
-    <PreviewSurface className="p-0 flex flex-col">
-      <div className="p-4 md:p-5 border-b border-slate-100 bg-white">
-        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-brand-strong mb-1">
-          Ranking
-        </p>
-        <h3 className="text-[13px] md:text-[15px] font-bold text-navy truncate">{item}</h3>
-      </div>
-      <div className="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100 bg-white shadow-sm">
-        <div className="p-3 md:p-4 text-center">
-          <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Posição
-          </p>
-          <p className="text-[16px] md:text-[20px] font-black text-brand-strong">{ourPosition}</p>
+    <PreviewSurface>
+      <PreviewHeader
+        eyebrow="Ranking ao vivo"
+        title={item}
+        description="Sua posição atualizada a cada novo lance."
+        aside={<PreviewStatus>Atualizando</PreviewStatus>}
+      />
+
+      <div className="bidbot-preview__ranking-summary">
+        <div>
+          <span>Posição</span>
+          <strong>{ourPosition}</strong>
         </div>
-        <div className="p-3 md:p-4 text-center">
-          <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Nosso lance
-          </p>
-          <p className="text-[14px] md:text-[18px] font-bold text-navy">{ourBid}</p>
+        <div>
+          <span>Nosso lance</span>
+          <strong>{ourBid}</strong>
         </div>
-        <div className="p-3 md:p-4 text-center">
-          <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Melhor
-          </p>
-          <p className="text-[14px] md:text-[18px] font-bold text-navy opacity-40">{bestBid}</p>
+        <div>
+          <span>Melhor valor</span>
+          <strong>{bestBid}</strong>
         </div>
       </div>
-      <div className="flex-1 overflow-auto bg-white">
-        <SupplierRankingTable rows={rows.slice(0, 10)} />
+
+      <div className="bidbot-preview__ranking" role="table" aria-label="Ranking de fornecedores">
+        <div className="bidbot-preview__ranking-head" role="row">
+          <span role="columnheader">Posição</span>
+          <span role="columnheader">Fornecedor</span>
+          <span role="columnheader">Lance</span>
+        </div>
+        <div className="bidbot-preview__ranking-body" role="rowgroup">
+          {rows.slice(0, 5).map((row) => (
+            <div
+              key={row.pos}
+              role="row"
+              className={cn("bidbot-preview__ranking-row", row.you && "is-current")}
+            >
+              <span role="cell" className="bidbot-preview__position">
+                {row.pos}º
+              </span>
+              <span role="cell" className="bidbot-preview__supplier">
+                <strong>{row.supplier}</strong>
+                <small>{row.you ? "Sua empresa" : `${row.uf} · ${row.type}`}</small>
+              </span>
+              <span role="cell" className="bidbot-preview__bid">
+                {row.bid}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </PreviewSurface>
   );
 }
 
+function timelineTone(kind: string) {
+  if (kind === "Nosso lance") return "brand";
+  if (kind === "Preço caiu") return "warn";
+  if (kind === "Monitorando") return "info";
+  return "navy";
+}
+
 export function BidTimelinePreview() {
+  const visibleEvents = demo.timeline.events
+    .filter((_, index, events) => index < 3 || index === events.length - 1)
+    .slice(0, 4);
+
   return (
-    <PreviewSurface className="p-0">
-      <div className="p-4 md:p-5 border-b border-slate-100 bg-white">
-        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-brand-strong mb-1">
-          Histórico
-        </p>
-        <h3 className="text-[13px] md:text-[15px] font-bold text-navy">Timeline da sessão</h3>
-      </div>
-      <div className="flex-1 overflow-auto bg-white">
-        <DisputeTimelineList events={demo.timeline.events.slice(0, 8)} />
+    <PreviewSurface>
+      <PreviewHeader
+        eyebrow="Histórico da disputa"
+        title="Timeline da sessão"
+        description="Eventos registrados pelo robô em ordem cronológica."
+        aside={<PreviewStatus>Ao vivo</PreviewStatus>}
+      />
+
+      <ol className="bidbot-preview__timeline">
+        {visibleEvents.map((event) => {
+          const tone = timelineTone(event.kind);
+          return (
+            <li key={`${event.time}-${event.event}`}>
+              <div className="bidbot-preview__timeline-time">
+                <Timer aria-hidden="true" />
+                <span>{event.time}</span>
+              </div>
+              <span
+                className={cn(
+                  "bidbot-preview__timeline-dot",
+                  `bidbot-preview__timeline-dot--${tone}`,
+                )}
+                aria-hidden="true"
+              />
+              <div className="bidbot-preview__timeline-content">
+                <div>
+                  <strong>{event.event}</strong>
+                  <span>{event.value}</span>
+                </div>
+                <p>{event.detail}</p>
+                <small>{event.status}</small>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="bidbot-preview__timeline-footer">
+        <ShieldCheck aria-hidden="true" />
+        <span>Todos os eventos ficam registrados para auditoria.</span>
       </div>
     </PreviewSurface>
   );
@@ -278,23 +357,17 @@ export function BidTimelinePreview() {
 
 export function BidBotOperationalSummaryPreview() {
   return (
-    <PreviewSurface className="flex flex-col justify-center">
-      <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] text-brand-strong mb-6 md:mb-8 text-center bg-brand-tint py-2 rounded-full border border-brand-strong/10 mx-4 md:mx-6">
-        Resumo Operacional
-      </p>
-      <div className="grid grid-cols-2 gap-3 md:gap-4 px-4 md:px-6">
-        {demo.operationalSummary.map((m) => (
-          <div
-            key={m.label}
-            className="text-center p-3 md:p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-transform hover:scale-[1.02]"
-          >
-            <p className="text-[18px] md:text-[24px] font-black text-navy leading-none tracking-tight">
-              {m.value}
-            </p>
-            <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-2">
-              {m.label}
-            </p>
-          </div>
+    <PreviewSurface className="bidbot-preview-surface--summary">
+      <p className="bidbot-preview__summary-label">Resumo operacional</p>
+      <div className="bidbot-preview__summary-grid">
+        {demo.operationalSummary.map((metric, index) => (
+          <PreviewMetric
+            key={metric.label}
+            label={metric.label}
+            value={metric.value}
+            icon={OVERVIEW_ICONS[index] ?? Sparkles}
+            tone={metric.tone}
+          />
         ))}
       </div>
     </PreviewSurface>

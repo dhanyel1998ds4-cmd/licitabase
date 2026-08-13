@@ -33,3 +33,17 @@ dist-ssr
 
 .vercel
 .env*
+
+# Local visual verification and browser profiles
+artifacts/
+.chrome-*/
+.codex-artifacts/
+.codex-logs/
+
+# Local copies and restore points (not part of the main deploy)
+licitabase-lp-standalone/
+restore-points/
+
+# Generated design explorations and local screenshots
+docs/ux-concepts/
+vercel-dash2.png

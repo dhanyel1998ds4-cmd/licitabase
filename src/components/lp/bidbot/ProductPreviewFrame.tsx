@@ -25,7 +25,15 @@ export function ProductPreviewFrame({
   const content = (
     <div
       className="bidbot-product-frame__content h-full"
-      style={scale !== 1 ? { transform: `scale(${scale})`, width: `calc(100% / ${scale})`, height: `calc(100% / ${scale})` } : undefined}
+      style={
+        scale !== 1
+          ? {
+              transform: `scale(${scale})`,
+              width: `calc(100% / ${scale})`,
+              height: `calc(100% / ${scale})`,
+            }
+          : undefined
+      }
     >
       {children}
     </div>

@@ -40,7 +40,7 @@ export function SidebarNavItem({
       aria-current={active ? "page" : undefined}
       aria-label={label}
       className={cn(
-        "flex min-h-10 w-full items-center gap-3 rounded-xl px-3 text-[14px] transition-all border border-transparent",
+        "flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-[14px] transition-all border border-transparent",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         collapsed && "justify-center px-2",
         active
@@ -78,14 +78,17 @@ export function SidebarNavItem({
       {showSubItems && (
         <ul className="mt-0.5 ml-[26px] flex flex-col gap-0.5 border-l border-hairline pl-3">
           {subItems!.map((sub) => {
-            const subActive = currentPath === sub.url;
+            const subActive =
+              sub.url === url
+                ? currentPath === sub.url || currentPath === `${sub.url}/`
+                : currentPath === sub.url || currentPath.startsWith(`${sub.url}/`);
             return (
               <li key={sub.url}>
                 <Link
                   to={sub.url as "/dash2"}
                   aria-current={subActive ? "page" : undefined}
                   className={cn(
-                    "flex min-h-8 items-center rounded-lg px-2.5 text-[13px] transition-all",
+                    "flex min-h-10 items-center rounded-lg px-2.5 text-[13.5px] transition-all",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                     subActive
                       ? "bg-white font-bold text-ink shadow-sm"

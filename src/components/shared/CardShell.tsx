@@ -26,18 +26,18 @@ export function CardShell({
         className,
       )}
     >
-      <header className="flex items-start justify-between gap-6 border-b border-border/50 px-6 py-5">
+      <header className="flex items-start justify-between gap-4 border-b border-border/50 px-4 py-4 sm:gap-6 sm:px-6 sm:py-5">
         <div className="min-w-0">
           {eyebrow && (
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#29C454]/80">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#15943a]">
               {eyebrow}
             </p>
           )}
-          <h2 className="mt-1.5 text-[16px] font-bold leading-none tracking-tight text-navy">
+          <h2 className="mt-1.5 text-[17px] font-bold leading-tight tracking-tight text-navy">
             {title}
           </h2>
           {description && (
-            <p className="mt-2 max-w-[46ch] text-[13px] leading-relaxed text-slate-text/90">
+            <p className="mt-2 max-w-[52ch] text-[14px] leading-relaxed text-slate-text">
               {description}
             </p>
           )}
@@ -56,7 +56,7 @@ export function CardShell({
         )}
       </header>
 
-      <div className={cn("flex-1 px-6 py-5", bodyClassName)}>{children}</div>
+      <div className={cn("flex-1 px-4 py-4 sm:px-6 sm:py-5", bodyClassName)}>{children}</div>
     </section>
   );
 }

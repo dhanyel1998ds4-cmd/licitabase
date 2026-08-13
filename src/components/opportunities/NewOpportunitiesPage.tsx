@@ -13,10 +13,11 @@ import {
   CalendarDays,
   Check,
   ChevronRight,
+  CircleDollarSign,
   Clock3,
   FileSearch,
-  FileText,
   Filter,
+  FlaskConical,
   Heart,
   Info,
   Lightbulb,
@@ -31,6 +32,12 @@ import {
   X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -49,6 +56,8 @@ import {
   newOpportunitiesSummary,
   opportunityPlatforms,
   type NewOpportunity,
+  type OpportunityProduct,
+  type OpportunityRequirement,
   type OpportunityPlatformFilter,
 } from "@/lib/new-opportunities-fixtures";
 import { cn } from "@/lib/utils";
@@ -96,7 +105,8 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
 
   const currentOpportunity = queue[0];
   const currentAnalysisStatus = currentOpportunity
-    ? (analysisById[currentOpportunity.id] ?? "idle")
+    ? (analysisById[currentOpportunity.id] ??
+      (currentOpportunity.documentAnalysis ? "done" : "idle"))
     : "idle";
 
   const totalInView =
@@ -248,51 +258,57 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
         </header>
 
         <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="-mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {opportunityPlatforms.map((platform) => {
-              const selected = activePlatform === platform;
-              return (
-                <button
-                  key={platform}
-                  type="button"
-                  onClick={() => selectPlatform(platform)}
-                  aria-pressed={selected}
-                  className={cn(
-                    "inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-4 text-[12px] font-semibold transition-all",
-                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]",
-                    selected
-                      ? "border-[#29C454] bg-[#29C454] text-white shadow-sm"
-                      : "border-hairline bg-white text-slate-text hover:border-slate-300 hover:text-ink",
-                  )}
-                >
-                  {platform}
-                  {platform === "Todas" && (
-                    <span
-                      className={cn(
-                        "rounded-full px-1.5 py-0.5 text-[10px] tabular-nums",
-                        selected ? "bg-white/20 text-white" : "bg-slate-100 text-ink",
-                      )}
-                    >
-                      {newOpportunitiesSummary.total}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+          <div className="relative min-w-0 lg:flex-1">
+            <div className="-mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 pb-1 pr-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {opportunityPlatforms.map((platform) => {
+                const selected = activePlatform === platform;
+                return (
+                  <button
+                    key={platform}
+                    type="button"
+                    onClick={() => selectPlatform(platform)}
+                    aria-pressed={selected}
+                    className={cn(
+                      "inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-4 text-[12px] font-semibold transition-all",
+                      "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]",
+                      selected
+                        ? "border-[#29C454] bg-[#29C454] text-white shadow-sm"
+                        : "border-hairline bg-white text-slate-text hover:border-slate-300 hover:text-ink",
+                    )}
+                  >
+                    {platform}
+                    {platform === "Todas" && (
+                      <span
+                        className={cn(
+                          "rounded-full px-1.5 py-0.5 text-[10px] tabular-nums",
+                          selected ? "bg-white/20 text-white" : "bg-slate-100 text-ink",
+                        )}
+                      >
+                        {newOpportunitiesSummary.total}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
 
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-              className={cn(
-                "inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-hairline bg-white px-4 text-[12px] font-semibold text-ink transition-colors hover:border-slate-300",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]",
-              )}
-              aria-label="Abrir filtros de oportunidades"
-            >
-              <Filter className="size-4" />
-              Filtros
-              {stateFilter !== "Todos" && <span className="size-2 rounded-full bg-[#29C454]" />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className={cn(
+                  "inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-hairline bg-white px-4 text-[12px] font-semibold text-ink transition-colors hover:border-slate-300",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]",
+                )}
+                aria-label="Abrir filtros de oportunidades"
+              >
+                <Filter className="size-4" />
+                Filtros
+                {stateFilter !== "Todos" && <span className="size-2 rounded-full bg-[#29C454]" />}
+              </button>
+            </div>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#F8FAFC] via-[#F8FAFC]/95 to-transparent"
+            />
           </div>
 
           <div className="flex shrink-0 items-center justify-between gap-6 lg:justify-end">
@@ -311,7 +327,7 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
         {feedback && (
           <div
             role="status"
-            className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-[#29C454]/20 bg-[#29C454]/[0.06] px-4 py-3"
+            className="fixed inset-x-4 bottom-[100px] z-50 flex items-center justify-between gap-4 rounded-xl border border-[#29C454]/20 bg-white px-4 py-3 shadow-lg sm:static sm:mt-4 sm:bg-[#29C454]/[0.06] sm:shadow-none"
           >
             <div className="flex min-w-0 items-center gap-2 text-[12px] font-medium text-ink">
               <Check className="size-4 shrink-0 text-[#29C454]" />
@@ -527,6 +543,12 @@ function OpportunityDeck({
           <article aria-labelledby={`opportunity-${opportunity.id}`}>
             <div className="p-5 sm:p-7">
               <div className="flex flex-wrap items-center gap-2">
+                {opportunity.isDemo && (
+                  <Badge className="gap-1 border border-violet-200 bg-violet-50 text-violet-700 shadow-none hover:bg-violet-50">
+                    <FlaskConical className="size-3" />
+                    Edital simulado
+                  </Badge>
+                )}
                 <Badge className="border-0 bg-blue-50 text-blue-700 shadow-none hover:bg-blue-50">
                   {opportunity.platform}
                 </Badge>
@@ -571,19 +593,30 @@ function OpportunityDeck({
               <p className="mt-4 text-[14px] font-medium leading-6 text-slate-text">
                 {opportunity.description}
               </p>
+              {opportunity.isDemo && (
+                <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-2 text-[11px] font-semibold text-violet-700">
+                  <Info className="size-3.5 shrink-0" />
+                  Dados fictícios e verossímeis usados somente para demonstrar a experiência da
+                  tela.
+                </p>
+              )}
 
               <div className="mt-6 grid grid-cols-2 rounded-2xl border border-hairline bg-slate-50/60 p-4 sm:grid-cols-4">
                 <MetadataItem
                   icon={<CalendarDays />}
-                  label="Data de abertura"
-                  value={opportunity.openingDate}
+                  label="Data / hora"
+                  value={`${opportunity.openingDate}${opportunity.openingTime ? ` · ${opportunity.openingTime}` : ""}`}
                 />
                 <MetadataItem
                   icon={<PackageSearch />}
                   label="Itens"
                   value={String(opportunity.items.length)}
                 />
-                <MetadataItem icon={<FileText />} label="Plataforma" value={opportunity.platform} />
+                <MetadataItem
+                  icon={<CircleDollarSign />}
+                  label="Valor estimado"
+                  value={opportunity.estimatedValue}
+                />
                 <MetadataItem
                   icon={<Target />}
                   label="Match"
@@ -600,12 +633,21 @@ function OpportunityDeck({
                 <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-text">
                   Itens da licitação
                 </p>
-                <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex min-w-0 gap-3">
-                    <span className="text-[13px] font-semibold text-slate-text">1.</span>
-                    <p className="text-[13px] font-medium leading-6 text-ink">
-                      {opportunity.items[0]}
-                    </p>
+                <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="min-w-0 space-y-2.5">
+                    {opportunity.items.slice(0, 2).map((item, index) => (
+                      <div key={item} className="flex min-w-0 gap-3">
+                        <span className="text-[13px] font-semibold text-slate-text">
+                          {index + 1}.
+                        </span>
+                        <p className="text-[13px] font-medium leading-5 text-ink">{item}</p>
+                      </div>
+                    ))}
+                    {opportunity.items.length > 2 && (
+                      <p className="pl-6 text-[11px] font-bold text-[#15943a]">
+                        + {opportunity.items.length - 2} item adicional
+                      </p>
+                    )}
                   </div>
                   <Button variant="outline" className="h-10 shrink-0 rounded-xl text-[12px]">
                     Ver detalhes do item
@@ -647,7 +689,7 @@ function OpportunityDeck({
         </div>
       </div>
 
-      <div className="mt-7 grid grid-cols-3 gap-2 sm:mx-auto sm:max-w-[650px] sm:gap-6">
+      <div className="sticky bottom-0 z-30 -mx-4 mt-5 grid grid-cols-3 gap-1 border-y border-hairline bg-white/95 px-3 pb-[calc(10px+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_28px_rgba(15,23,42,0.10)] backdrop-blur sm:static sm:mx-auto sm:mt-7 sm:max-w-[650px] sm:gap-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
         <DecisionButton
           icon={<X />}
           title="Excluir"
@@ -674,7 +716,7 @@ function OpportunityDeck({
         />
       </div>
 
-      <p className="mt-5 flex items-center justify-center gap-2 text-center text-[11px] font-medium text-slate-text">
+      <p className="mt-4 flex items-center justify-center gap-2 text-center text-[12px] font-medium text-slate-text sm:mt-5">
         <RefreshCcw className="size-4" aria-hidden="true" />
         Arraste para os lados ou use as ações
       </p>
@@ -702,8 +744,8 @@ function MetadataItem({
     >
       <span className="shrink-0 text-slate-text [&_svg]:size-5">{icon}</span>
       <span className="min-w-0">
-        <span className="block text-[10px] font-medium text-slate-text">{label}</span>
-        <span className="mt-0.5 block truncate text-[12px] font-bold text-ink">{value}</span>
+        <span className="block text-[11px] font-medium text-slate-text">{label}</span>
+        <span className="mt-0.5 block truncate text-[13px] font-bold text-ink">{value}</span>
       </span>
     </div>
   );
@@ -739,7 +781,7 @@ function DecisionButton({
     >
       <span
         className={cn(
-          "grid size-14 shrink-0 place-items-center rounded-full border bg-white shadow-sm transition-transform group-hover:-translate-y-0.5 sm:size-16 [&_svg]:size-7",
+          "grid size-12 shrink-0 place-items-center rounded-full border bg-white shadow-sm transition-transform group-hover:-translate-y-0.5 sm:size-16 [&_svg]:size-5 sm:[&_svg]:size-7",
           toneClasses[tone],
         )}
       >
@@ -748,7 +790,7 @@ function DecisionButton({
       <span className="min-w-0">
         <span
           className={cn(
-            "block text-[11px] font-bold sm:text-[12px]",
+            "block text-[12px] font-bold sm:text-[12px]",
             tone === "danger"
               ? "text-red-500"
               : tone === "positive"
@@ -775,132 +817,300 @@ function IntelligencePanel({
   analysisStatus: AnalysisStatus;
   onAnalyze: () => void;
 }) {
+  const analysis = analysisStatus === "done" ? opportunity.documentAnalysis : undefined;
+
   return (
-    <aside
-      aria-label="Inteligência da oportunidade"
-      className="min-w-0 space-y-4 xl:sticky xl:top-6 xl:self-start"
-    >
-      <Panel className="overflow-hidden">
-        <div className="flex items-center gap-2 border-b border-hairline px-5 py-4">
-          <Lightbulb className="size-5 text-[#29C454]" />
-          <h2 className="text-[14px] font-bold text-ink">Insights da oportunidade</h2>
-        </div>
-        <div className="space-y-4 p-5">
-          <InsightProgress
-            icon={<Target />}
-            label="Score de aderência"
-            value={opportunity.matchScore}
-          />
-          <InsightProgress
-            icon={<TrendingUp />}
-            label="Chance de sucesso"
-            value={opportunity.successChance}
-          />
-          <InsightRow
-            icon={<Users />}
-            label="Concorrência"
-            value={
-              typeof opportunity.supplierCount === "number"
-                ? `${opportunity.supplierCount} fornecedores`
-                : "Não disponível"
-            }
-          />
-          <InsightRow
-            icon={<ShieldCheck />}
-            label="Risco do órgão"
-            value={opportunity.agencyRisk ?? "Não disponível"}
-          />
-          <InsightRow
-            icon={<TrendingUp />}
-            label="Histórico similar"
-            value={
-              typeof opportunity.similarWins === "number"
-                ? `${opportunity.similarWins} disputas vencidas`
-                : "Não disponível"
-            }
-          />
-        </div>
-        <button
-          type="button"
-          className="flex w-full items-center justify-between border-t border-hairline px-5 py-3.5 text-[12px] font-semibold text-ink transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]"
-        >
-          Ver mais detalhes
-          <ArrowRight className="size-4" />
-        </button>
-      </Panel>
+    <>
+      <MobileIntelligencePanel
+        opportunity={opportunity}
+        analysisStatus={analysisStatus}
+        onAnalyze={onAnalyze}
+      />
+      <aside
+        aria-label="Inteligência da oportunidade"
+        className="hidden min-w-0 space-y-4 xl:sticky xl:top-6 xl:block xl:self-start"
+      >
+        <Panel className="overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-hairline px-5 py-4">
+            <Lightbulb className="size-5 text-[#29C454]" />
+            <h2 className="text-[14px] font-bold text-ink">Insights da oportunidade</h2>
+          </div>
+          <div className="space-y-4 p-5">
+            <InsightProgress
+              icon={<Target />}
+              label="Score de aderência"
+              value={opportunity.matchScore}
+            />
+            <InsightProgress
+              icon={<TrendingUp />}
+              label="Chance de sucesso"
+              value={opportunity.successChance}
+            />
+            <InsightRow
+              icon={<Users />}
+              label="Concorrência"
+              value={
+                typeof opportunity.supplierCount === "number"
+                  ? `${opportunity.competitionLevel ? `${opportunity.competitionLevel} · ` : ""}${opportunity.supplierCount} fornecedores`
+                  : "Não disponível"
+              }
+            />
+            <InsightRow
+              icon={<ShieldCheck />}
+              label="Risco do órgão"
+              value={opportunity.agencyRisk ?? "Não disponível"}
+            />
+            <InsightRow
+              icon={<TrendingUp />}
+              label="Histórico similar"
+              value={
+                typeof opportunity.similarWins === "number"
+                  ? `${opportunity.similarWins} disputas vencidas`
+                  : "Não disponível"
+              }
+            />
+          </div>
+          <button
+            type="button"
+            className="flex w-full items-center justify-between border-t border-hairline px-5 py-3.5 text-[12px] font-semibold text-ink transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]"
+          >
+            Ver mais detalhes
+            <ArrowRight className="size-4" />
+          </button>
+        </Panel>
 
-      <Panel className="overflow-hidden">
-        <section className="p-5" aria-labelledby="ray-title">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <FileSearch className="size-5 text-slate-text" />
-              <h2 id="ray-title" className="text-[14px] font-bold text-ink">
-                Raio-X do edital
-              </h2>
+        <Panel className="overflow-hidden">
+          <section className="p-5" aria-labelledby="ray-title">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2">
+                <FileSearch className="size-5 text-slate-text" />
+                <h2 id="ray-title" className="text-[14px] font-bold text-ink">
+                  Raio-X do edital
+                </h2>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onAnalyze}
+                disabled={analysisStatus === "processing"}
+                aria-label="Analisar edital e anexos"
+                className="h-9 rounded-xl border-[#29C454] text-[11px] font-bold text-[#15943a] hover:bg-[#29C454]/[0.06] hover:text-[#15943a]"
+              >
+                {analysisStatus === "processing" ? (
+                  <RefreshCcw className="animate-spin" />
+                ) : (
+                  <Sparkles />
+                )}
+                {analysisStatus === "processing"
+                  ? "Analisando documentos..."
+                  : analysisStatus === "done"
+                    ? "Análise concluída"
+                    : "Analisar edital e anexos"}
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onAnalyze}
-              disabled={analysisStatus === "processing"}
-              aria-label="Analisar edital e anexos"
-              className="h-9 rounded-xl border-[#29C454] text-[11px] font-bold text-[#15943a] hover:bg-[#29C454]/[0.06] hover:text-[#15943a]"
-            >
-              {analysisStatus === "processing" ? (
-                <RefreshCcw className="animate-spin" />
+
+            <div className="mt-5">
+              <h3 className="text-[12px] font-bold text-ink">Resumo do edital</h3>
+              <p className="mt-2 text-[11px] font-medium leading-5 text-slate-text">
+                {analysis
+                  ? analysis.summary
+                  : "Analise os documentos para extrair resumo, exigências, prazos e condições."}
+              </p>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
+              <AnalysisDatum label="Exigência técnica" value={analysis?.technicalRequirement} />
+              <AnalysisDatum label="Prazo de entrega" value={analysis?.deliveryDeadline} />
+              <AnalysisDatum label="Condições de pagamento" value={analysis?.paymentTerms} />
+            </div>
+          </section>
+
+          <IntelligenceSection
+            icon={<PackageSearch />}
+            title="Produtos sugeridos"
+            action="Ver todos"
+          >
+            {analysis ? (
+              <ProductPreviewList products={analysis.products} />
+            ) : (
+              <div className="rounded-xl border border-dashed border-hairline bg-slate-50/60 p-4 text-[11px] font-medium leading-5 text-slate-text">
+                Nenhum produto foi sugerido. Execute o Raio-X ou conecte o catálogo da empresa.
+              </div>
+            )}
+          </IntelligenceSection>
+
+          <IntelligenceSection
+            icon={<ShieldCheck />}
+            title="Requisitos de habilitação"
+            action="Ver todos os requisitos"
+          >
+            {analysis ? (
+              <RequirementsList requirements={analysis.requirements} />
+            ) : (
+              <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-[11px] font-semibold text-amber-800">
+                <Info className="size-4 shrink-0" />
+                Não identificado — análise documental necessária.
+              </div>
+            )}
+          </IntelligenceSection>
+
+          <button
+            type="button"
+            className="flex w-full items-center justify-between border-t border-hairline px-5 py-3.5 text-[12px] font-semibold text-ink transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]"
+          >
+            Ver edital e anexos
+            <ArrowRight className="size-4" />
+          </button>
+        </Panel>
+      </aside>
+    </>
+  );
+}
+
+function MobileIntelligencePanel({
+  opportunity,
+  analysisStatus,
+  onAnalyze,
+}: {
+  opportunity: NewOpportunity;
+  analysisStatus: AnalysisStatus;
+  onAnalyze: () => void;
+}) {
+  const analysis = analysisStatus === "done" ? opportunity.documentAnalysis : undefined;
+
+  return (
+    <section aria-labelledby="mobile-intelligence-title" className="min-w-0 xl:hidden">
+      <div className="mb-3 flex items-center gap-2">
+        <Lightbulb className="size-5 text-[#29C454]" aria-hidden="true" />
+        <h2 id="mobile-intelligence-title" className="text-[17px] font-bold text-ink">
+          Inteligência da oportunidade
+        </h2>
+      </div>
+
+      <Panel className="overflow-hidden">
+        <Accordion type="single" defaultValue="insights" collapsible>
+          <AccordionItem value="insights" className="border-hairline px-4 sm:px-5">
+            <AccordionTrigger className="min-h-14 py-3 text-[14px] font-bold text-ink hover:no-underline">
+              <span className="flex items-center gap-2">
+                <Target className="size-4 text-[#29C454]" aria-hidden="true" />
+                Insights da oportunidade
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pb-5">
+              <InsightProgress
+                icon={<Target />}
+                label="Score de aderência"
+                value={opportunity.matchScore}
+              />
+              <InsightProgress
+                icon={<TrendingUp />}
+                label="Chance de sucesso"
+                value={opportunity.successChance}
+              />
+              <InsightRow
+                icon={<Users />}
+                label="Concorrência"
+                value={
+                  typeof opportunity.supplierCount === "number"
+                    ? `${opportunity.competitionLevel ? `${opportunity.competitionLevel} · ` : ""}${opportunity.supplierCount} fornecedores`
+                    : "Não disponível"
+                }
+              />
+              <InsightRow
+                icon={<ShieldCheck />}
+                label="Risco do órgão"
+                value={opportunity.agencyRisk ?? "Não disponível"}
+              />
+              <InsightRow
+                icon={<TrendingUp />}
+                label="Histórico similar"
+                value={
+                  typeof opportunity.similarWins === "number"
+                    ? `${opportunity.similarWins} disputas vencidas`
+                    : "Não disponível"
+                }
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="ray" className="border-hairline px-4 sm:px-5">
+            <AccordionTrigger className="min-h-14 py-3 text-[14px] font-bold text-ink hover:no-underline">
+              <span className="flex items-center gap-2">
+                <FileSearch className="size-4 text-slate-text" aria-hidden="true" />
+                Raio-X e resumo do edital
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="pb-5">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onAnalyze}
+                disabled={analysisStatus === "processing"}
+                className="min-h-11 w-full rounded-xl border-[#29C454] text-[13px] font-bold text-[#15943a]"
+              >
+                {analysisStatus === "processing" ? (
+                  <RefreshCcw className="animate-spin" />
+                ) : (
+                  <Sparkles />
+                )}
+                {analysisStatus === "processing"
+                  ? "Analisando documentos..."
+                  : analysisStatus === "done"
+                    ? "Análise concluída"
+                    : "Analisar edital e anexos"}
+              </Button>
+              <p className="mt-4 text-[13px] font-medium leading-relaxed text-slate-text">
+                {analysis
+                  ? analysis.summary
+                  : "Analise os documentos para extrair resumo, exigências, prazos e condições."}
+              </p>
+              <div className="mt-4 grid gap-3 min-[480px]:grid-cols-3">
+                <AnalysisDatum label="Exigência técnica" value={analysis?.technicalRequirement} />
+                <AnalysisDatum label="Prazo de entrega" value={analysis?.deliveryDeadline} />
+                <AnalysisDatum label="Condições de pagamento" value={analysis?.paymentTerms} />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="products" className="border-hairline px-4 sm:px-5">
+            <AccordionTrigger className="min-h-14 py-3 text-[14px] font-bold text-ink hover:no-underline">
+              <span className="flex items-center gap-2">
+                <PackageSearch className="size-4 text-slate-text" aria-hidden="true" />
+                Produtos sugeridos
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="pb-5">
+              {analysis ? (
+                <ProductPreviewList products={analysis.products} />
               ) : (
-                <Sparkles />
+                <div className="rounded-xl border border-dashed border-hairline bg-slate-50/60 p-4 text-[13px] font-medium leading-relaxed text-slate-text">
+                  Nenhum produto foi sugerido. Execute o Raio-X ou conecte o catálogo da empresa.
+                </div>
               )}
-              {analysisStatus === "processing"
-                ? "Analisando documentos..."
-                : analysisStatus === "done"
-                  ? "Análise concluída"
-                  : "Analisar edital e anexos"}
-            </Button>
-          </div>
+            </AccordionContent>
+          </AccordionItem>
 
-          <div className="mt-5">
-            <h3 className="text-[12px] font-bold text-ink">Resumo do edital</h3>
-            <p className="mt-2 text-[11px] font-medium leading-5 text-slate-text">
-              {analysisStatus === "done"
-                ? "A estrutura está pronta para receber a análise real. Nenhuma extração definitiva está disponível neste ambiente."
-                : "Analise os documentos para extrair resumo, exigências, prazos e condições."}
-            </p>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
-            <AnalysisDatum label="Exigência técnica" />
-            <AnalysisDatum label="Prazo de entrega" />
-            <AnalysisDatum label="Condições de pagamento" />
-          </div>
-        </section>
-
-        <IntelligenceSection icon={<PackageSearch />} title="Produtos sugeridos" action="Ver todos">
-          <div className="rounded-xl border border-dashed border-hairline bg-slate-50/60 p-4 text-[11px] font-medium leading-5 text-slate-text">
-            Nenhum produto foi sugerido. Execute o Raio-X ou conecte o catálogo da empresa.
-          </div>
-        </IntelligenceSection>
-
-        <IntelligenceSection
-          icon={<ShieldCheck />}
-          title="Requisitos de habilitação"
-          action="Ver todos os requisitos"
-        >
-          <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-[11px] font-semibold text-amber-800">
-            <Info className="size-4 shrink-0" />
-            Não identificado — análise documental necessária.
-          </div>
-        </IntelligenceSection>
-
-        <button
-          type="button"
-          className="flex w-full items-center justify-between border-t border-hairline px-5 py-3.5 text-[12px] font-semibold text-ink transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]"
-        >
-          Ver edital e anexos
-          <ArrowRight className="size-4" />
-        </button>
+          <AccordionItem value="requirements" className="border-0 px-4 sm:px-5">
+            <AccordionTrigger className="min-h-14 py-3 text-[14px] font-bold text-ink hover:no-underline">
+              <span className="flex items-center gap-2">
+                <ShieldCheck className="size-4 text-slate-text" aria-hidden="true" />
+                Requisitos de habilitação
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="pb-5">
+              {analysis ? (
+                <RequirementsList requirements={analysis.requirements} showDetails />
+              ) : (
+                <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-3 text-[13px] font-semibold leading-relaxed text-amber-800">
+                  <Info className="size-4 shrink-0" aria-hidden="true" />
+                  Não identificado — análise documental necessária.
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </Panel>
-    </aside>
+    </section>
   );
 }
 
@@ -918,7 +1128,7 @@ function InsightProgress({
       <span className="text-slate-text [&_svg]:size-4">{icon}</span>
       <div className="min-w-0">
         <div className="mb-1.5 flex items-center justify-between gap-3">
-          <span className="text-[11px] font-medium text-slate-text">{label}</span>
+          <span className="text-[12px] font-medium text-slate-text">{label}</span>
         </div>
         {typeof value === "number" ? (
           <Progress value={value} className="h-1.5 bg-slate-100" />
@@ -926,7 +1136,7 @@ function InsightProgress({
           <div className="h-1.5 rounded-full bg-slate-100" />
         )}
       </div>
-      <span className="text-[11px] font-bold tabular-nums text-ink">
+      <span className="text-[12px] font-bold tabular-nums text-ink">
         {typeof value === "number" ? `${value}%` : "N/D"}
       </span>
     </div>
@@ -937,17 +1147,114 @@ function InsightRow({ icon, label, value }: { icon: ReactNode; label: string; va
   return (
     <div className="grid grid-cols-[20px_minmax(0,1fr)_auto] items-center gap-2.5">
       <span className="text-slate-text [&_svg]:size-4">{icon}</span>
-      <span className="text-[11px] font-medium text-slate-text">{label}</span>
-      <span className="text-right text-[11px] font-semibold text-ink">{value}</span>
+      <span className="text-[12px] font-medium text-slate-text">{label}</span>
+      <span className="text-right text-[12px] font-semibold text-ink">{value}</span>
     </div>
   );
 }
 
-function AnalysisDatum({ label }: { label: string }) {
+function AnalysisDatum({ label, value }: { label: string; value: string | undefined }) {
   return (
     <div className="rounded-xl border border-hairline bg-slate-50/50 p-3">
-      <p className="text-[10px] font-bold text-ink">{label}</p>
-      <p className="mt-1.5 text-[10px] font-medium text-slate-text">Não identificado</p>
+      <p className="text-[11px] font-bold text-ink">{label}</p>
+      <p className="mt-1.5 text-[11px] font-medium leading-[1.55] text-slate-text">
+        {value ?? "Não identificado"}
+      </p>
+    </div>
+  );
+}
+
+function ProductPreviewList({ products }: { products: OpportunityProduct[] }) {
+  return (
+    <div className="space-y-2">
+      {products.map((product) => (
+        <article
+          key={product.sku}
+          className="grid grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-hairline bg-white p-3"
+        >
+          <span className="grid size-[38px] place-items-center rounded-lg bg-[#29C454]/10 text-[#15943a]">
+            <PackageSearch className="size-4" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <h4 className="truncate text-[11px] font-bold text-ink">{product.name}</h4>
+            <p className="mt-0.5 truncate text-[9px] font-semibold uppercase tracking-[0.04em] text-slate-text">
+              {product.sku}
+            </p>
+            <p className="mt-1 line-clamp-1 text-[10px] font-medium text-slate-text">
+              {product.note}
+            </p>
+          </div>
+          <span className="rounded-full bg-[#29C454]/10 px-2 py-1 text-[10px] font-extrabold tabular-nums text-[#15943a]">
+            {product.compatibility}%
+          </span>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function RequirementsList({
+  requirements,
+  showDetails = false,
+}: {
+  requirements: OpportunityRequirement[];
+  showDetails?: boolean;
+}) {
+  return (
+    <div className="grid gap-2 2xl:grid-cols-2">
+      {requirements.map((requirement) => {
+        const isCompliant = requirement.status === "Conforme";
+        const needsAttention = requirement.status === "Atenção";
+
+        return (
+          <div
+            key={requirement.label}
+            className={cn(
+              "rounded-xl border px-3 py-2.5",
+              isCompliant
+                ? "border-[#29C454]/20 bg-[#29C454]/[0.05]"
+                : needsAttention
+                  ? "border-amber-200 bg-amber-50"
+                  : "border-hairline bg-slate-50",
+            )}
+          >
+            <div className="flex items-start gap-2">
+              <span
+                className={cn(
+                  "mt-0.5 grid size-4 shrink-0 place-items-center rounded-full",
+                  isCompliant
+                    ? "bg-[#29C454] text-white"
+                    : needsAttention
+                      ? "bg-amber-500 text-white"
+                      : "bg-slate-200 text-slate-text",
+                )}
+              >
+                {isCompliant ? <Check className="size-3" /> : <Info className="size-2.5" />}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold leading-4 text-ink">{requirement.label}</p>
+                <p
+                  className={cn(
+                    "mt-0.5 text-[9px] font-bold",
+                    isCompliant
+                      ? "text-[#15943a]"
+                      : needsAttention
+                        ? "text-amber-700"
+                        : "text-slate-text",
+                  )}
+                >
+                  {requirement.status}
+                </p>
+                {showDetails && (
+                  <p className="mt-1 text-[11px] font-medium leading-relaxed text-slate-text">
+                    {requirement.detail}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

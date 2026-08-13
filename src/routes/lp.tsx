@@ -1,31 +1,39 @@
-import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
-import { Header } from '@/components/lp/Header';
-import { Hero } from '@/components/lp/Hero';
-import { ValueProof } from '@/components/lp/ValueProof';
-import { HowItWorks } from '@/components/lp/HowItWorks';
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
+import { Header } from "@/components/lp/Header";
+import { Hero } from "@/components/lp/Hero";
+import { ValueProof } from "@/components/lp/ValueProof";
+import { HowItWorks } from "@/components/lp/HowItWorks";
 
-import { BidBot } from '@/components/lp/BidBot';
-import { Resources } from '@/components/lp/Resources';
-import { Benefits } from '@/components/lp/Benefits';
-import { Pricing } from '@/components/lp/Pricing';
-import { SearchFilters } from '@/components/lp/SearchFilters';
-import { Categories } from '@/components/lp/Categories';
-import { FAQ } from '@/components/lp/FAQ';
+import { BidBot } from "@/components/lp/BidBot";
+import { Resources } from "@/components/lp/Resources";
+import { Benefits } from "@/components/lp/Benefits";
+import { Pricing } from "@/components/lp/Pricing";
+import { SearchFilters } from "@/components/lp/SearchFilters";
+import { Categories } from "@/components/lp/Categories";
+import { FAQ } from "@/components/lp/FAQ";
 
-import { Footer } from '@/components/lp/Footer';
+import { Footer } from "@/components/lp/Footer";
 
-export const Route = createFileRoute('/lp')({
+export const Route = createFileRoute("/lp")({
   head: () => ({
-    title: 'Licitabase | Encontre, analise e monitore licitações públicas',
+    title: "Licitabase | Encontre, analise e monitore licitações públicas",
     meta: [
       {
-        name: 'description',
-        content: 'Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.',
+        name: "description",
+        content:
+          "Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.",
       },
-      { property: 'og:title', content: 'Licitabase | Encontre, analise e monitore licitações públicas' },
-      { property: 'og:description', content: 'Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.' },
-      { property: 'og:type', content: 'website' },
-      { name: 'twitter:card', content: 'summary_large_image' },
+      {
+        property: "og:title",
+        content: "Licitabase | Encontre, analise e monitore licitações públicas",
+      },
+      {
+        property: "og:description",
+        content:
+          "Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LandingPage,
@@ -33,14 +41,14 @@ export const Route = createFileRoute('/lp')({
 
 function LandingPage() {
   const location = useLocation();
-  const isBaseLp = location.pathname === '/lp' || location.pathname === '/lp/';
+  const isBaseLp = location.pathname === "/lp" || location.pathname === "/lp/";
 
   if (!isBaseLp) {
     return <Outlet />;
   }
 
   return (
-    <div className="flex flex-col w-full font-manrope bg-white">
+    <div className="lp-page flex min-w-0 w-full flex-col bg-white font-manrope">
       <Header />
       <main>
         <Hero />
@@ -53,7 +61,6 @@ function LandingPage() {
         <SearchFilters />
         <Categories />
         <FAQ />
-        
       </main>
       <Footer />
     </div>

@@ -29,19 +29,28 @@ export function PanelHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-4", className)}>
-      <div className="flex min-w-0 items-start gap-3">
-        {icon ? <span className="mt-0.5 shrink-0 text-[#29C454]">{icon}</span> : null}
+    <div
+      className={cn(
+        "panel-header flex flex-wrap items-start justify-between gap-3 sm:gap-4",
+        className,
+      )}
+    >
+      <div className="panel-header__main flex min-w-0 flex-1 items-start gap-3">
+        {icon ? (
+          <span className="panel-header__icon mt-0.5 shrink-0 text-[#29C454]">{icon}</span>
+        ) : null}
         <div className="min-w-0">
-          <h2 className="truncate text-[15px] font-bold tracking-tight leading-tight text-ink">
+          <h2 className="panel-header__title text-[16px] font-bold leading-tight tracking-tight text-ink">
             {title}
           </h2>
           {subtitle ? (
-            <p className="mt-1 text-[12px] font-medium leading-tight text-slate-text">{subtitle}</p>
+            <p className="panel-header__subtitle mt-1 text-[13px] font-medium leading-snug text-slate-text">
+              {subtitle}
+            </p>
           ) : null}
         </div>
       </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
+      {action ? <div className="panel-header__action shrink-0 self-center">{action}</div> : null}
     </div>
   );
 }

@@ -22,6 +22,7 @@ import { Route as BotLancesRelatoriosRouteImport } from './routes/bot-lances.rel
 import { Route as PlanosCompararRouteImport } from './routes/planos.comparar'
 import { Route as BotLancesDisputasIndexRouteImport } from './routes/bot-lances.disputas.index'
 import { Route as BotLancesDisputasDisputeIdRouteImport } from './routes/bot-lances.disputas.$disputeId'
+import { Route as Dash2LicitacoesBuscarRouteImport } from './routes/dash2.licitacoes.buscar'
 import { Route as Dash2OportunidadesNovasRouteImport } from './routes/dash2.oportunidades.novas'
 
 const IndexRoute = IndexRouteImport.update({
@@ -90,6 +91,11 @@ const BotLancesDisputasDisputeIdRoute =
     path: '/disputas/$disputeId',
     getParentRoute: () => BotLancesRoute,
   } as any)
+const Dash2LicitacoesBuscarRoute = Dash2LicitacoesBuscarRouteImport.update({
+  id: '/licitacoes/buscar',
+  path: '/licitacoes/buscar',
+  getParentRoute: () => Dash2Route,
+} as any)
 const Dash2OportunidadesNovasRoute = Dash2OportunidadesNovasRouteImport.update({
   id: '/oportunidades/novas',
   path: '/oportunidades/novas',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas/': typeof BotLancesDisputasIndexRoute
 }
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances': typeof BotLancesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas': typeof BotLancesDisputasIndexRoute
 }
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas/': typeof BotLancesDisputasIndexRoute
 }
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/planos/comparar'
     | '/bot-lances/'
     | '/bot-lances/disputas/$disputeId'
+    | '/dash2/licitacoes/buscar'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas/'
   fileRoutesByTo: FileRoutesByTo
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/planos/comparar'
     | '/bot-lances'
     | '/bot-lances/disputas/$disputeId'
+    | '/dash2/licitacoes/buscar'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas'
   id:
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/planos/comparar'
     | '/bot-lances/'
     | '/bot-lances/disputas/$disputeId'
+    | '/dash2/licitacoes/buscar'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas/'
   fileRoutesById: FileRoutesById
@@ -296,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BotLancesDisputasDisputeIdRouteImport
       parentRoute: typeof BotLancesRoute
     }
+    '/dash2/licitacoes/buscar': {
+      id: '/dash2/licitacoes/buscar'
+      path: '/licitacoes/buscar'
+      fullPath: '/dash2/licitacoes/buscar'
+      preLoaderRoute: typeof Dash2LicitacoesBuscarRouteImport
+      parentRoute: typeof Dash2Route
+    }
     '/dash2/oportunidades/novas': {
       id: '/dash2/oportunidades/novas'
       path: '/oportunidades/novas'
@@ -331,10 +350,12 @@ const BotLancesRouteWithChildren = BotLancesRoute._addFileChildren(
 )
 
 interface Dash2RouteChildren {
+  Dash2LicitacoesBuscarRoute: typeof Dash2LicitacoesBuscarRoute
   Dash2OportunidadesNovasRoute: typeof Dash2OportunidadesNovasRoute
 }
 
 const Dash2RouteChildren: Dash2RouteChildren = {
+  Dash2LicitacoesBuscarRoute: Dash2LicitacoesBuscarRoute,
   Dash2OportunidadesNovasRoute: Dash2OportunidadesNovasRoute,
 }
 

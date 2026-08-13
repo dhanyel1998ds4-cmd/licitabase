@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Clock, Settings2, SlidersHorizontal } from "lucide-react";
-import { BotPageHeader, MetricCard } from "@/components/bot/BotPageHeader";
-import { CardShell } from "@/components/shared/CardShell";
+import {
+  BotPageHeader,
+  BotPanel as CardShell,
+  MetricCard,
+  botInputClassName,
+  botOutlineButtonClassName,
+} from "@/components/dash2/BotPrimitives";
 import { ConfigList, DisputeList } from "@/components/bot/panels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,11 +47,15 @@ function BidBotOverview() {
         description="Monitoramento em tempo real das disputas automatizadas da sua operação."
         actions={
           <>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className={botOutlineButtonClassName}>
               <SlidersHorizontal className="size-4" aria-hidden="true" />
               Filtros
             </Button>
-            <Button size="sm" asChild>
+            <Button
+              size="sm"
+              className="rounded-xl bg-[#29C454] shadow-none hover:bg-[#22ad49]"
+              asChild
+            >
               <Link to={BID_BOT_ROUTES.settings}>
                 <Settings2 className="size-4" aria-hidden="true" />
                 Nova estratégia
@@ -56,24 +65,36 @@ function BidBotOverview() {
         }
       />
 
-      <div className="max-w-2xl">
+      <div className="w-full">
         <Input
+          className={botInputClassName}
           placeholder="Buscar por órgão, objeto, UASG, edital, fornecedor..."
           aria-label="Buscar disputas"
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {bidBotSummary.map((m) => (
-          <MetricCard key={m.label} {...m} />
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 xl:grid-cols-5">
+        {bidBotSummary.map((m, index) => (
+          <MetricCard
+            key={m.label}
+            {...m}
+            className={
+              index === bidBotSummary.length - 1 ? "min-[360px]:col-span-2 xl:col-span-1" : ""
+            }
+          />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-        <div className="space-y-8 lg:col-span-4">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12 sm:gap-5">
+        <div className="space-y-4 lg:col-span-4 sm:space-y-5">
           <CardShell eyebrow="Operacional" title="Configuração ativa">
             <ConfigList rows={bidBotActiveConfig} />
-            <Button variant="outline" size="sm" className="mt-6 w-full" asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className={`${botOutlineButtonClassName} mt-6 w-full`}
+              asChild
+            >
               <Link to={BID_BOT_ROUTES.settings}>
                 Ver configurações
                 <ArrowRight className="size-4" aria-hidden="true" />
@@ -82,7 +103,7 @@ function BidBotOverview() {
           </CardShell>
 
           <CardShell eyebrow="Resumo" title="Resumo rápido">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {bidBotQuickSummary.map((m) => (
                 <MetricCard key={m.label} {...m} className="shadow-none" />
               ))}
@@ -101,10 +122,15 @@ function BidBotOverview() {
             description="Sessões acompanhadas automaticamente pelos seus robôs de lance."
             bodyClassName="p-0"
           >
-            <DisputeList items={disputes} />
-            <div className="flex items-center justify-between px-6 py-4">
-              <p className="text-[12px] text-slate-text">Mostrando 1–10 de 200</p>
-              <Button variant="outline" size="sm" asChild>
+            <DisputeList items={disputes} visual="dash2" />
+            <div className="flex flex-col items-stretch gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <p className="text-[13px] text-slate-text">Mostrando 1–10 de 200</p>
+              <Button
+                variant="outline"
+                className={`${botOutlineButtonClassName} min-h-11 sm:min-h-9`}
+                size="sm"
+                asChild
+              >
                 <Link to={BID_BOT_ROUTES.disputes}>
                   Ver todas as disputas
                   <ArrowRight className="size-4" aria-hidden="true" />

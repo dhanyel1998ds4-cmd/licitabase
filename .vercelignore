@@ -1,0 +1,8 @@
+artifacts/
+.output/
+.tanstack/
+.wrangler/
+node_modules/
+*.log
+.env*
+.vercel/

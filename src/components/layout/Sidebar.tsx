@@ -1,111 +1,110 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import {
-  BarChart3,
-  Bell,
-  Bot,
-  BookmarkCheck,
-  Building2,
-  ChevronDown,
-  ChevronRight,
-  ClipboardList,
-  CreditCard,
-  FolderOpen,
-  Gauge,
-  KanbanSquare,
-  LayoutDashboard,
-  LifeBuoy,
-  Package,
-  PanelLeft,
-  PanelLeftDashed,
-  Plug,
-  ScanSearch,
-  Search,
-  Settings,
-  Swords,
-  Tags,
-  Users,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, PanelLeft, PanelLeftDashed } from "lucide-react";
 import { SidebarNavItem, type SidebarNavItemProps } from "./SidebarNavItem";
 import { BrandLogo, BrandPattern } from "@/components/brand/BrandMarks";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { SidebarUtilityCards } from "./SidebarUtilityCards";
+import { getGlobalSearchItem } from "@/lib/global-search-catalog";
 
 type NavGroup = {
   label?: string;
   items: SidebarNavItemProps[];
 };
 
+function navigationItem(
+  id: string,
+  fallbackUrl: string,
+  extras: Partial<SidebarNavItemProps> = {},
+): SidebarNavItemProps {
+  const catalogItem = getGlobalSearchItem(id);
+  if (!catalogItem) throw new Error(`Item de navegação não encontrado no catálogo: ${id}`);
+
+  return {
+    icon: catalogItem.icon,
+    label: catalogItem.navigationLabel ?? catalogItem.title,
+    url: catalogItem.route ?? fallbackUrl,
+    ...extras,
+  };
+}
+
+function navigationSubItem(id: string, fallbackUrl: string) {
+  const catalogItem = getGlobalSearchItem(id);
+  if (!catalogItem) throw new Error(`Subitem de navegação não encontrado no catálogo: ${id}`);
+  return {
+    label: catalogItem.navigationLabel ?? catalogItem.title,
+    url: catalogItem.route ?? fallbackUrl,
+  };
+}
+
 const navGroups: NavGroup[] = [
   {
-    items: [{ icon: LayoutDashboard, label: "Visão geral", url: "/dash2" }],
+    items: [navigationItem("dashboard-home", "/dash2")],
   },
   {
     label: "Explorar licitações",
     items: [
-      { icon: Search, label: "Buscar licitações", url: "/licitacoes/buscar" },
-      { icon: Tags, label: "Categorias de interesse", url: "/categorias" },
-      { icon: Package, label: "Itens de licitação", url: "/itens" },
-      { icon: BookmarkCheck, label: "Filtros salvos", url: "/filtros" },
+      navigationItem("search-bids", "/licitacoes/buscar"),
+      navigationItem("interest-categories", "/categorias"),
+      navigationItem("bid-items", "/itens"),
+      navigationItem("saved-filters", "/filtros"),
     ],
   },
   {
     label: "Minha operação",
     items: [
-      { icon: ClipboardList, label: "Minhas licitações", url: "/minhas-licitacoes" },
-      { icon: KanbanSquare, label: "Pipeline", url: "/pipeline" },
-      {
-        icon: Bot,
-        label: "Bot de Lances",
-        url: "/bot-lances",
+      navigationItem("my-bids", "/minhas-licitacoes"),
+      navigationItem("operation-pipeline", "/pipeline"),
+      navigationItem("bid-bot-home", "/bot-lances", {
         badge: 2,
         subItems: [
-          { label: "Visão geral", url: "/bot-lances" },
-          { label: "Disputas", url: "/bot-lances/disputas" },
-          { label: "Monitoramento", url: "/bot-lances/monitoramento" },
-          { label: "Relatórios", url: "/bot-lances/relatorios" },
-          { label: "Histórico", url: "/bot-lances/historico" },
-          { label: "Configurações", url: "/bot-lances/configuracoes" },
+          navigationSubItem("bid-bot-home", "/bot-lances"),
+          navigationSubItem("bid-bot-disputes", "/bot-lances/disputas"),
+          navigationSubItem("bid-bot-monitoring", "/bot-lances/monitoramento"),
+          navigationSubItem("bid-bot-reports", "/bot-lances/relatorios"),
+          navigationSubItem("bid-bot-history", "/bot-lances/historico"),
+          navigationSubItem("bid-bot-settings", "/bot-lances/configuracoes"),
         ],
-      },
-      { icon: FolderOpen, label: "Documentos", url: "/documentos" },
+      }),
+      navigationItem("documents", "/documentos"),
     ],
   },
   {
     label: "Inteligência",
     items: [
-      { icon: ScanSearch, label: "Raio-X", url: "/raio-x" },
-      { icon: Gauge, label: "Score dos Órgãos", url: "/score-orgaos" },
-      { icon: Building2, label: "Empresas monitoradas", url: "/empresas-monitoradas" },
-      { icon: Swords, label: "Concorrentes", url: "/concorrentes" },
-      { icon: BarChart3, label: "Relatórios", url: "/relatorios" },
+      navigationItem("bid-xray", "/raio-x"),
+      navigationItem("agency-score", "/score-orgaos"),
+      navigationItem("monitored-companies", "/empresas-monitoradas"),
+      navigationItem("competitors", "/concorrentes"),
+      navigationItem("company-reports", "/relatorios"),
     ],
   },
   {
     label: "Gestão",
     items: [
-      { icon: Users, label: "Equipe", url: "/equipe" },
-      { icon: Plug, label: "Integrações", url: "/integracoes" },
-      { icon: CreditCard, label: "Planos", url: "/planos" },
+      navigationItem("team-permissions", "/equipe"),
+      navigationItem("integrations", "/integracoes"),
+      navigationItem("billing-plan", "/planos"),
     ],
   },
-];
-
-const footerNav: SidebarNavItemProps[] = [
-  { icon: Bell, label: "Alertas", url: "/alertas", badge: 3 },
-  { icon: Settings, label: "Configurações pessoais", url: "/configuracoes" },
-  { icon: LifeBuoy, label: "Ajuda e suporte", url: "/ajuda" },
 ];
 
 type SidebarProps = {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  showCollapseToggle?: boolean;
 };
 
-export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
+export function Sidebar({
+  collapsed = false,
+  onToggleCollapse,
+  showCollapseToggle = true,
+}: SidebarProps) {
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
-  const isActive = (url: string) => currentPath === url;
+  const isActive = (url: string, hasSubItems = false) =>
+    currentPath === url || (hasSubItems && currentPath.startsWith(`${url}/`));
 
   const activeGroupLabel = useMemo(() => {
     return navGroups.find((g) => g.items.some((i) => currentPath.startsWith(i.url)))?.label ?? null;
@@ -124,13 +123,14 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
   };
 
   const isGroupOpen = (label: string) => openGroup === label;
-  const isDashboardActive = currentPath.startsWith("/dash2");
+  const isDashboardActive =
+    currentPath.startsWith("/dash2") || currentPath.startsWith("/bot-lances");
 
   return (
     <nav
       aria-label="Navegação principal"
       className={cn(
-        "relative flex h-full flex-col overflow-hidden bg-[#F8FAFC] border-r border-hairline pb-6 pt-8 transition-all",
+        "relative flex h-full flex-col overflow-x-hidden overflow-y-auto bg-[#F8FAFC] border-r border-hairline pb-6 pt-8 transition-all",
         collapsed ? "w-[80px] px-3" : "w-full px-5",
       )}
     >
@@ -141,19 +141,21 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
         )}
       >
         {!collapsed && <BrandLogo variant="dark" />}
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
-          title={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
-          className="flex size-9 items-center justify-center rounded-lg text-navy hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          {collapsed ? (
-            <PanelLeftDashed className="size-5" aria-hidden="true" />
-          ) : (
-            <PanelLeft className="size-5" aria-hidden="true" />
-          )}
-        </button>
+        {showCollapseToggle ? (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
+            title={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
+            className="flex size-11 items-center justify-center rounded-xl text-navy transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            {collapsed ? (
+              <PanelLeftDashed className="size-5" aria-hidden="true" />
+            ) : (
+              <PanelLeft className="size-5" aria-hidden="true" />
+            )}
+          </button>
+        ) : null}
       </div>
 
       {!collapsed && (
@@ -167,7 +169,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
         >
           <p
             className={cn(
-              "text-[10.5px] font-medium uppercase tracking-[0.12em]",
+              "text-[11.5px] font-medium uppercase tracking-[0.1em]",
               isDashboardActive ? "text-brand-strong" : "text-muted-foreground",
             )}
           >
@@ -211,7 +213,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
           <SidebarNavItem
             key={item.label}
             {...item}
-            active={isActive(item.url)}
+            active={isActive(item.url, Boolean(item.subItems?.length))}
             collapsed={collapsed}
           />
         ))}
@@ -254,7 +256,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
                       <SidebarNavItem
                         key={item.label}
                         {...item}
-                        active={isActive(item.url)}
+                        active={isActive(item.url, Boolean(item.subItems?.length))}
                         collapsed={collapsed}
                         currentPath={currentPath}
                       />
@@ -270,7 +272,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
                     <button
                       type="button"
                       className={cn(
-                        "relative mb-2 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left transition-all border border-transparent",
+                        "relative mb-2 flex min-h-11 w-full items-center gap-2 rounded-xl border border-transparent px-3 py-2 text-left transition-all",
                         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                         groupActive
                           ? "bg-white shadow-sm border border-hairline"
@@ -292,7 +294,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
                       />
                       <span
                         className={cn(
-                          "flex-1 text-[11px] font-semibold uppercase tracking-[0.1em]",
+                          "flex-1 text-[12px] font-semibold uppercase tracking-[0.08em]",
                           groupActive ? "text-brand-strong" : "text-navy",
                         )}
                       >
@@ -323,7 +325,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
                         <SidebarNavItem
                           key={item.label}
                           {...item}
-                          active={isActive(item.url)}
+                          active={isActive(item.url, Boolean(item.subItems?.length))}
                           collapsed={collapsed}
                           currentPath={currentPath}
                         />
@@ -337,18 +339,8 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
         })}
       </div>
 
-      <hr className="my-5 border-t border-border" />
-
-      <ul className="flex flex-col gap-0.5 pb-2">
-        {footerNav.map((item) => (
-          <SidebarNavItem
-            key={item.label}
-            {...item}
-            active={isActive(item.url)}
-            collapsed={collapsed}
-          />
-        ))}
-      </ul>
+      <hr className="mt-5 border-t border-border" />
+      <SidebarUtilityCards collapsed={collapsed} />
 
       <BrandPattern
         className={cn(

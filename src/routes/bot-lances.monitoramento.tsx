@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Activity, RefreshCcw } from "lucide-react";
-import { BotPageHeader, MetricCard } from "@/components/bot/BotPageHeader";
-import { StatusPill } from "@/components/bot/StatusPill";
-import { CardShell } from "@/components/shared/CardShell";
+import {
+  BotPageHeader,
+  BotPanel as CardShell,
+  MetricCard,
+  StatusPill,
+  botOutlineButtonClassName,
+} from "@/components/dash2/BotPrimitives";
+import { MobileMonitoringCards } from "@/components/bot/BotMobileCards";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -37,16 +42,16 @@ function MonitoringPage() {
     <>
       <BotPageHeader
         title="Monitoramento"
-        description="Sessões acompanhadas em tempo real, com verificações automáticas de preço e posição."
+        description="Sessões acompanhadas em tempo real, com verificações automáticas de preço e posição. Atualizado agora."
         actions={
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className={botOutlineButtonClassName}>
             <RefreshCcw className="size-4" aria-hidden="true" />
             Atualizar agora
           </Button>
         }
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {monitoringMetrics.map((m) => (
           <MetricCard key={m.label} {...m} />
         ))}
@@ -58,35 +63,38 @@ function MonitoringPage() {
         description="Cada sessão é verificada automaticamente no intervalo configurado."
         bodyClassName="p-0"
       >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Órgão</TableHead>
-              <TableHead>Escopo</TableHead>
-              <TableHead className="text-right">Intervalo</TableHead>
-              <TableHead className="text-right">Verificações</TableHead>
-              <TableHead className="text-right">Estado</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {monitoringWatchers.map((w) => (
-              <TableRow key={w.name}>
-                <TableCell className="text-[13px] font-bold text-navy">{w.name}</TableCell>
-                <TableCell className="text-[12px] text-slate-text">{w.scope}</TableCell>
-                <TableCell className="tnum text-right text-[13px] text-navy">
-                  {w.frequency}
-                </TableCell>
-                <TableCell className="tnum text-right text-[13px] text-navy">{w.checks}</TableCell>
-                <TableCell className="text-right">
-                  <StatusPill tone={w.state === "Monitorando" ? "brand" : "neutral"}>
-                    <Activity className="size-3" aria-hidden="true" />
-                    {w.state}
-                  </StatusPill>
-                </TableCell>
+        <MobileMonitoringCards items={monitoringWatchers} />
+        <div className="hidden overflow-x-auto lg:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Órgão</TableHead>
+                <TableHead>Escopo</TableHead>
+                <TableHead className="text-right">Intervalo</TableHead>
+                <TableHead className="text-right">Verificações</TableHead>
+                <TableHead className="text-right">Estado</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {monitoringWatchers.map((w) => (
+                <TableRow key={w.name}>
+                  <TableCell className="text-[13px] font-bold text-ink">{w.name}</TableCell>
+                  <TableCell className="text-[12px] text-slate-text">{w.scope}</TableCell>
+                  <TableCell className="tnum text-right text-[13px] text-ink">
+                    {w.frequency}
+                  </TableCell>
+                  <TableCell className="tnum text-right text-[13px] text-ink">{w.checks}</TableCell>
+                  <TableCell className="text-right">
+                    <StatusPill tone={w.state === "Monitorando" ? "brand" : "neutral"}>
+                      <Activity className="size-3" aria-hidden="true" />
+                      {w.state}
+                    </StatusPill>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardShell>
     </>
   );

@@ -1,6 +1,10 @@
+import { useEffect, useState, type FormEvent } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BotPageHeader } from "@/components/bot/BotPageHeader";
-import { CardShell } from "@/components/shared/CardShell";
+import {
+  BotPageHeader,
+  BotPanel as CardShell,
+  botInputClassName,
+} from "@/components/dash2/BotPrimitives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,21 +36,57 @@ export const Route = createFileRoute("/bot-lances/configuracoes")({
 });
 
 function SettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useEffect(() => {
+    function warnBeforeLeaving(event: BeforeUnloadEvent) {
+      if (!hasUnsavedChanges) return;
+      event.preventDefault();
+    }
+
+    window.addEventListener("beforeunload", warnBeforeLeaving);
+    return () => window.removeEventListener("beforeunload", warnBeforeLeaving);
+  }, [hasUnsavedChanges]);
+
+  function saveSettings(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setHasUnsavedChanges(false);
+  }
+
   return (
-    <>
+    <form
+      onSubmit={saveSettings}
+      onChange={() => setHasUnsavedChanges(true)}
+      className="space-y-5 sm:space-y-6"
+    >
       <BotPageHeader
         title="Configurações"
         description="Parâmetros aplicados às disputas automatizadas da sua operação."
-        actions={<Button size="sm">Salvar alterações</Button>}
+        actions={
+          <Button
+            type="submit"
+            size="sm"
+            className="hidden rounded-xl bg-[#29C454] shadow-none hover:bg-[#22ad49] sm:inline-flex"
+            disabled={!hasUnsavedChanges}
+          >
+            Salvar alterações
+          </Button>
+        }
       />
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      {hasUnsavedChanges && (
+        <p role="status" className="text-[13px] font-semibold text-orange-600 sm:text-right">
+          Existem alterações ainda não salvas.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 sm:gap-5">
         <CardShell eyebrow="Estratégia" title="Comportamento de lances">
           <div className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="estrategia">Estratégia</Label>
               <Select defaultValue="decremento-fixo">
-                <SelectTrigger id="estrategia">
+                <SelectTrigger id="estrategia" className={botInputClassName}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -58,15 +98,20 @@ function SettingsPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="decremento">Decremento por lance</Label>
-              <Input id="decremento" defaultValue="R$ 0,20" />
+              <Input
+                id="decremento"
+                className={botInputClassName}
+                defaultValue="R$ 0,20"
+                inputMode="decimal"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="intervalo">Intervalo entre lances (segundos)</Label>
-              <Input id="intervalo" type="number" defaultValue={20} />
+              <Input id="intervalo" className={botInputClassName} type="number" defaultValue={20} />
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+            <div className="flex items-center justify-between gap-4 rounded-xl border border-hairline bg-slate-50/50 px-4 py-3">
               <div>
-                <p className="text-[13px] font-bold text-navy">Só dar lance quando perdendo</p>
+                <p className="text-[13px] font-bold text-ink">Só dar lance quando perdendo</p>
                 <p className="text-[12px] text-slate-text">
                   Evita lances desnecessários na liderança.
                 </p>
@@ -80,24 +125,29 @@ function SettingsPage() {
           <div className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="piso">Preço piso (% do valor orçado)</Label>
-              <Input id="piso" defaultValue="85%" />
+              <Input
+                id="piso"
+                className={botInputClassName}
+                defaultValue="85%"
+                inputMode="decimal"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="max-lances">Máximo de lances por item</Label>
-              <Input id="max-lances" placeholder="Ilimitado" />
+              <Input id="max-lances" className={botInputClassName} placeholder="Ilimitado" />
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+            <div className="flex items-center justify-between gap-4 rounded-xl border border-hairline bg-slate-50/50 px-4 py-3">
               <div>
-                <p className="text-[13px] font-bold text-navy">Pausar ao atingir o piso</p>
+                <p className="text-[13px] font-bold text-ink">Pausar ao atingir o piso</p>
                 <p className="text-[12px] text-slate-text">
                   O bot para de dar lances e avisa a equipe.
                 </p>
               </div>
               <Switch defaultChecked aria-label="Pausar ao atingir o piso" />
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+            <div className="flex items-center justify-between gap-4 rounded-xl border border-hairline bg-slate-50/50 px-4 py-3">
               <div>
-                <p className="text-[13px] font-bold text-navy">Alertas de disputa</p>
+                <p className="text-[13px] font-bold text-ink">Alertas de disputa</p>
                 <p className="text-[12px] text-slate-text">
                   Notificar por e-mail em mudanças de posição.
                 </p>
@@ -107,6 +157,16 @@ function SettingsPage() {
           </div>
         </CardShell>
       </div>
-    </>
+
+      <div className="sticky bottom-0 z-20 -mx-4 border-t border-hairline bg-white/95 px-4 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:hidden">
+        <Button
+          type="submit"
+          className="min-h-12 w-full rounded-xl bg-[#29C454] shadow-none hover:bg-[#22ad49]"
+          disabled={!hasUnsavedChanges}
+        >
+          {hasUnsavedChanges ? "Salvar alterações" : "Configurações salvas"}
+        </Button>
+      </div>
+    </form>
   );
 }

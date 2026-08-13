@@ -7,7 +7,7 @@ import { getGreeting } from "@/lib/greeting";
  * divergência de hidratação; a hora local só é aplicada após a montagem.
  */
 export function useGreeting() {
-  const [greeting, setGreeting] = useState<string | null>(null);
+  const [greeting, setGreeting] = useState(() => getGreeting());
 
   useEffect(() => {
     const update = () => setGreeting(getGreeting());
@@ -16,5 +16,5 @@ export function useGreeting() {
     return () => window.clearInterval(timer);
   }, []);
 
-  return greeting ?? "Olá";
+  return greeting;
 }

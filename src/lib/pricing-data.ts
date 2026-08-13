@@ -41,14 +41,15 @@ export const pricingPlans = [
     featured: false,
     prices: {
       monthly: { amount: 99, billedTotal: null },
-      annual: { amount: 99, billedTotal: null },
+      annual: { amount: 79, billedTotal: 948 },
     },
   },
   {
     id: "professional",
     name: "Profissional",
     subtitle: "Centralize participações e automatize disputas",
-    description: "Para empresas que já participam de licitações com frequência e precisam ganhar eficiência operacional.",
+    description:
+      "Para empresas que já participam de licitações com frequência e precisam ganhar eficiência operacional.",
     icon: TrendingUp,
     features: [
       { text: "Tudo do plano Essencial", icon: Layers },
@@ -64,14 +65,15 @@ export const pricingPlans = [
     badge: "MAIS ESCOLHIDO",
     prices: {
       monthly: { amount: 299, billedTotal: null },
-      annual: { amount: 299, billedTotal: null },
+      annual: { amount: 199, billedTotal: 2388 },
     },
   },
   {
     id: "enterprise",
     name: "Enterprise",
     subtitle: "Automação para operações em escala",
-    description: "Para empresas com alto volume de participações, múltiplos CNPJs ou equipes maiores.",
+    description:
+      "Para empresas com alto volume de participações, múltiplos CNPJs ou equipes maiores.",
     icon: Building2,
     features: [
       { text: "Tudo do plano Profissional", icon: Layers },
@@ -86,7 +88,7 @@ export const pricingPlans = [
     featured: false,
     prices: {
       monthly: { amount: 997, billedTotal: null },
-      annual: { amount: 997, billedTotal: null },
+      annual: { amount: 747, billedTotal: 8964 },
     },
   },
 ];

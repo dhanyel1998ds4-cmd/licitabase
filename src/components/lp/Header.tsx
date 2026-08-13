@@ -1,173 +1,179 @@
-import { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandMarks";
 import { cn } from "@/lib/utils";
 import { AppButton } from "./AppButton";
 
-export function Header() {
+const NAV_LINKS = [
+  { id: "busca", label: "Buscar licitações" },
+  { id: "recursos", label: "Funcionalidades" },
+  { id: "bot-de-lances", label: "Bot de lances" },
+  { id: "planos", label: "Planos" },
+  { id: "faq", label: "Perguntas frequentes" },
+] as const;
+
+interface HeaderProps {
+  forceSolid?: boolean;
+}
+
+export function Header({ forceSolid = false }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('bot-de-lances'); // Default active as per reference
+  const [activeSection, setActiveSection] = useState("busca");
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 24);
+    let animationFrame: number | null = null;
+
+    const updateHeaderState = () => {
+      if (animationFrame !== null) return;
+
+      animationFrame = window.requestAnimationFrame(() => {
+        const valueProof = document.getElementById("prova-de-valor");
+        setIsScrolled(window.scrollY > 24);
+        setIsPastHero(Boolean(valueProof && valueProof.getBoundingClientRect().top <= 90));
+
+        const activationLine = Math.min(180, window.innerHeight * 0.28);
+        const currentSection = NAV_LINKS.map((link) => ({
+          id: link.id,
+          top:
+            document.getElementById(link.id)?.getBoundingClientRect().top ??
+            Number.POSITIVE_INFINITY,
+        }))
+          .filter((section) => section.top <= activationLine)
+          .sort((left, right) => right.top - left.top)[0];
+        setActiveSection(currentSection?.id ?? NAV_LINKS[0].id);
+        animationFrame = null;
+      });
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  useEffect(() => {
-    const getSection = () => document.getElementById('prova-de-valor');
+    window.addEventListener("scroll", updateHeaderState, { passive: true });
+    window.addEventListener("resize", updateHeaderState);
+    updateHeaderState();
 
-    const update = () => {
-      const section = getSection();
-      if (!section) return;
-      const top = section.getBoundingClientRect().top;
-      // Vidro só a partir do momento em que a seção "Uma operação de licitações
-      // mais simples..." encosta no topo (altura do header ~ 90px).
-      setIsPastHero(top <= 90);
-    };
-
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    update();
     return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      window.removeEventListener("scroll", updateHeaderState);
+      window.removeEventListener("resize", updateHeaderState);
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
     };
   }, []);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return undefined;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileMenuOpen(false);
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isMobileMenuOpen]);
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <header 
-      className={cn(
-        "lp-header fixed top-0 left-0 right-0 z-[60] flex justify-center pt-6 px-6 transition-all duration-300 bg-transparent overflow-visible",
-        isScrolled && "pt-3"
-      )}
-    >
-      {/* Ambient Lighting Layer */}
-      <div 
-        className="lp-header__ambient absolute inset-0 z-0 pointer-events-none opacity-40 blur-[40px]" 
-        aria-hidden="true"
-        style={{
-          background: 'radial-gradient(ellipse at 50% 50%, rgba(41, 196, 84, 0.08), transparent 70%)'
-        }}
-      />
+    <header className={cn("lp-header", isScrolled && "lp-header--scrolled")}>
+      <div className="lp-header__ambient" aria-hidden="true" />
 
-      <nav 
+      <nav
         className={cn(
-          "lp-header__panel relative z-10 flex items-center justify-between w-full max-w-[1500px] min-h-[82px] px-8 py-0 rounded-full transition-all duration-300",
-          "border border-white/10 bg-[#0A0C10]/20",
-          isScrolled && "min-h-[70px]",
-          isPastHero && "min-h-[70px] bg-[#0A0C10]/72 border-white/20 backdrop-blur-[28px] backdrop-saturate-150"
+          "lp-header__panel",
+          isScrolled && "lp-header__panel--compact",
+          (forceSolid || isPastHero) && "lp-header__panel--solid",
         )}
-        style={{
-          backgroundImage: isPastHero
-            ? 'linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 45%, rgba(41,196,84,0.04))'
-            : 'linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01) 45%, rgba(41,196,84,0.02))',
-          boxShadow: isPastHero
-            ? '0 12px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(255,255,255,0.05)'
-            : '0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.03)',
-        }}
         aria-label="Navegação principal"
       >
-        {/* Reflexo superior do vidro */}
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-full bg-gradient-to-b from-white/10 to-transparent"
-          aria-hidden="true"
-        />
+        <div className="lp-header__reflection" aria-hidden="true" />
 
-        {/* Logotipo */}
-        <div className="lp-header__brand flex items-center">
-          <a href="/" className="transition-transform active:scale-95">
-            <BrandLogo variant="light" className="scale-90 origin-left" />
-          </a>
-        </div>
+        <a
+          href="/lp"
+          className="lp-header__brand"
+          aria-label="Ir para a página inicial da Licitabase"
+        >
+          <BrandLogo variant="light" className="lp-header__logo" />
+        </a>
 
-        {/* Navegação Central */}
-        <div className="lp-header__nav hidden lg:flex items-center justify-center gap-1">
-          {[
-            { id: 'busca', label: 'Buscar licitações' },
-            { id: 'recursos', label: 'Funcionalidades' },
-            { id: 'bot-de-lances', label: 'Bot de lances' },
-            { id: 'planos', label: 'Planos' },
-            { id: 'faq', label: 'Perguntas frequentes' }
-          ].map((link) => (
+        <div className="lp-header__nav hidden xl:flex">
+          {NAV_LINKS.map((link) => (
             <a
               key={link.id}
-              href={`#${link.id}`}
+              href={forceSolid ? `/lp#${link.id}` : `#${link.id}`}
               onClick={() => setActiveSection(link.id)}
               className={cn(
-                "relative flex items-center justify-center min-h-[48px] px-8 text-sm font-semibold tracking-wide transition-all duration-200",
-                activeSection === link.id ? "text-white" : "text-gray-400 hover:text-white"
+                "lp-header__nav-link",
+                activeSection === link.id && "lp-header__nav-link--active",
               )}
             >
               {link.label}
-              {activeSection === link.id && (
-                <div 
-                  className="absolute bottom-[-1px] left-1/2 -translate-x-1/2 w-4 h-[3px] bg-[#29C454] rounded-full shadow-[0_0_8px_rgba(41,196,84,0.6)]" 
-                  aria-hidden="true"
-                />
-              )}
+              {activeSection === link.id ? (
+                <span className="lp-header__active-indicator" aria-hidden="true" />
+              ) : null}
             </a>
           ))}
         </div>
 
-        {/* Ações da Direita */}
-        <div className="lp-header__actions flex items-center gap-3">
-          <AppButton 
-            variant="secondary" 
+        <div className="lp-header__actions">
+          <AppButton
+            variant="secondary"
             size="md"
-            className="hidden lg:flex min-w-[120px]"
-            onClick={() => window.location.href = '/login'}
+            className="hidden min-w-[112px] xl:flex"
+            onClick={() => window.location.assign("/login")}
           >
             Entrar
           </AppButton>
-          
-          <AppButton 
-            variant="primary" 
+
+          <AppButton
+            variant="primary"
             size="md"
-            iconRight={<ArrowRight className="app-button__icon app-button__icon--right" />}
-            onClick={() => window.location.href = '/signup'}
+            className="lp-header__signup hidden xl:inline-flex"
+            iconRight={<ArrowRight aria-hidden="true" />}
+            aria-label="Criar conta grátis"
+            onClick={() => window.location.assign("/signup")}
           >
-            <span className="hidden sm:inline">Criar conta grátis</span>
+            <span className="lp-header__cta-full">Criar conta grátis</span>
+            <span className="lp-header__cta-short">Começar</span>
           </AppButton>
 
-
-
-          {/* Mobile Menu Trigger */}
-          <button 
-            className="lg:hidden flex items-center justify-center w-[48px] h-[48px] rounded-[16px] border border-white/10 text-white/90 hover:bg-white/5 transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Abrir menu"
+          <button
+            type="button"
+            className="lp-header__menu-trigger xl:hidden"
+            onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
+            aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-controls="lp-mobile-navigation"
             aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {isMobileMenuOpen ? (
+              <X size={22} aria-hidden="true" />
+            ) : (
+              <Menu size={22} aria-hidden="true" />
+            )}
           </button>
         </div>
 
-        {/* Mobile Menu Popover */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 mt-3 mx-0 bg-[#0A0C10] border border-white/10 rounded-3xl p-6 flex flex-col gap-5 shadow-2xl animate-in fade-in slide-in-from-top-2 z-[70]">
-            <a href="#busca" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-400 hover:text-gray-200">Buscar licitações</a>
-            <a href="#recursos" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-400 hover:text-gray-200">Funcionalidades</a>
-            <a href="#bot-de-lances" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-400 hover:text-gray-200">Bot de lances</a>
-            <a href="#planos" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-400 hover:text-gray-200">Planos</a>
-            <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-400 hover:text-gray-200">Perguntas frequentes</a>
-            <div className="h-px bg-white/5 my-1" />
-            <a href="/login" className="text-base font-semibold text-white">Entrar</a>
+        {isMobileMenuOpen ? (
+          <div id="lp-mobile-navigation" className="lp-header__mobile-menu xl:hidden">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.id}
+                href={forceSolid ? `/lp#${link.id}` : `#${link.id}`}
+                onClick={closeMobileMenu}
+              >
+                {link.label}
+              </a>
+            ))}
+            <div className="lp-header__mobile-divider" />
+            <a href="/login" onClick={closeMobileMenu} className="lp-header__mobile-login">
+              Entrar
+            </a>
+            <a href="/signup" onClick={closeMobileMenu} className="lp-header__mobile-signup">
+              <span>Começar</span>
+              <ArrowRight size={18} aria-hidden="true" />
+            </a>
           </div>
-        )}
+        ) : null}
       </nav>
 
-      {/* Indicador luminoso central na borda inferior do viewport (opcional, based on prompt) */}
-      <div 
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-[#29C454]/20 blur-[2px] rounded-full pointer-events-none" 
-        aria-hidden="true" 
-      />
+      <div className="lp-header__edge-light" aria-hidden="true" />
     </header>
   );
 }

@@ -16,16 +16,19 @@ export function Footer() {
                 Monitoramento, inteligência e automação para empresas que participam de licitações
                 públicas.
               </p>
-              <div className="footer-brand__social">
-                <a href="#" className="social-icon" aria-label="LinkedIn">
-                  <Linkedin className="size-4" />
-                </a>
-                <a href="#" className="social-icon" aria-label="YouTube">
-                  <Youtube className="size-4" />
-                </a>
-                <a href="#" className="social-icon" aria-label="Email">
-                  <Mail className="size-4" />
-                </a>
+              <div className="footer-brand__social" aria-label="Canais sociais em configuração">
+                <span
+                  className="social-icon social-icon--disabled"
+                  title="LinkedIn em configuração"
+                >
+                  <Linkedin className="size-4" aria-hidden="true" />
+                </span>
+                <span className="social-icon social-icon--disabled" title="YouTube em configuração">
+                  <Youtube className="size-4" aria-hidden="true" />
+                </span>
+                <span className="social-icon social-icon--disabled" title="E-mail em configuração">
+                  <Mail className="size-4" aria-hidden="true" />
+                </span>
               </div>
             </div>
 
@@ -34,38 +37,38 @@ export function Footer() {
               <div className="footer-group">
                 <div className="footer-group__header">
                   <div className="footer-group__icon">
-                    <LayoutGrid className="size-4" />
+                    <LayoutGrid className="size-4" aria-hidden="true" />
                   </div>
                   <h4 className="footer-group__title">Plataforma</h4>
                 </div>
                 <ul className="footer-group__list">
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#oportunidades" className="footer-link">
                       Buscar licitações
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#categorias" className="footer-link">
                       Categorias
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Itens e preços
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Concorrentes
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#bot-de-lances" className="footer-link">
                       Bot de lances
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#planos" className="footer-link">
                       Planos
                     </a>
                   </li>
@@ -75,38 +78,38 @@ export function Footer() {
               <div className="footer-group">
                 <div className="footer-group__header">
                   <div className="footer-group__icon">
-                    <Zap className="size-4" />
+                    <Zap className="size-4" aria-hidden="true" />
                   </div>
                   <h4 className="footer-group__title">Recursos</h4>
                 </div>
                 <ul className="footer-group__list">
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Alertas de oportunidades
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Leitura de editais com IA
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Comparação de preços
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Gestão de prazos
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Integrações
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#recursos" className="footer-link">
                       Pipeline de licitações
                     </a>
                   </li>
@@ -116,35 +119,33 @@ export function Footer() {
               <div className="footer-group">
                 <div className="footer-group__header">
                   <div className="footer-group__icon">
-                    <User className="size-4" />
+                    <User className="size-4" aria-hidden="true" />
                   </div>
                   <h4 className="footer-group__title">Empresa</h4>
                 </div>
                 <ul className="footer-group__list">
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="/login" className="footer-link">
                       Entrar
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="/signup" className="footer-link">
                       Criar conta
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <a href="#faq" className="footer-link">
                       Central de ajuda
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
-                      Termos de uso
-                    </a>
+                    <span className="footer-link footer-link--disabled">Termos de uso</span>
                   </li>
                   <li>
-                    <a href="#" className="footer-link">
+                    <span className="footer-link footer-link--disabled">
                       Política de privacidade
-                    </a>
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -154,7 +155,7 @@ export function Footer() {
           <div className="footer-bottom">
             <div className="footer-bottom__legal">
               <div className="legal-icon">
-                <Zap className="size-3 text-primary fill-primary/20" />
+                <Zap className="size-3 text-primary fill-primary/20" aria-hidden="true" />
               </div>
               <span>Licitabase — Monitoramento de licitações públicas</span>
             </div>
