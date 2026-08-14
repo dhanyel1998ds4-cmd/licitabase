@@ -44,7 +44,7 @@ function Dash2Page() {
   const isDashboardHome = location.pathname === "/dash2" || location.pathname === "/dash2/";
 
   return (
-    <AppLayout contentClassName="flex h-full min-h-0 flex-col overflow-hidden bg-[#F8FAFC] p-0 font-manrope">
+    <AppLayout contentClassName="flex h-full min-h-0 flex-col overflow-hidden p-0 font-manrope">
       <Topbar />
       {isDashboardHome ? <DashboardHome /> : <Outlet />}
     </AppLayout>
@@ -147,6 +147,7 @@ function DashboardHome() {
           hint="licitações cadastradas"
           trend="+4,2%"
           link="Ver todas"
+          linkTo="/dash2/operacao/minhas-licitacoes?stage=proposal"
           ticker={{
             ariaLabel: "Próximos prazos das propostas cadastradas",
             duration: 28,
@@ -190,6 +191,8 @@ function DashboardHome() {
           label="Pós-disputa"
           hint="2 exigem atenção"
           trend="+3"
+          link="Ver todas"
+          linkTo="/dash2/operacao/minhas-licitacoes?stage=post-dispute"
         />
         <SummaryCard
           icon={CircleCheckBig}
@@ -200,6 +203,7 @@ function DashboardHome() {
           trend="-2"
           trendDir="down"
           link="Ver todas"
+          linkTo="/dash2/operacao/minhas-licitacoes?stage=finalized"
           ticker={{
             ariaLabel: "Licitações finalizadas recentemente",
             duration: 34,
@@ -238,6 +242,8 @@ function DashboardHome() {
           value={String(newOpportunitiesSummary.favorites)}
           label="Favoritos"
           hint="Oportunidades salvas"
+          link="Ver todas"
+          linkTo="/dash2/oportunidades/favoritos"
         />
         <SummaryCard
           icon={NotebookPen}
@@ -245,6 +251,8 @@ function DashboardHome() {
           value="0"
           label="Minhas anotações"
           hint="Anotações registradas"
+          link="Ver todas"
+          linkTo="/dash2/operacao/anotacoes"
         />
       </div>
 

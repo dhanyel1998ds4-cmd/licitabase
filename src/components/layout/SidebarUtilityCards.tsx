@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUp, Bell, Sparkles } from "lucide-react";
 import { BrandPattern } from "@/components/brand/BrandMarks";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { markDashboardAlertRead, useDashboardAlerts } from "@/hooks/use-dashboard-alerts";
 import { openAlicitanteAssistant } from "@/lib/alicitante-events";
@@ -24,6 +25,7 @@ export function SidebarUtilityCards({ collapsed }: { collapsed: boolean }) {
   const previousLatestAlertIdRef = useRef(alerts[0]?.id);
   const preserveTimerRef = useRef<number | null>(null);
   const [pendingNewCount, setPendingNewCount] = useState(0);
+  const [alertsSheetOpen, setAlertsSheetOpen] = useState(false);
   const latestAlertId = alerts[0]?.id;
 
   useEffect(() => {
@@ -95,188 +97,399 @@ export function SidebarUtilityCards({ collapsed }: { collapsed: boolean }) {
 
   if (collapsed) {
     return (
-      <div className="mt-auto flex flex-col items-center gap-2 pt-5">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              className="relative grid size-11 place-items-center rounded-xl border border-hairline bg-white text-navy shadow-sm"
-              tabIndex={0}
-              aria-label={`${unreadCount} alertas recentes`}
-            >
-              <Bell className="size-[19px]" strokeWidth={1.8} aria-hidden="true" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full border-2 border-[#F8FAFC] bg-[#29C454] px-1 text-[9px] font-bold text-white">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>
-            Alertas em tempo real
-          </TooltipContent>
-        </Tooltip>
+      <>
+        <div className="mt-3 flex flex-col items-center gap-2 pt-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => setAlertsSheetOpen(true)}
+                className="relative grid size-11 place-items-center rounded-xl border border-hairline bg-white text-navy shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+                aria-label={`${unreadCount} alertas recentes`}
+              >
+                <Bell className="size-[19px]" strokeWidth={1.8} aria-hidden="true" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full border-2 border-[#F8FAFC] bg-[#29C454] px-1 text-[9px] font-bold text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+              Alertas em tempo real
+            </TooltipContent>
+          </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              onClick={() => openAlicitanteAssistant()}
-              aria-label="Conversar com a Alicitante"
-              className="overflow-hidden rounded-xl border border-[#29C454]/25 bg-brand-tint shadow-sm transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
-            >
-              <img
-                src="/images/alicitante-assistant.png"
-                alt=""
-                className="size-11 object-cover object-top"
-              />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>
-            Conversar com a Alicitante
-          </TooltipContent>
-        </Tooltip>
-      </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => openAlicitanteAssistant()}
+                aria-label="Conversar com a Alicitante"
+                className="overflow-hidden rounded-xl border border-[#29C454]/25 bg-brand-tint shadow-sm transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+              >
+                <img
+                  src="/images/alicitante-assistant.png"
+                  alt=""
+                  className="size-11 object-cover object-top"
+                />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+              Conversar com a Alicitante
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        <AlertsSheet
+          open={alertsSheetOpen}
+          onOpenChange={setAlertsSheetOpen}
+          alerts={alerts}
+          unreadCount={unreadCount}
+        />
+      </>
     );
   }
 
   return (
-    <div className="mt-auto space-y-4 pt-6">
-      <section
-        className="min-h-[276px] rounded-[22px] border border-hairline bg-white p-4 shadow-sm"
-        aria-label="Alertas recentes"
-      >
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-tint text-brand-strong">
-            <Bell className="size-[18px]" strokeWidth={1.8} aria-hidden="true" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-[14px] font-extrabold text-navy">Alertas</h3>
-            <p className="text-[11px] font-medium text-slate-text">Atualizações em tempo real</p>
-          </div>
-          <span
-            className={cn(
-              "grid min-h-7 min-w-7 place-items-center rounded-full px-1.5 text-[10px] font-extrabold",
-              unreadCount > 0 ? "animate-pulse bg-[#29C454] text-white" : "bg-page text-slate-text",
-            )}
+    <>
+      <div className="sidebar-utility-cards mt-3 pt-3">
+        <div className="sidebar-utility-cards__full space-y-3">
+          <section
+            className="min-h-[228px] rounded-[20px] border border-hairline bg-white p-3 shadow-sm"
+            aria-label="Alertas recentes"
           >
-            {unreadCount}
-          </span>
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-9 place-items-center rounded-xl bg-brand-tint text-brand-strong">
+                <Bell className="size-[18px]" strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[14px] font-extrabold text-navy">Alertas</h3>
+                <p className="text-[11px] font-medium text-slate-text">
+                  Atualizações em tempo real
+                </p>
+              </div>
+              <span
+                className={cn(
+                  "grid min-h-7 min-w-7 place-items-center rounded-full px-1.5 text-[10px] font-extrabold",
+                  unreadCount > 0
+                    ? "animate-pulse bg-[#29C454] text-white"
+                    : "bg-page text-slate-text",
+                )}
+              >
+                {unreadCount}
+              </span>
+            </div>
+
+            <div className="relative mt-2.5">
+              {pendingNewCount > 0 && (
+                <button
+                  type="button"
+                  onClick={revealNewAlerts}
+                  className="absolute left-1/2 top-1 z-20 inline-flex min-h-8 -translate-x-1/2 items-center gap-1.5 rounded-full border border-[#29C454]/30 bg-white px-3 text-[9.5px] font-extrabold text-brand-strong shadow-[0_6px_18px_rgba(15,23,42,0.16)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+                  aria-label={`${pendingNewCount} ${pendingNewCount === 1 ? "novo alerta" : "novos alertas"}. Voltar ao topo`}
+                >
+                  <ArrowUp className="size-3" strokeWidth={2.2} aria-hidden="true" />
+                  {pendingNewCount}{" "}
+                  {pendingNewCount === 1 ? "nova atualização" : "novas atualizações"}
+                </button>
+              )}
+
+              <div
+                ref={alertListRef}
+                onScroll={handleAlertScroll}
+                className="max-h-[124px] overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(100,116,139,0.25)_transparent] [scrollbar-width:thin]"
+                aria-live="polite"
+                aria-relevant="additions"
+              >
+                <div ref={alertFeedContentRef} className="space-y-1">
+                  {alerts.map((alert) => (
+                    <div key={alert.id} className={cn(alert.isNewArrival && "alert-cascade-enter")}>
+                      <button
+                        type="button"
+                        onClick={() => markDashboardAlertRead(alert.id)}
+                        className={cn(
+                          "flex min-h-[50px] w-full gap-2 rounded-xl px-2 py-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]",
+                          alert.unread ? "bg-brand-tint/65 hover:bg-brand-tint" : "hover:bg-page",
+                        )}
+                      >
+                        <span className="relative mt-1.5 flex size-2 shrink-0">
+                          {alert.unread && (
+                            <span
+                              className={cn(
+                                "absolute inline-flex size-full animate-ping rounded-full opacity-35",
+                                alertToneClasses[alert.tone],
+                              )}
+                            />
+                          )}
+                          <span
+                            className={cn(
+                              "relative inline-flex size-2 rounded-full",
+                              alertToneClasses[alert.tone],
+                            )}
+                            aria-hidden="true"
+                          />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-1.5">
+                            <span className="truncate text-[11px] font-bold text-navy">
+                              {alert.title}
+                            </span>
+                            {alert.unread && (
+                              <span className="shrink-0 rounded-full bg-[#29C454] px-1.5 py-0.5 text-[7.5px] font-extrabold uppercase tracking-wide text-white">
+                                Novo
+                              </span>
+                            )}
+                          </span>
+                          <span className="mt-1 block truncate text-[9.5px] font-medium text-slate-text">
+                            {alert.description}
+                          </span>
+                        </span>
+                        <time className="shrink-0 text-[8.5px] font-semibold text-slate-text">
+                          {alert.timeLabel}
+                        </time>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-2 flex items-center gap-1.5 border-t border-hairline pt-2 text-[10px] font-semibold text-brand-strong">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#29C454] opacity-50" />
+                <span className="relative inline-flex size-2 rounded-full bg-[#29C454]" />
+              </span>
+              Atualizações em tempo real
+            </div>
+          </section>
+
+          <section className="group relative isolate min-h-[164px] overflow-hidden rounded-[20px] border border-[#29C454]/35 bg-[#F0FFF5] p-3 shadow-[0_10px_30px_rgba(19,155,69,0.12)] transition-all hover:border-[#29C454]/55 hover:shadow-[0_14px_36px_rgba(19,155,69,0.18)]">
+            <BrandPattern className="absolute -bottom-12 -right-10 -z-10 size-48 opacity-90" />
+
+            <div className="absolute inset-y-0 right-0 z-0 w-[46%] overflow-hidden">
+              <BrandPattern className="absolute -bottom-8 -right-10 size-40 opacity-70" />
+              <div className="absolute inset-x-4 bottom-1 h-10 rounded-full bg-[#14A944]/25 blur-xl" />
+              <img
+                src="/images/alicitante-card.png"
+                alt="Alicitante, assistente virtual do Licitabase"
+                className="relative z-0 h-full w-full object-cover [object-position:52%_7%] transition-transform duration-300 group-hover:scale-[1.025]"
+              />
+            </div>
+
+            <div className="relative z-20 max-w-[112px]">
+              <div className="flex items-center gap-1.5 text-brand-strong">
+                <Sparkles className="size-4" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em]">
+                  IA Licitabase
+                </span>
+              </div>
+              <h3 className="mt-1.5 text-[18px] font-extrabold tracking-tight text-navy">
+                Alicitante
+              </h3>
+              <p className="mt-1 text-[10.5px] font-medium leading-[1.4] text-slate-text">
+                Sua copiloto para oportunidades e editais.
+              </p>
+              <button
+                type="button"
+                onClick={() => openAlicitanteAssistant()}
+                className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-[#29C454] px-3 text-[10.5px] font-bold text-white shadow-[0_6px_16px_rgba(19,155,69,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#22AD49] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+              >
+                Conversar
+                <Sparkles className="size-3" aria-hidden="true" />
+              </button>
+            </div>
+          </section>
         </div>
 
-        <div className="relative mt-3">
-          {pendingNewCount > 0 && (
-            <button
-              type="button"
-              onClick={revealNewAlerts}
-              className="absolute left-1/2 top-1 z-20 inline-flex min-h-8 -translate-x-1/2 items-center gap-1.5 rounded-full border border-[#29C454]/30 bg-white px-3 text-[9.5px] font-extrabold text-brand-strong shadow-[0_6px_18px_rgba(15,23,42,0.16)] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
-              aria-label={`${pendingNewCount} ${pendingNewCount === 1 ? "novo alerta" : "novos alertas"}. Voltar ao topo`}
-            >
-              <ArrowUp className="size-3" strokeWidth={2.2} aria-hidden="true" />
-              {pendingNewCount} {pendingNewCount === 1 ? "nova atualização" : "novas atualizações"}
-            </button>
-          )}
-
-          <div
-            ref={alertListRef}
-            onScroll={handleAlertScroll}
-            className="max-h-[172px] overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(100,116,139,0.25)_transparent] [scrollbar-width:thin]"
-            aria-live="polite"
-            aria-relevant="additions"
+        <div className="sidebar-utility-cards__medium space-y-3">
+          <section
+            className="rounded-[20px] border border-hairline bg-white p-3 shadow-sm"
+            aria-label="Alertas recentes"
           >
-            <div ref={alertFeedContentRef} className="space-y-1">
-              {alerts.map((alert) => (
-                <div key={alert.id} className={cn(alert.isNewArrival && "alert-cascade-enter")}>
-                  <button
-                    type="button"
-                    onClick={() => markDashboardAlertRead(alert.id)}
-                    className={cn(
-                      "flex min-h-[58px] w-full gap-2 rounded-xl px-2 py-2.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]",
-                      alert.unread ? "bg-brand-tint/65 hover:bg-brand-tint" : "hover:bg-page",
-                    )}
-                  >
-                    <span className="relative mt-1.5 flex size-2 shrink-0">
-                      {alert.unread && (
-                        <span
-                          className={cn(
-                            "absolute inline-flex size-full animate-ping rounded-full opacity-35",
-                            alertToneClasses[alert.tone],
-                          )}
-                        />
-                      )}
-                      <span
-                        className={cn(
-                          "relative inline-flex size-2 rounded-full",
-                          alertToneClasses[alert.tone],
-                        )}
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1.5">
-                        <span className="truncate text-[11px] font-bold text-navy">
-                          {alert.title}
-                        </span>
-                        {alert.unread && (
-                          <span className="shrink-0 rounded-full bg-[#29C454] px-1.5 py-0.5 text-[7.5px] font-extrabold uppercase tracking-wide text-white">
-                            Novo
-                          </span>
-                        )}
-                      </span>
-                      <span className="mt-1 block truncate text-[9.5px] font-medium text-slate-text">
-                        {alert.description}
-                      </span>
-                    </span>
-                    <time className="shrink-0 text-[8.5px] font-semibold text-slate-text">
-                      {alert.timeLabel}
-                    </time>
-                  </button>
-                </div>
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-9 place-items-center rounded-xl bg-brand-tint text-brand-strong">
+                <Bell className="size-[18px]" strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[14px] font-extrabold text-navy">Alertas</h3>
+                <p className="text-[10.5px] font-medium text-slate-text">
+                  Atualizações em tempo real
+                </p>
+              </div>
+              <span className="grid min-h-7 min-w-7 place-items-center rounded-full bg-[#29C454] px-1.5 text-[10px] font-extrabold text-white">
+                {unreadCount}
+              </span>
+            </div>
+
+            <div className="mt-2 space-y-1">
+              {alerts.slice(0, 2).map((alert) => (
+                <button
+                  key={alert.id}
+                  type="button"
+                  onClick={() => markDashboardAlertRead(alert.id)}
+                  className={cn(
+                    "flex min-h-8 w-full items-center gap-2 rounded-lg px-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#29C454]",
+                    alert.unread ? "bg-brand-tint/65 hover:bg-brand-tint" : "hover:bg-page",
+                  )}
+                >
+                  <span
+                    className={cn("size-1.5 shrink-0 rounded-full", alertToneClasses[alert.tone])}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-[10px] font-bold text-navy">
+                    {alert.title}
+                  </span>
+                  <time className="shrink-0 text-[8.5px] font-semibold text-slate-text">
+                    {alert.timeLabel}
+                  </time>
+                </button>
               ))}
             </div>
-          </div>
+
+            <button
+              type="button"
+              onClick={() => setAlertsSheetOpen(true)}
+              className="mt-2 inline-flex min-h-7 items-center text-[10px] font-bold text-brand-strong transition-colors hover:text-[#15943a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+            >
+              Ver todos os alertas →
+            </button>
+          </section>
+
+          <section className="group relative isolate min-h-[164px] overflow-hidden rounded-[20px] border border-[#29C454]/35 bg-[#F0FFF5] p-3 shadow-[0_10px_30px_rgba(19,155,69,0.12)] transition-all hover:border-[#29C454]/55 hover:shadow-[0_14px_36px_rgba(19,155,69,0.18)]">
+            <BrandPattern className="absolute -bottom-12 -right-10 -z-10 size-48 opacity-90" />
+            <div className="absolute inset-y-0 right-0 z-0 w-[46%] overflow-hidden">
+              <BrandPattern className="absolute -bottom-8 -right-10 size-40 opacity-70" />
+              <div className="absolute inset-x-4 bottom-1 h-10 rounded-full bg-[#14A944]/25 blur-xl" />
+              <img
+                src="/images/alicitante-card.png"
+                alt="Alicitante, assistente virtual do Licitabase"
+                className="relative z-0 h-full w-full object-cover [object-position:52%_7%] transition-transform duration-300 group-hover:scale-[1.025]"
+              />
+            </div>
+            <div className="relative z-20 max-w-[112px]">
+              <div className="flex items-center gap-1.5 text-brand-strong">
+                <Sparkles className="size-4" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em]">
+                  IA Licitabase
+                </span>
+              </div>
+              <h3 className="mt-1.5 text-[18px] font-extrabold tracking-tight text-navy">
+                Alicitante
+              </h3>
+              <p className="mt-1 text-[10.5px] font-medium leading-[1.4] text-slate-text">
+                Sua copiloto para oportunidades e editais.
+              </p>
+              <button
+                type="button"
+                onClick={() => openAlicitanteAssistant()}
+                className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-[#29C454] px-3 text-[10.5px] font-bold text-white shadow-[0_6px_16px_rgba(19,155,69,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#22AD49] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+              >
+                Conversar
+                <Sparkles className="size-3" aria-hidden="true" />
+              </button>
+            </div>
+          </section>
         </div>
 
-        <div className="mt-3 flex items-center gap-1.5 border-t border-hairline pt-3 text-[10px] font-semibold text-brand-strong">
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#29C454] opacity-50" />
-            <span className="relative inline-flex size-2 rounded-full bg-[#29C454]" />
-          </span>
-          Atualizações em tempo real
-        </div>
-      </section>
-
-      <section className="group relative isolate min-h-[200px] overflow-hidden rounded-[22px] border border-[#29C454]/35 bg-[#F0FFF5] p-4 shadow-[0_10px_30px_rgba(19,155,69,0.12)] transition-all hover:border-[#29C454]/55 hover:shadow-[0_14px_36px_rgba(19,155,69,0.18)]">
-        <BrandPattern className="absolute -bottom-12 -right-10 -z-10 size-48 opacity-90" />
-
-        <div className="absolute inset-y-0 right-0 z-0 w-[48%] overflow-hidden">
-          <BrandPattern className="absolute -bottom-8 -right-10 size-40 opacity-70" />
-          <div className="absolute inset-x-4 bottom-1 h-10 rounded-full bg-[#14A944]/25 blur-xl" />
-          <img
-            src="/images/alicitante-card.png"
-            alt="Alicitante, assistente virtual do Licitabase"
-            className="relative z-0 h-full w-full object-cover [object-position:52%_7%] transition-transform duration-300 group-hover:scale-[1.025]"
-          />
-        </div>
-
-        <div className="relative z-20 max-w-[112px]">
-          <div className="flex items-center gap-1.5 text-brand-strong">
-            <Sparkles className="size-4" aria-hidden="true" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.08em]">IA Licitabase</span>
-          </div>
-          <h3 className="mt-2 text-[20px] font-extrabold tracking-tight text-navy">Alicitante</h3>
-          <p className="mt-1.5 text-[11px] font-medium leading-[1.5] text-slate-text">
-            Sua copiloto para oportunidades e editais.
-          </p>
+        <div className="sidebar-utility-cards__compact grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setAlertsSheetOpen(true)}
+            className="relative inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.09] px-3 text-[11px] font-bold text-white transition-colors hover:bg-white/[0.15] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+          >
+            <Bell className="size-4 text-[#6cf08f]" aria-hidden="true" />
+            Alertas
+            {unreadCount > 0 ? (
+              <span className="grid min-w-5 place-items-center rounded-full bg-[#29C454] px-1.5 py-0.5 text-[9px] text-white">
+                {unreadCount}
+              </span>
+            ) : null}
+          </button>
           <button
             type="button"
             onClick={() => openAlicitanteAssistant()}
-            className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-[#29C454] px-3.5 text-[11px] font-bold text-white shadow-[0_6px_16px_rgba(19,155,69,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#22AD49] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#29C454]/35 bg-[#29C454]/[0.12] px-3 text-[11px] font-bold text-[#8af6a8] transition-colors hover:bg-[#29C454]/[0.2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
           >
-            Conversar
-            <Sparkles className="size-3" aria-hidden="true" />
+            <Sparkles className="size-4" aria-hidden="true" />
+            Alicitante
           </button>
         </div>
-      </section>
-    </div>
+      </div>
+      <AlertsSheet
+        open={alertsSheetOpen}
+        onOpenChange={setAlertsSheetOpen}
+        alerts={alerts}
+        unreadCount={unreadCount}
+      />
+    </>
+  );
+}
+
+function AlertsSheet({
+  open,
+  onOpenChange,
+  alerts,
+  unreadCount,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  alerts: ReturnType<typeof useDashboardAlerts>;
+  unreadCount: number;
+}) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        className="flex w-[min(100vw,420px)] flex-col gap-0 border-hairline bg-white p-0 font-manrope sm:max-w-[420px]"
+      >
+        <div className="border-b border-hairline px-5 py-5 pr-12">
+          <SheetTitle className="text-[18px] font-extrabold text-navy">
+            Alertas em tempo real
+          </SheetTitle>
+          <SheetDescription className="mt-1 text-[12px] leading-relaxed text-slate-text">
+            {unreadCount > 0
+              ? `${unreadCount} alertas ainda precisam da sua atenção.`
+              : "Todas as atualizações recentes foram visualizadas."}
+          </SheetDescription>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-4" aria-live="polite">
+          <div className="space-y-2">
+            {alerts.map((alert) => (
+              <button
+                key={alert.id}
+                type="button"
+                onClick={() => markDashboardAlertRead(alert.id)}
+                className={cn(
+                  "flex min-h-[72px] w-full gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]",
+                  alert.unread
+                    ? "border-[#29C454]/20 bg-brand-tint/55 hover:bg-brand-tint"
+                    : "border-hairline bg-white hover:bg-page",
+                )}
+              >
+                <span className="mt-1.5 flex size-2 shrink-0 rounded-full">
+                  <span className={cn("size-2 rounded-full", alertToneClasses[alert.tone])} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate text-[13px] font-bold text-navy">{alert.title}</span>
+                    {alert.unread ? (
+                      <span className="rounded-full bg-[#29C454] px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white">
+                        Novo
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="mt-1 block text-[11px] leading-relaxed text-slate-text">
+                    {alert.description}
+                  </span>
+                  <span className="mt-1 block text-[10px] font-semibold text-slate-text">
+                    {alert.timeLabel}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

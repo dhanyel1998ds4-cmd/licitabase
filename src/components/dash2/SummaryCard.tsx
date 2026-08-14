@@ -1,6 +1,5 @@
 import type { LucideIcon } from "lucide-react";
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { DashboardTicker, type DashboardTickerItem } from "@/components/dash2/DashboardTicker";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +17,7 @@ export type SummaryCardProps = {
   label: string;
   hint?: string;
   link?: string;
-  linkTo?: "/dash2/oportunidades/novas";
+  linkTo?: string;
   trend?: string;
   trendDir?: "up" | "down";
   ticker?: SummaryTicker;
@@ -49,8 +48,8 @@ export function SummaryCard({
 
   const action = link ? (
     linkTo ? (
-      <Link
-        to={linkTo}
+      <a
+        href={linkTo}
         className={cn(
           "inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-1 text-[10px] font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#29C454] sm:text-[11px]",
           ticker ? "min-h-6" : "min-h-11 rounded-lg px-2 text-[12px]",
@@ -59,7 +58,7 @@ export function SummaryCard({
       >
         <span className="summary-card__action-full">{link} →</span>
         <span className="summary-card__action-compact">Todas →</span>
-      </Link>
+      </a>
     ) : (
       <button
         type="button"

@@ -25,6 +25,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  Star,
   Swords,
   Tags,
   UserRound,
@@ -41,7 +42,10 @@ export type GlobalSearchFilter =
 export type GlobalSearchRoute =
   | "/dash2"
   | "/dash2/licitacoes/buscar"
+  | "/dash2/licitacoes/$licitacaoId"
   | "/dash2/oportunidades/novas"
+  | "/dash2/oportunidades/favoritos"
+  | "/dash2/operacao/minhas-licitacoes"
   | "/bot-lances"
   | "/bot-lances/disputas"
   | "/bot-lances/monitoramento"
@@ -578,6 +582,22 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     status: "coming-soon",
   },
   {
+    id: "favorites",
+    title: "Favoritos",
+    navigationLabel: "Favoritos",
+    description: "Revise oportunidades favoritas e salvas para depois",
+    type: "page",
+    group: "Oportunidades",
+    breadcrumb: ["Explorar licitações", "Favoritos"],
+    icon: Star,
+    filters: ["Páginas", "Oportunidades"],
+    keywords: ["favorito", "salvo", "ver depois", "oportunidade"],
+    synonyms: ["minhas favoritas", "oportunidades salvas"],
+    status: "available",
+    route: "/dash2/oportunidades/favoritos",
+    contextPaths: ["/dash2/oportunidades"],
+  },
+  {
     id: "company-reports",
     title: "Relatórios gerais",
     navigationLabel: "Relatórios",
@@ -643,7 +663,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Operação"],
     keywords: ["minhas", "licitação", "proposta", "participação", "operação"],
     synonyms: ["licitações acompanhadas", "meus processos"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/operacao/minhas-licitacoes",
   },
   {
     id: "monitored-companies",

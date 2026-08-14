@@ -319,6 +319,20 @@
   gap: 21px;
 }
 
+.auth-split-form--swap {
+  animation: auth-split-form-swap 260ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+@keyframes auth-split-form-swap {
+  from {
+    opacity: 0;
+    transform: translateX(10px) translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
 .auth-split-field {
   display: grid;
   gap: 8px;
@@ -488,6 +502,28 @@
 .auth-split-security-note p {
   font-size: 12px;
   line-height: 1.55;
+}
+
+/* Keep the desktop auth experience inside the viewport. On shorter screens,
+   only the form column scrolls instead of creating a blank document tail. */
+@media (min-width: 1024px) {
+  .auth-split-page,
+  .auth-split-layout {
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .auth-split-brand-panel,
+  .auth-split-brand-panel__inner,
+  .auth-split-form-panel {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .auth-split-form-panel {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 
 @keyframes auth-split-card-enter {

@@ -31,6 +31,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
@@ -61,6 +62,7 @@ import {
   type OpportunityPlatformFilter,
 } from "@/lib/new-opportunities-fixtures";
 import { cn } from "@/lib/utils";
+import { useOpportunityTriage, type OpportunityPriority } from "@/hooks/use-opportunity-triage";
 
 type Decision = "dismissed" | "later" | "interested";
 type AnalysisStatus = "idle" | "processing" | "done";
@@ -81,22 +83,51 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
   const [activePlatform, setActivePlatform] = useState<OpportunityPlatformFilter>("Todas");
   const [stateFilter, setStateFilter] = useState("Todos");
   const [draftStateFilter, setDraftStateFilter] = useState("Todos");
-  const [queue, setQueue] = useState(newOpportunities);
+  const { triage, decide, undo } = useOpportunityTriage();
+  const [queue, setQueue] = useState(() =>
+    newOpportunities.filter((opportunity) => !triage[opportunity.id]),
+  );
   const [position, setPosition] = useState(1);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [interestedIds, setInterestedIds] = useState<Set<string>>(new Set());
   const [showFavorites, setShowFavorites] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [analysisById, setAnalysisById] = useState<Record<string, AnalysisStatus>>({});
   const [autoParticipate, setAutoParticipate] = useState(true);
+  const [interestDraft, setInterestDraft] = useState<{
+    opportunity: NewOpportunity;
+    priority: OpportunityPriority;
+    note: string;
+  } | null>(null);
   const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+
+  const savedIds = useMemo(
+    () =>
+      new Set(
+        Object.entries(triage)
+          .filter(([, record]) => record.decision === "later")
+          .map(([id]) => id),
+      ),
+    [triage],
+  );
+  const interestedIds = useMemo(
+    () =>
+      new Set(
+        Object.entries(triage)
+          .filter(([, record]) => record.decision === "interested")
+          .map(([id]) => id),
+      ),
+    [triage],
+  );
 
   useEffect(() => {
     const activeTimers = timers.current;
     return () => activeTimers.forEach(clearTimeout);
   }, []);
+
+  useEffect(() => {
+    setQueue((current) => current.filter((opportunity) => !triage[opportunity.id]));
+  }, [triage]);
 
   const availableStates = useMemo(
     () => ["Todos", ...Array.from(new Set(newOpportunities.map((item) => item.state)))],
@@ -125,7 +156,8 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
       const platformMatches = platform === "Todas" || opportunity.platform === platform;
       const stateMatches = state === "Todos" || opportunity.state === state;
       const favoriteMatches = !favoritesOnly || favorites.has(opportunity.id);
-      return platformMatches && stateMatches && favoriteMatches;
+      const isPending = !triage[opportunity.id];
+      return platformMatches && stateMatches && favoriteMatches && (favoritesOnly || isPending);
     });
   }
 
@@ -163,15 +195,33 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
   }
 
   function registerDecision(opportunity: NewOpportunity, decision: Decision) {
-    if (decision === "later") {
-      setSavedIds((current) => new Set(current).add(opportunity.id));
-    }
     if (decision === "interested") {
-      setInterestedIds((current) => new Set(current).add(opportunity.id));
+      setInterestDraft({ opportunity, priority: "normal", note: "" });
+      return;
     }
+    commitDecision(opportunity, decision);
+  }
+
+  function commitDecision(
+    opportunity: NewOpportunity,
+    decision: Decision,
+    details: { priority?: OpportunityPriority; note?: string } = {},
+  ) {
+    decide(opportunity.id, decision, details);
     setQueue((current) => current.slice(1));
     setPosition((current) => current + 1);
     setFeedback({ message: decisionCopy[decision], opportunity, decision });
+  }
+
+  function confirmInterest() {
+    if (!interestDraft) return;
+    const note = interestDraft.note.trim();
+    commitDecision(
+      interestDraft.opportunity,
+      "interested",
+      note ? { priority: interestDraft.priority, note } : { priority: interestDraft.priority },
+    );
+    setInterestDraft(null);
   }
 
   function undoLastDecision() {
@@ -179,20 +229,7 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
     setQueue((current) => [feedback.opportunity, ...current]);
     setPosition((current) => Math.max(1, current - 1));
 
-    if (feedback.decision === "later") {
-      setSavedIds((current) => {
-        const next = new Set(current);
-        next.delete(feedback.opportunity.id);
-        return next;
-      });
-    }
-    if (feedback.decision === "interested") {
-      setInterestedIds((current) => {
-        const next = new Set(current);
-        next.delete(feedback.opportunity.id);
-        return next;
-      });
-    }
+    undo(feedback.opportunity.id);
     setFeedback(null);
   }
 
@@ -340,6 +377,22 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
             >
               Desfazer
             </button>
+            {feedback.decision === "interested" ? (
+              <Link
+                to="/dash2/operacao/minhas-licitacoes"
+                className="shrink-0 text-[12px] font-bold text-[#15943a] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+              >
+                Ver no pipeline
+              </Link>
+            ) : null}
+            {feedback.decision === "later" ? (
+              <Link
+                to="/dash2/oportunidades/favoritos"
+                className="shrink-0 text-[12px] font-bold text-[#15943a] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+              >
+                Ver salvas
+              </Link>
+            ) : null}
           </div>
         )}
 
@@ -387,6 +440,19 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
         onValueChange={setDraftStateFilter}
         onApply={applyFilters}
         onClear={() => setDraftStateFilter("Todos")}
+      />
+      <InterestDialog
+        draft={interestDraft}
+        onOpenChange={(open) => {
+          if (!open) setInterestDraft(null);
+        }}
+        onPriorityChange={(priority) =>
+          setInterestDraft((current) => (current ? { ...current, priority } : current))
+        }
+        onNoteChange={(note) =>
+          setInterestDraft((current) => (current ? { ...current, note } : current))
+        }
+        onConfirm={confirmInterest}
       />
     </div>
   );
@@ -1328,6 +1394,97 @@ function EmptyQueue({
         </Button>
       </div>
     </Panel>
+  );
+}
+
+function InterestDialog({
+  draft,
+  onOpenChange,
+  onPriorityChange,
+  onNoteChange,
+  onConfirm,
+}: {
+  draft: { opportunity: NewOpportunity; priority: OpportunityPriority; note: string } | null;
+  onOpenChange: (open: boolean) => void;
+  onPriorityChange: (priority: OpportunityPriority) => void;
+  onNoteChange: (note: string) => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <Dialog open={Boolean(draft)} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg rounded-2xl border-hairline bg-white p-0 sm:rounded-2xl">
+        <DialogHeader className="border-b border-hairline px-5 py-5 sm:px-6">
+          <DialogTitle className="text-[18px] text-ink">Adicionar a operação</DialogTitle>
+          <DialogDescription className="pt-1 text-[13px] leading-relaxed text-slate-text">
+            {draft?.opportunity.title}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-5 px-5 py-5 sm:px-6">
+          <fieldset>
+            <legend className="text-[13px] font-bold text-ink">Prioridade inicial</legend>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              {(
+                [
+                  ["normal", "Normal", "Entrar na fila de análise"],
+                  ["high", "Priorizar", "Destacar no pipeline"],
+                ] as const
+              ).map(([value, title, description]) => {
+                const selected = draft?.priority === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => onPriorityChange(value)}
+                    className={cn(
+                      "min-h-20 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]",
+                      selected
+                        ? "border-[#29C454] bg-[#29C454]/[0.07] text-[#13763a]"
+                        : "border-hairline bg-white text-ink hover:border-[#29C454]/45",
+                    )}
+                  >
+                    <span className="block text-[12px] font-extrabold">{title}</span>
+                    <span className="mt-1 block text-[11px] leading-relaxed text-slate-text">
+                      {description}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+          <label className="grid gap-2">
+            <span className="text-[13px] font-bold text-ink">
+              Anotação inicial <span className="font-medium text-slate-text">(opcional)</span>
+            </span>
+            <textarea
+              value={draft?.note ?? ""}
+              onChange={(event) => onNoteChange(event.target.value)}
+              placeholder="Ex.: confirmar garantia on-site antes de preparar a proposta."
+              rows={3}
+              className="w-full resize-none rounded-xl border border-hairline bg-white px-3 py-2.5 text-[13px] leading-relaxed text-ink outline-none transition placeholder:text-slate-400 focus:border-[#29C454] focus:ring-2 focus:ring-[#29C454]/15"
+            />
+          </label>
+        </div>
+        <DialogFooter className="flex-row justify-between border-t border-hairline bg-slate-50/60 px-5 py-4 sm:px-6">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="min-h-11 rounded-xl text-[12px] font-bold text-slate-text"
+          >
+            Agora não
+          </Button>
+          <Button
+            type="button"
+            onClick={onConfirm}
+            className="min-h-11 rounded-xl bg-[#18B849] text-[12px] font-extrabold text-white hover:bg-[#139e3e]"
+          >
+            Adicionar a operação
+            <ArrowRight className="size-4" />
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

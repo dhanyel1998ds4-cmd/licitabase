@@ -19,11 +19,11 @@ export function AppLayout({
   return (
     <AppLayoutStateContext.Provider value={{ sidebarCollapsed: collapsed }}>
       <TooltipProvider delayDuration={0}>
-        <div className="h-dvh overflow-hidden bg-sunken">
+        <div data-app-shell className="h-dvh overflow-hidden bg-[#eaf3ed]">
           {/* Sidebar desktop */}
           <aside
             className={cn(
-              "fixed inset-y-0 left-0 z-30 hidden border-r border-border bg-sidebar transition-all duration-300 ease-out min-[1440px]:!block",
+              "fixed inset-y-0 left-0 z-30 hidden border-0 bg-[#06351e] transition-all duration-300 ease-out min-[1440px]:!block",
               collapsed ? "w-[80px]" : "w-[280px]",
             )}
           >
@@ -31,7 +31,7 @@ export function AppLayout({
           </aside>
 
           {/* Compact rail for notebooks */}
-          <aside className="fixed inset-y-0 left-0 z-30 hidden w-[80px] border-r border-border bg-sidebar lg:block min-[1440px]:!hidden">
+          <aside className="fixed inset-y-0 left-0 z-30 hidden w-[80px] border-0 bg-[#06351e] lg:block min-[1440px]:!hidden">
             <Sidebar collapsed onToggleCollapse={() => setOpen(true)} />
           </aside>
 
@@ -49,7 +49,7 @@ export function AppLayout({
             <DialogPrimitive.Portal>
               <DialogPrimitive.Overlay className="fixed inset-0 z-[80] bg-navy/45 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
               <DialogPrimitive.Content
-                className="fixed inset-y-0 left-0 z-[90] w-[304px] max-w-[88vw] overflow-hidden border-r border-border bg-sidebar shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left"
+                className="fixed inset-y-0 left-0 z-[90] w-[304px] max-w-[88vw] overflow-hidden border-0 bg-[#06351e] shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left"
                 onClick={(event) => {
                   if ((event.target as HTMLElement).closest("a")) setOpen(false);
                 }}
@@ -68,11 +68,18 @@ export function AppLayout({
 
           <div
             className={cn(
-              "flex h-dvh min-w-0 flex-col overflow-x-hidden overflow-y-hidden transition-all duration-300 ease-out lg:pl-[80px]",
-              collapsed ? "min-[1440px]:!pl-[80px]" : "min-[1440px]:!pl-[280px]",
+              "flex h-dvh min-w-0 flex-col overflow-x-hidden overflow-y-hidden transition-all duration-300 ease-out lg:pl-[92px]",
+              collapsed ? "min-[1440px]:!pl-[92px]" : "min-[1440px]:!pl-[292px]",
             )}
           >
-            <main className={cn("min-h-0 min-w-0 flex-1", contentClassName)}>{children}</main>
+            <main
+              className={cn(
+                "min-h-0 min-w-0 flex-1 bg-white lg:my-3 lg:overflow-hidden lg:rounded-l-[28px]",
+                contentClassName,
+              )}
+            >
+              {children}
+            </main>
           </div>
         </div>
       </TooltipProvider>

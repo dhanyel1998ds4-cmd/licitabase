@@ -1,8 +1,15 @@
 const {
   chromium,
-} = require("C:/Users/Rent e Clean/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright");
+} = require("C:/Users/User/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright");
 
 const routes = [
+  {
+    path: "/dash2/licitacoes/pe-845-2026",
+    heading:
+      "Aquisição de notebooks para atendimento às unidades administrativas, com garantia e suporte técnico.",
+  },
+  { path: "/dash2/oportunidades/favoritos", heading: "Favoritos" },
+  { path: "/dash2/operacao/minhas-licitacoes", heading: "Minhas licitações" },
   { path: "/dash2/licitacoes/buscar", heading: "Buscar licitações" },
   { path: "/bot-lances", heading: "Visão geral do Bot de Lances" },
   { path: "/bot-lances/disputas", heading: "Disputas" },

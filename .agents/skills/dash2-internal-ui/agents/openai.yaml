@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Interna LicitaBase"
+  short_description: "Padroniza telas internas pelo shell da dash2"
+  default_prompt: "Use $dash2-internal-ui para criar ou refatorar uma tela interna da LicitaBase."

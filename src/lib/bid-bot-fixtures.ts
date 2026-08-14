@@ -216,22 +216,242 @@ export const disputeItems = [
   },
 ];
 
-export const disputeRanking = [
-  { pos: 1, supplier: "MK Solucoes em Seguranca e Servicos Ltda", uf: "SP", type: "ME/EPP", bid: "R$ 346.761,91", delta: "" },
-  { pos: 2, supplier: "Renato Palladino de Freitas 41131128869", uf: "SP", type: "ME/EPP", bid: "R$ 361.900,00", delta: "" },
-  { pos: 3, supplier: "Multicompany Brasil Comercial e Servicos Ltda", uf: "SP", type: "ME/EPP", bid: "R$ 376.200,00", delta: "" },
-  { pos: 4, supplier: "ASX Comercial Ltda", uf: "SP", type: "ME/EPP", bid: "R$ 397.100,00", delta: "" },
-  { pos: 5, supplier: "Iridia Solucoes Ltda", uf: "MG", type: "ME/EPP", bid: "R$ 36.500,00", delta: "-14,1%", you: true },
-  { pos: 6, supplier: "Camila Fernandes Sant Ana", uf: "SP", type: "ME/EPP", bid: "R$ 400.708,00", delta: "+2,7%" },
-  { pos: 7, supplier: "A3 Infotech Comercio e Prestacao de Servicos", uf: "SP", type: "ME/EPP", bid: "R$ 416.460,00", delta: "+11,4%" },
-  { pos: 8, supplier: "Litimax Servico e Comercio Ltda", uf: "RJ", type: "ME/EPP", bid: "R$ 418.000,00", delta: "+11,8%" },
-  { pos: 9, supplier: "Ederson Cunha de Sousa - Comercio de Informatica", uf: "DF", type: "ME/EPP", bid: "R$ 423.500,00", delta: "+13,4%" },
-  { pos: 10, supplier: "Thads Servicos Ltda", uf: "SP", type: "ME/EPP", bid: "R$ 425.194,00", delta: "+13,9%" },
+/**
+ * Dados de demonstração por sala ativa. Cada disputa inicia com objeto, lance,
+ * posição, quantidade de lances e contexto de portal próprios, para que uma
+ * sala nunca reaproveite a história financeira de outra.
+ */
+export type LiveDisputeSession = {
+  disputeId: string;
+  portal: string;
+  elapsedSeconds: number;
+  ourBid: number;
+  marketBid: number;
+  position: "1º" | "2º";
+  bids: number;
+  item: (typeof disputeItems)[number];
+};
+
+export const liveDisputeSessions: Record<string, LiveDisputeSession> = {
+  "d-4": {
+    disputeId: "d-4",
+    portal: "Compras.gov",
+    elapsedSeconds: 17 * 60 + 28,
+    ourBid: 42496.67,
+    marketBid: 42496.67,
+    position: "1º",
+    bids: 28,
+    item: {
+      number: 1,
+      description:
+        "Computador com monitor 24”, placa de vídeo offboard, SSD 512GB e Windows 11 Pro.",
+      ourBid: "R$ 42.496,67",
+      ourBidAt: "06/08, 09:17:28",
+      bestBid: "R$ 42.496,67",
+      bestBidAt: "06/08, 09:17:28",
+      discount: "-14,1%",
+      bids: 28,
+      position: "1º",
+      nextEvent: "17:28",
+      checks: "39x verificações",
+    },
+  },
+  "d-5": {
+    disputeId: "d-5",
+    portal: "Compras.gov",
+    elapsedSeconds: 9 * 60 + 14,
+    ourBid: 8045.45,
+    marketBid: 8045.45,
+    position: "1º",
+    bids: 6,
+    item: {
+      number: 1,
+      description: "Insumos laboratoriais para registro de preços, com fornecimento parcelado.",
+      ourBid: "R$ 8.045,45",
+      ourBidAt: "07/08, 08:09:14",
+      bestBid: "R$ 8.045,45",
+      bestBidAt: "07/08, 08:09:14",
+      discount: "-8,6%",
+      bids: 6,
+      position: "1º",
+      nextEvent: "09:14",
+      checks: "14x verificações",
+    },
+  },
+  "d-6": {
+    disputeId: "d-6",
+    portal: "Portal de Compras Públicas",
+    elapsedSeconds: 13 * 60 + 1,
+    ourBid: 697106.4,
+    marketBid: 697106.4,
+    position: "1º",
+    bids: 12,
+    item: {
+      number: 1,
+      description:
+        "Serviços de manutenção preventiva e corretiva para os prédios da Câmara Municipal.",
+      ourBid: "R$ 697.106,40",
+      ourBidAt: "07/08, 09:12:01",
+      bestBid: "R$ 697.106,40",
+      bestBidAt: "07/08, 09:12:01",
+      discount: "-11,2%",
+      bids: 12,
+      position: "1º",
+      nextEvent: "13:01",
+      checks: "22x verificações",
+    },
+  },
+};
+
+export function getLiveDisputeSession(disputeId: string) {
+  return liveDisputeSessions[disputeId];
+}
+
+export type LiveDisputeStatus = "Ganhando" | "Monitorando" | "Preço caiu";
+
+export type LiveDisputeSnapshot = {
+  dispute: Dispute;
+  session: LiveDisputeSession;
+  status: LiveDisputeStatus;
+  position: "1º" | "2º";
+  currentBid: number;
+  bids: number;
+  updated: string;
+};
+
+const liveStatusCycle: LiveDisputeStatus[] = ["Ganhando", "Monitorando", "Preço caiu", "Ganhando"];
+
+/**
+ * Snapshot compartilhado das três salas ao vivo. A cadência é acelerada para
+ * demonstrar a mudança de status no Bot e na visão geral sem dados reais.
+ */
+export function getLiveDisputeSnapshots(referenceTime = Date.now()): LiveDisputeSnapshot[] {
+  const cycle = Math.floor(referenceTime / 4_000);
+
+  return Object.values(liveDisputeSessions).flatMap((session, index) => {
+    const dispute = disputes.find((candidate) => candidate.id === session.disputeId);
+    if (!dispute) return [];
+
+    const status = liveStatusCycle[(cycle + index) % liveStatusCycle.length]!;
+    const pulse = (cycle + index) % 5;
+    const priceDrop = Math.max(session.marketBid * (0.00002 + pulse * 0.00001), 0.2);
+    const currentBid = status === "Preço caiu" ? session.marketBid - priceDrop : session.ourBid;
+
+    return [
+      {
+        dispute,
+        session,
+        status,
+        position: status === "Preço caiu" ? "2º" : session.position,
+        currentBid,
+        bids: session.bids + (cycle % 6),
+        updated: `há ${1 + ((cycle + index * 2) % 8)}s`,
+      },
+    ];
+  });
+}
+
+export type DisputeRankingRow = {
+  id?: string;
+  pos: number;
+  supplier: string;
+  uf: string;
+  type: string;
+  bid: string;
+  delta: string;
+  you?: boolean;
+  movement?: "up" | "down" | "updated";
+  movementLabel?: string;
+};
+
+export const disputeRanking: DisputeRankingRow[] = [
+  {
+    pos: 1,
+    supplier: "MK Solucoes em Seguranca e Servicos Ltda",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 346.761,91",
+    delta: "",
+  },
+  {
+    pos: 2,
+    supplier: "Renato Palladino de Freitas 41131128869",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 361.900,00",
+    delta: "",
+  },
+  {
+    pos: 3,
+    supplier: "Multicompany Brasil Comercial e Servicos Ltda",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 376.200,00",
+    delta: "",
+  },
+  {
+    pos: 4,
+    supplier: "ASX Comercial Ltda",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 397.100,00",
+    delta: "",
+  },
+  {
+    pos: 5,
+    supplier: "Iridia Solucoes Ltda",
+    uf: "MG",
+    type: "ME/EPP",
+    bid: "R$ 36.500,00",
+    delta: "-14,1%",
+    you: true,
+  },
+  {
+    pos: 6,
+    supplier: "Camila Fernandes Sant Ana",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 400.708,00",
+    delta: "+2,7%",
+  },
+  {
+    pos: 7,
+    supplier: "A3 Infotech Comercio e Prestacao de Servicos",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 416.460,00",
+    delta: "+11,4%",
+  },
+  {
+    pos: 8,
+    supplier: "Litimax Servico e Comercio Ltda",
+    uf: "RJ",
+    type: "ME/EPP",
+    bid: "R$ 418.000,00",
+    delta: "+11,8%",
+  },
+  {
+    pos: 9,
+    supplier: "Ederson Cunha de Sousa - Comercio de Informatica",
+    uf: "DF",
+    type: "ME/EPP",
+    bid: "R$ 423.500,00",
+    delta: "+13,4%",
+  },
+  {
+    pos: 10,
+    supplier: "Thads Servicos Ltda",
+    uf: "SP",
+    type: "ME/EPP",
+    bid: "R$ 425.194,00",
+    delta: "+13,9%",
+  },
 ];
 
-export type TimelineKind = "Nosso lance" | "Preço caiu" | "Monitorando" | "Sistema" | "Fase" | "Sessão";
+export type TimelineKind =
+  "Nosso lance" | "Preço caiu" | "Monitorando" | "Sistema" | "Fase" | "Sessão";
 
-export const disputeTimeline: {
+export type TimelineEvent = {
   time: string;
   event: string;
   kind: TimelineKind;
@@ -239,25 +459,348 @@ export const disputeTimeline: {
   value: string;
   status: string;
   note: string;
-}[] = [
-  { time: "09:00:37", event: "Sessão iniciada", kind: "Sessão", detail: "A disputa foi aberta pelo órgão.", value: "—", status: "Sistema", note: "Disputa aberta pelo órgão." },
-  { time: "09:00:43", event: "Nosso lance", kind: "Nosso lance", detail: "Lance registrado com sucesso.", value: "R$ 36.500,00", status: "Ganhando", note: "Mantemos a melhor oferta." },
-  { time: "09:00:49", event: "Preço caiu", kind: "Preço caiu", detail: "Novo lance do concorrente.", value: "R$ 36.122,17", status: "Preço caiu", note: "Concorrente superou nosso lance." },
-  { time: "09:01:12", event: "Nosso lance", kind: "Nosso lance", detail: "Lance registrado com sucesso.", value: "R$ 36.122,17", status: "Ganhando", note: "Voltamos a assumir a liderança." },
-  { time: "09:02:05", event: "Monitorando", kind: "Monitorando", detail: "Verificações automáticas em andamento.", value: "39x verificações", status: "Monitorando", note: "Monitoramento contínuo ativo." },
-  { time: "09:04:21", event: "Monitorando", kind: "Monitorando", detail: "Verificações automáticas em andamento.", value: "39x verificações", status: "Monitorando", note: "Monitoramento contínuo ativo." },
-  { time: "09:04:26", event: "Preço caiu", kind: "Preço caiu", detail: "Novo lance do concorrente.", value: "R$ 36.122,17", status: "Preço caiu", note: "Concorrente superou nosso lance." },
-  { time: "09:04:32", event: "Preço caiu", kind: "Preço caiu", detail: "Novo lance do concorrente.", value: "R$ 36.122,17", status: "Preço caiu", note: "Variação mínima registrada." },
-  { time: "09:25:08", event: "Fase", kind: "Fase", detail: "Fase: sealed_bid", value: "—", status: "Sistema", note: "Fase de lances fechada automaticamente." },
-  { time: "09:25:09", event: "Nosso lance", kind: "Nosso lance", detail: "Lance final registrado.", value: "R$ 36.122,17", status: "Ganhando", note: "Último lance da sessão." },
-  { time: "09:25:20", event: "Sessão encerrada", kind: "Sessão", detail: "Disputa encerrada pelo sistema.", value: "—", status: "Sistema", note: "Disputa encerrada." },
+};
+
+export const disputeTimeline: TimelineEvent[] = [
+  {
+    time: "09:00:37",
+    event: "Sessão iniciada",
+    kind: "Sessão",
+    detail: "A disputa foi aberta pelo órgão.",
+    value: "—",
+    status: "Sistema",
+    note: "Disputa aberta pelo órgão.",
+  },
+  {
+    time: "09:00:43",
+    event: "Nosso lance",
+    kind: "Nosso lance",
+    detail: "Lance registrado com sucesso.",
+    value: "R$ 36.500,00",
+    status: "Ganhando",
+    note: "Mantemos a melhor oferta.",
+  },
+  {
+    time: "09:00:49",
+    event: "Preço caiu",
+    kind: "Preço caiu",
+    detail: "Novo lance do concorrente.",
+    value: "R$ 36.122,17",
+    status: "Preço caiu",
+    note: "Concorrente superou nosso lance.",
+  },
+  {
+    time: "09:01:12",
+    event: "Nosso lance",
+    kind: "Nosso lance",
+    detail: "Lance registrado com sucesso.",
+    value: "R$ 36.122,17",
+    status: "Ganhando",
+    note: "Voltamos a assumir a liderança.",
+  },
+  {
+    time: "09:02:05",
+    event: "Monitorando",
+    kind: "Monitorando",
+    detail: "Verificações automáticas em andamento.",
+    value: "39x verificações",
+    status: "Monitorando",
+    note: "Monitoramento contínuo ativo.",
+  },
+  {
+    time: "09:04:21",
+    event: "Monitorando",
+    kind: "Monitorando",
+    detail: "Verificações automáticas em andamento.",
+    value: "39x verificações",
+    status: "Monitorando",
+    note: "Monitoramento contínuo ativo.",
+  },
+  {
+    time: "09:04:26",
+    event: "Preço caiu",
+    kind: "Preço caiu",
+    detail: "Novo lance do concorrente.",
+    value: "R$ 36.122,17",
+    status: "Preço caiu",
+    note: "Concorrente superou nosso lance.",
+  },
+  {
+    time: "09:04:32",
+    event: "Preço caiu",
+    kind: "Preço caiu",
+    detail: "Novo lance do concorrente.",
+    value: "R$ 36.122,17",
+    status: "Preço caiu",
+    note: "Variação mínima registrada.",
+  },
+  {
+    time: "09:25:08",
+    event: "Fase",
+    kind: "Fase",
+    detail: "Fase: sealed_bid",
+    value: "—",
+    status: "Sistema",
+    note: "Fase de lances fechada automaticamente.",
+  },
+  {
+    time: "09:25:09",
+    event: "Nosso lance",
+    kind: "Nosso lance",
+    detail: "Lance final registrado.",
+    value: "R$ 36.122,17",
+    status: "Ganhando",
+    note: "Último lance da sessão.",
+  },
+  {
+    time: "09:25:20",
+    event: "Sessão encerrada",
+    kind: "Sessão",
+    detail: "Disputa encerrada pelo sistema.",
+    value: "—",
+    status: "Sistema",
+    note: "Disputa encerrada.",
+  },
 ];
 
+const timelineCurrency = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+function timelineClock(totalSeconds: number) {
+  const hours = Math.floor(totalSeconds / 3600) % 24;
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return [hours, minutes, seconds].map((unit) => String(unit).padStart(2, "0")).join(":");
+}
+
+/**
+ * Roteiro integral de uma disputa para a demonstração interativa. Os eventos
+ * seguem a cadência de uma sessão real, mas a tela os reproduz de forma
+ * acelerada para que o histórico possa ser avaliado sem esperar horas.
+ */
+export const realtimeDisputeTimeline: TimelineEvent[] = (() => {
+  const events: TimelineEvent[] = [
+    {
+      time: "09:59:55",
+      event: "Sessão iniciada",
+      kind: "Sessão",
+      detail: "O portal abriu a fase competitiva do item 1.",
+      value: "—",
+      status: "Ao vivo",
+      note: "Monitoramento e estratégia assistida ativados.",
+    },
+    {
+      time: "10:00:02",
+      event: "Nosso lance",
+      kind: "Nosso lance",
+      detail: "Lance inicial enviado automaticamente pelo bot.",
+      value: "R$ 1.364.399,80",
+      status: "Ganhando",
+      note: "Melhor oferta assumida para o item 1.",
+    },
+    {
+      time: "10:00:08",
+      event: "Preço caiu",
+      kind: "Preço caiu",
+      detail: "Novo lance do concorrente identificado no portal.",
+      value: "R$ 1.364.399,80",
+      status: "Preço caiu",
+      note: "de R$ 1.364.400,00",
+    },
+    {
+      time: "10:00:13",
+      event: "Monitorando",
+      kind: "Monitorando",
+      detail: "Verificações automáticas em andamento.",
+      value: "2x verificações",
+      status: "Ganhando",
+      note: "Liderança confirmada após a leitura do portal.",
+    },
+    {
+      time: "10:00:19",
+      event: "Nosso lance",
+      kind: "Nosso lance",
+      detail: "Decremento configurado aplicado pela estratégia assistida.",
+      value: "R$ 1.363.999,80",
+      status: "Ganhando",
+      note: "Resposta enviada dentro da janela de decisão.",
+    },
+    {
+      time: "10:00:25",
+      event: "Preço caiu",
+      kind: "Preço caiu",
+      detail: "Concorrente reduziu novamente a oferta.",
+      value: "R$ 1.363.999,80",
+      status: "Preço caiu",
+      note: "de R$ 1.364.000,00",
+    },
+    {
+      time: "10:00:31",
+      event: "Monitorando",
+      kind: "Monitorando",
+      detail: "Verificações automáticas em andamento.",
+      value: "7x verificações",
+      status: "Ganhando",
+      note: "Bot pronto para a próxima oportunidade de lance.",
+    },
+  ];
+
+  const sessionStart = 10 * 60 * 60 + 2 * 60 + 11;
+  const finalCompetitiveEvent = 11 * 60 * 60 + 31 * 60 + 47;
+  // 425 registros no total: a mesma granularidade da sessão completa recebida
+  // para esta demonstração, sem transformar a tela em uma lista resumida.
+  const totalRounds = 204;
+  const initialValue = 1_363_997;
+  const finalValue = 956_000;
+  const automaticBidRounds = new Set([0, 2, 5, 9, 14, 20, 27, 35]);
+
+  for (let round = 0; round < totalRounds; round += 1) {
+    const roundStart = Math.round(
+      sessionStart + ((finalCompetitiveEvent - sessionStart) * round) / (totalRounds - 1),
+    );
+    const previousValue =
+      round === 0
+        ? 1_363_999.8
+        : initialValue - ((initialValue - finalValue) * round) / totalRounds;
+    const currentValue = initialValue - ((initialValue - finalValue) * (round + 1)) / totalRounds;
+    const formattedCurrent = timelineCurrency.format(Math.max(currentValue, finalValue));
+    const formattedPrevious = timelineCurrency.format(Math.max(previousValue, finalValue));
+    const atFloor = round >= 44;
+
+    events.push({
+      time: timelineClock(roundStart),
+      event: "Preço caiu",
+      kind: "Preço caiu",
+      detail: "Novo lance do concorrente identificado no portal.",
+      value: formattedCurrent,
+      status: "Preço caiu",
+      note: `de ${formattedPrevious}`,
+    });
+
+    if (automaticBidRounds.has(round)) {
+      const bidValue = Math.max(currentValue - 0.2, finalValue);
+      events.push({
+        time: timelineClock(roundStart + 6),
+        event: "Nosso lance",
+        kind: "Nosso lance",
+        detail: "Lance calculado e enviado pela estratégia assistida.",
+        value: timelineCurrency.format(bidValue),
+        status: "Ganhando",
+        note: "Decremento fixo respeitado na reação automática.",
+      });
+    }
+
+    events.push({
+      time: timelineClock(roundStart + (automaticBidRounds.has(round) ? 12 : 6)),
+      event: "Monitorando",
+      kind: "Monitorando",
+      detail: "Verificações automáticas em andamento.",
+      value: `${1 + ((round * 7) % 25)}x verificações`,
+      status: atFloor ? "Piso" : round % 3 === 0 ? "Cooldown" : "Ganhando",
+      note: atFloor
+        ? "Preço piso atingido; o bot mantém somente o monitoramento."
+        : "Leitura concluída; aguardando novo movimento do portal.",
+    });
+  }
+
+  events.push(
+    {
+      time: "11:39:50",
+      event: "Fim da disputa",
+      kind: "Fase",
+      detail: "O portal sinalizou o encerramento da etapa competitiva.",
+      value: "—",
+      status: "Sistema",
+      note: "Aguardando a confirmação final da sessão.",
+    },
+    {
+      time: "11:40:08",
+      event: "Sessão encerrada",
+      kind: "Sessão",
+      detail: "Disputa encerrada pelo sistema do portal.",
+      value: "—",
+      status: "Finalizada",
+      note: "Histórico completo disponível para conferência.",
+    },
+  );
+
+  return events;
+})();
+
+/** Cria uma cadência completa usando os valores e o objeto da sala selecionada. */
+export function createLiveSessionTimeline(session: LiveDisputeSession): TimelineEvent[] {
+  let currentBid = session.marketBid;
+  let checks = 2;
+
+  return realtimeDisputeTimeline.map((event, index) => {
+    if (event.kind === "Preço caiu") {
+      currentBid = Math.max(currentBid - Math.max(session.marketBid * 0.00045, 0.2), 0);
+      return {
+        ...event,
+        value: new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+          currentBid,
+        ),
+        detail: "Novo lance de concorrente identificado na leitura do portal.",
+        note: `Disputa do item ${session.item.number} atualizada em ${session.portal}.`,
+      };
+    }
+
+    if (event.kind === "Nosso lance") {
+      currentBid = Math.max(currentBid - 0.2, 0);
+      return {
+        ...event,
+        value: new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+          currentBid,
+        ),
+        detail: "Lance da Iridia registrado na sessão ativa.",
+        note: "A estratégia assistida respondeu dentro do decremento configurado.",
+      };
+    }
+
+    if (event.kind === "Monitorando") {
+      checks = (checks % 9) + 1;
+      return {
+        ...event,
+        value: `${checks}x verificações`,
+        detail: `Leitura automática ativa em ${session.portal}.`,
+      };
+    }
+
+    return event;
+  });
+}
+
 export const monitoringWatchers = [
-  { name: "Prefeitura Municipal de Guarulhos - SP", scope: "Pregão 845/2026 · Item 1", frequency: "20s", checks: "39x", state: "Monitorando" as const },
-  { name: "ESP-Centro de Energia Nuclear na Agricultura", scope: "Pregão 310/2026 · Item 1", frequency: "30s", checks: "18x", state: "Monitorando" as const },
-  { name: "Vitória Câmara Municipal", scope: "Pregão 077/2026 · Item 1", frequency: "60s", checks: "9x", state: "Pausado" as const },
-  { name: "Câmara Municipal de Jacareí - SP", scope: "Pregão 059/2026 · Item 1", frequency: "60s", checks: "4x", state: "Pausado" as const },
+  {
+    name: "Prefeitura Municipal de Guarulhos - SP",
+    scope: "Pregão 845/2026 · Item 1",
+    frequency: "20s",
+    checks: "39x",
+    state: "Monitorando" as const,
+  },
+  {
+    name: "ESP-Centro de Energia Nuclear na Agricultura",
+    scope: "Pregão 310/2026 · Item 1",
+    frequency: "30s",
+    checks: "18x",
+    state: "Monitorando" as const,
+  },
+  {
+    name: "Vitória Câmara Municipal",
+    scope: "Pregão 077/2026 · Item 1",
+    frequency: "60s",
+    checks: "9x",
+    state: "Pausado" as const,
+  },
+  {
+    name: "Câmara Municipal de Jacareí - SP",
+    scope: "Pregão 059/2026 · Item 1",
+    frequency: "60s",
+    checks: "4x",
+    state: "Pausado" as const,
+  },
 ];
 
 export const monitoringMetrics = [
@@ -282,9 +825,44 @@ export const reportRows = [
 ];
 
 export const historyRows = [
-  { id: "h-1", date: "05/08/2026", dispute: "Pregão 845/2026 · Guarulhos - SP", result: "Vencemos" as const, ourBid: "R$ 36.122,17", bids: 28 },
-  { id: "h-2", date: "02/08/2026", dispute: "Pregão 310/2026 · CENA/USP", result: "Vencemos" as const, ourBid: "R$ 7.980,00", bids: 12 },
-  { id: "h-3", date: "28/07/2026", dispute: "Pregão 018/2026 · Fiotec", result: "Perdemos" as const, ourBid: "R$ 14.870.000,00", bids: 9 },
-  { id: "h-4", date: "21/07/2026", dispute: "Pregão 133/2026 · IFRS", result: "Vencemos" as const, ourBid: "R$ 1.089.440,00", bids: 34 },
-  { id: "h-5", date: "14/07/2026", dispute: "Pregão 059/2026 · Jacareí - SP", result: "Cancelada" as const, ourBid: "—", bids: 3 },
+  {
+    id: "h-1",
+    date: "05/08/2026",
+    dispute: "Pregão 845/2026 · Guarulhos - SP",
+    result: "Vencemos" as const,
+    ourBid: "R$ 36.122,17",
+    bids: 28,
+  },
+  {
+    id: "h-2",
+    date: "02/08/2026",
+    dispute: "Pregão 310/2026 · CENA/USP",
+    result: "Vencemos" as const,
+    ourBid: "R$ 7.980,00",
+    bids: 12,
+  },
+  {
+    id: "h-3",
+    date: "28/07/2026",
+    dispute: "Pregão 018/2026 · Fiotec",
+    result: "Perdemos" as const,
+    ourBid: "R$ 14.870.000,00",
+    bids: 9,
+  },
+  {
+    id: "h-4",
+    date: "21/07/2026",
+    dispute: "Pregão 133/2026 · IFRS",
+    result: "Vencemos" as const,
+    ourBid: "R$ 1.089.440,00",
+    bids: 34,
+  },
+  {
+    id: "h-5",
+    date: "14/07/2026",
+    dispute: "Pregão 059/2026 · Jacareí - SP",
+    result: "Cancelada" as const,
+    ourBid: "—",
+    bids: 3,
+  },
 ];

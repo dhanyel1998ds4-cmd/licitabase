@@ -1,4 +1,6 @@
+/* eslint-disable react-refresh/only-export-components -- the detail route reuses the local demo catalog. */
 import { useMemo, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -80,10 +82,11 @@ import {
   type SearchTerm,
 } from "@/lib/tender-search-intelligence";
 import { cn } from "@/lib/utils";
+import { useTenderDecisions } from "@/hooks/use-tender-decisions";
 
 type SearchMode = "normal" | "intelligent";
 
-type Tender = {
+export type Tender = {
   id: string;
   code: string;
   modality: "Pregão" | "Concorrência";
@@ -137,7 +140,7 @@ type SearchFilters = {
   minMatch: string;
 };
 
-const tenders: Tender[] = [
+export const tenders: Tender[] = [
   {
     id: "pe-845-2026",
     code: "Pregão 845/2026",
@@ -1481,6 +1484,7 @@ function MobileDetailSection({
 }
 
 function TenderDetailPreview({ tender }: { tender: Tender }) {
+  const { decide } = useTenderDecisions();
   const itemDetails =
     tender.category === "Equipamentos de TI"
       ? [
@@ -1526,7 +1530,10 @@ function TenderDetailPreview({ tender }: { tender: Tender }) {
               <button
                 type="button"
                 aria-label={`Favoritar ${tender.code}`}
-                onClick={() => toast.success(`${tender.code} foi adicionado aos favoritos.`)}
+                onClick={() => {
+                  decide(tender.id, "favorite");
+                  toast.success(`${tender.code} foi adicionado aos favoritos.`);
+                }}
                 className="grid size-9 place-items-center rounded-xl text-slate-text hover:bg-brand-tint hover:text-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
               >
                 <Star className="size-4" aria-hidden="true" />
@@ -1735,18 +1742,27 @@ function TenderDetailPreview({ tender }: { tender: Tender }) {
           <ExternalLink className="size-3.5" aria-hidden="true" />
         </Button>
         <Button
-          type="button"
+          asChild
           variant="outline"
-          onClick={() => toast.info(`Detalhes completos de ${tender.code}.`)}
           className="h-11 rounded-xl border-hairline px-2 text-[9.5px] font-extrabold shadow-none sm:px-4 sm:text-[10.5px]"
         >
-          <span className="sm:hidden">Detalhes</span>
-          <span className="hidden sm:inline">Ver detalhes completos</span>
-          <ArrowRight className="size-3.5" aria-hidden="true" />
+          <Link to="/dash2/licitacoes/$licitacaoId" params={{ licitacaoId: tender.id }}>
+            <span className="sm:hidden">Detalhes</span>
+            <span className="hidden sm:inline">Ver detalhes completos</span>
+            <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
         </Button>
         <Button
           type="button"
-          onClick={() => toast.success("Oportunidade marcada como interessante.")}
+          onClick={() => {
+            decide(tender.id, "interested");
+            toast.success("Oportunidade adicionada à sua operação.", {
+              action: {
+                label: "Ver no pipeline",
+                onClick: () => window.location.assign("/dash2/operacao/minhas-licitacoes"),
+              },
+            });
+          }}
           className="h-11 rounded-xl bg-[#18B849] px-2 text-[9.5px] font-extrabold text-white shadow-none hover:bg-[#139E3E] sm:px-4 sm:text-[10.5px]"
         >
           Tenho interesse
@@ -1932,6 +1948,7 @@ function SaveFilterDialog({
 }
 
 export function TenderSearchPage() {
+  const { decide, decisions } = useTenderDecisions();
   const [mode, setMode] = useState<SearchMode>("normal");
   const [searchText, setSearchText] = useState("");
   const [searchTerms, setSearchTerms] = useState<SearchTerm[]>([]);
@@ -2734,9 +2751,16 @@ export function TenderSearchPage() {
                                   mode === "intelligent" && appliedIntelligentCriteria.length > 0
                                 }
                                 evidence={resultEvidence.get(tender.id) ?? []}
-                                onFavorite={() =>
-                                  toast.success(`${tender.code} foi adicionado aos favoritos.`)
-                                }
+                                onFavorite={() => {
+                                  const nextDecision =
+                                    decisions[tender.id] === "favorite" ? null : "favorite";
+                                  decide(tender.id, nextDecision);
+                                  toast.success(
+                                    nextDecision
+                                      ? `${tender.code} foi adicionado aos favoritos.`
+                                      : `${tender.code} foi removido dos favoritos.`,
+                                  );
+                                }}
                               />
                             </div>
                           ))}

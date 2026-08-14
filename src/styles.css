@@ -2178,9 +2178,15 @@
     text-wrap: balance;
   }
 
-  section {
+  /* Marketing rhythm belongs only to the landing-page sections. */
+  .lp-page > main > section {
     padding: clamp(80px, 10vw, 140px) 0;
   }
+}
+
+/* The onboarding column is an application surface, not a marketing section. */
+[data-onboarding-content] {
+  padding-block: 0;
 }
 
 /*
@@ -2892,6 +2898,7 @@
   --color-ink-soft: #1e293b;
   --color-slate-text: #64748b;
   --color-page: #f8fafc;
+  --color-app-canvas: #eaf3ed;
   --color-hairline: #f1f5f9;
   --color-green-500: #10b981;
   --color-green-600: #059669;
@@ -6771,5 +6778,216 @@
 @media (prefers-reduced-motion: reduce) {
   .dashboard-ticker__track {
     animation-duration: 52s !important;
+  }
+}
+
+/* Indicador único: acompanha o item ativo sem recriar o estado visual a cada rota. */
+.sidebar-active-indicator {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, height;
+  transition:
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease-out;
+}
+
+.sidebar-active-indicator--ready {
+  opacity: 1;
+}
+
+.sidebar-active-indicator--connected {
+  left: 20px;
+  right: 0;
+  border: 0;
+  border-radius: 12px 0 0 12px;
+  background: #eaf3ed;
+  box-shadow: none;
+}
+
+.sidebar-active-indicator--connected::before,
+.sidebar-active-indicator--connected::after {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  content: "";
+  pointer-events: none;
+  background: transparent;
+}
+
+.sidebar-active-indicator--connected::before {
+  top: -20px;
+  border-radius: 0 0 20px 0;
+  box-shadow: 8px 8px 0 8px #eaf3ed;
+}
+
+.sidebar-active-indicator--connected::after {
+  right: 0;
+  bottom: -20px;
+  border-radius: 0 20px 0 0;
+  box-shadow: 8px -8px 0 8px #eaf3ed;
+}
+
+.sidebar-active-indicator--compact {
+  left: 12px;
+  right: 12px;
+  border: 1px solid #c8ead2;
+  border-radius: 12px;
+  background: var(--color-app-canvas, #eaf3ed);
+  box-shadow: inset 3px 0 0 #29c454;
+}
+
+/* Estado inicial antes da primeira medição do indicador no cliente. */
+.sidebar-nav-item--fallback-connected {
+  isolation: isolate;
+  border-color: transparent !important;
+  background: #eaf3ed !important;
+  box-shadow: none !important;
+}
+
+.sidebar-nav-item--fallback-connected::before,
+.sidebar-nav-item--fallback-connected::after {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  content: "";
+  pointer-events: none;
+  background: transparent;
+}
+
+.sidebar-nav-item--fallback-connected::before {
+  top: -20px;
+  border-radius: 0 0 20px 0;
+  box-shadow: 8px 8px 0 8px #eaf3ed;
+}
+
+.sidebar-nav-item--fallback-connected::after {
+  right: 0;
+  bottom: -20px;
+  border-radius: 0 20px 0 0;
+  box-shadow: 8px -8px 0 8px #eaf3ed;
+}
+
+.sidebar-nav-item--fallback-compact {
+  box-shadow: inset 3px 0 0 #29c454;
+}
+
+/* Em alturas menores, a navegação preserva prioridade e os cards viram atalhos. */
+.sidebar-utility-cards__full {
+  display: none;
+}
+
+.sidebar-utility-cards__medium {
+  display: none;
+}
+
+.sidebar-utility-cards__compact {
+  display: grid;
+}
+
+@media (min-height: 1120px) and (max-height: 1399px) {
+  .sidebar-utility-cards__medium {
+    display: block;
+  }
+
+  .sidebar-utility-cards__compact {
+    display: none;
+  }
+}
+
+@media (min-height: 1400px) {
+  .sidebar-utility-cards__full {
+    display: block;
+  }
+
+  .sidebar-utility-cards__compact {
+    display: none;
+  }
+}
+
+@media (max-height: 1399px) and (min-width: 1440px) {
+  [data-sidebar-surface] {
+    padding-top: 12px;
+  }
+
+  [data-sidebar-surface] .sidebar-brand-row {
+    margin-bottom: 12px;
+  }
+
+  [data-sidebar-surface] .sidebar-workspace {
+    margin-bottom: 10px;
+    padding-block: 6px;
+  }
+
+  [data-sidebar-surface] .sidebar-navigation > div {
+    gap: 8px;
+  }
+
+  [data-sidebar-surface] .sidebar-nav-link,
+  [data-sidebar-surface] .sidebar-group-trigger {
+    min-height: 36px;
+  }
+
+  [data-sidebar-surface] .sidebar-nav-sub-link {
+    min-height: 34px;
+  }
+}
+
+/* SuperfÃ­cies internas rolÃ¡veis: trilho discreto e indicador na cor da marca. */
+[data-app-shell] :is(.overflow-y-auto, .overflow-y-scroll, .overflow-auto, .overflow-scroll) {
+  scrollbar-color: #29c454 transparent;
+  scrollbar-width: thin;
+}
+
+[data-app-shell]
+  :is(.overflow-y-auto, .overflow-y-scroll, .overflow-auto, .overflow-scroll)::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-app-shell]
+  :is(
+    .overflow-y-auto,
+    .overflow-y-scroll,
+    .overflow-auto,
+    .overflow-scroll
+  )::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-app-shell]
+  :is(
+    .overflow-y-auto,
+    .overflow-y-scroll,
+    .overflow-auto,
+    .overflow-scroll
+  )::-webkit-scrollbar-thumb {
+  background: #29c454;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+[data-app-shell]
+  :is(
+    .overflow-y-auto,
+    .overflow-y-scroll,
+    .overflow-auto,
+    .overflow-scroll
+  )::-webkit-scrollbar-thumb:hover {
+  background-color: #15943a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-active-indicator {
+    transition: none;
   }
 }

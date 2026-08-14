@@ -9,8 +9,8 @@ export const Route = createFileRoute("/bot-lances")({
 
 function BotLancesLayout() {
   return (
-    <AppLayout contentClassName="flex h-full min-h-0 flex-col overflow-hidden bg-[#F8FAFC] p-0 font-manrope">
-      <div className="flex h-full min-h-0 flex-col bg-[#F8FAFC]">
+    <AppLayout contentClassName="flex h-full min-h-0 flex-col overflow-hidden bg-white p-0 font-manrope">
+      <div className="flex h-full min-h-0 flex-col bg-white">
         <Topbar />
         <BotSubnav />
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">

@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "npm run check:internal-ui && vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "check:internal-ui": "node scripts/check-internal-ui.cjs",
+    "verify:internal-ui": "node scripts/verify-internal-density.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
