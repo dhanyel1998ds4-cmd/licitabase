@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -32,6 +32,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -41,6 +49,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -84,6 +93,13 @@ type Tender = {
   city: string;
   state: string;
   opening: string;
+  publishedAt: string;
+  proposalDeadline: string;
+  disputeAt: string;
+  disputeMode: string;
+  sphere: string;
+  procurementType: string;
+  hasDocuments: boolean;
   value: number;
   match: number;
   status: "Aberto" | "Encerra em 2 dias";
@@ -107,6 +123,18 @@ type SearchFilters = {
   hideClosed: boolean;
   minValue: string;
   maxValue: string;
+  publicationStart: string;
+  publicationEnd: string;
+  proposalStart: string;
+  proposalEnd: string;
+  disputeStart: string;
+  disputeEnd: string;
+  disputeMode: string;
+  sphere: string;
+  procurementType: string;
+  status: string;
+  hasDocuments: boolean;
+  minMatch: string;
 };
 
 const tenders: Tender[] = [
@@ -121,6 +149,13 @@ const tenders: Tender[] = [
     city: "São Paulo",
     state: "SP",
     opening: "23/08/2026 09:00",
+    publishedAt: "05/08/2026",
+    proposalDeadline: "22/08/2026 17:00",
+    disputeAt: "23/08/2026 09:00",
+    disputeMode: "Aberto",
+    sphere: "Municipal",
+    procurementType: "Aquisição de bens",
+    hasDocuments: true,
     value: 1_250_000,
     match: 92,
     status: "Aberto",
@@ -138,6 +173,13 @@ const tenders: Tender[] = [
     city: "São Paulo",
     state: "SP",
     opening: "28/08/2026 10:00",
+    publishedAt: "08/08/2026",
+    proposalDeadline: "27/08/2026 17:00",
+    disputeAt: "28/08/2026 10:00",
+    disputeMode: "Aberto",
+    sphere: "Municipal",
+    procurementType: "Aquisição de bens",
+    hasDocuments: true,
     value: 950_000,
     match: 90,
     status: "Aberto",
@@ -154,6 +196,13 @@ const tenders: Tender[] = [
     city: "São Paulo",
     state: "SP",
     opening: "27/08/2026 09:30",
+    publishedAt: "09/08/2026",
+    proposalDeadline: "26/08/2026 17:00",
+    disputeAt: "27/08/2026 09:30",
+    disputeMode: "Aberto",
+    sphere: "Municipal",
+    procurementType: "Registro de preços",
+    hasDocuments: true,
     value: 1_800_000,
     match: 88,
     status: "Aberto",
@@ -171,6 +220,13 @@ const tenders: Tender[] = [
     city: "São Paulo",
     state: "SP",
     opening: "21/08/2026 10:00",
+    publishedAt: "03/08/2026",
+    proposalDeadline: "20/08/2026 17:00",
+    disputeAt: "21/08/2026 10:00",
+    disputeMode: "Aberto",
+    sphere: "Estadual",
+    procurementType: "Registro de preços",
+    hasDocuments: true,
     value: 680_000,
     match: 85,
     status: "Aberto",
@@ -187,6 +243,13 @@ const tenders: Tender[] = [
     city: "Campinas",
     state: "SP",
     opening: "20/09/2026 09:30",
+    publishedAt: "11/08/2026",
+    proposalDeadline: "18/09/2026 17:00",
+    disputeAt: "20/09/2026 09:30",
+    disputeMode: "Fechado-aberto",
+    sphere: "Estadual",
+    procurementType: "Contratação de serviços",
+    hasDocuments: false,
     value: 3_200_000,
     match: 78,
     status: "Encerra em 2 dias",
@@ -203,6 +266,13 @@ const tenders: Tender[] = [
     city: "Santos",
     state: "SP",
     opening: "30/08/2026 14:00",
+    publishedAt: "10/08/2026",
+    proposalDeadline: "29/08/2026 17:00",
+    disputeAt: "30/08/2026 14:00",
+    disputeMode: "Aberto",
+    sphere: "Municipal",
+    procurementType: "Aquisição de bens",
+    hasDocuments: true,
     value: 420_000,
     match: 91,
     status: "Aberto",
@@ -226,6 +296,18 @@ const initialFilters: SearchFilters = {
   hideClosed: false,
   minValue: "",
   maxValue: "",
+  publicationStart: "",
+  publicationEnd: "",
+  proposalStart: "",
+  proposalEnd: "",
+  disputeStart: "",
+  disputeEnd: "",
+  disputeMode: "",
+  sphere: "",
+  procurementType: "",
+  status: "",
+  hasDocuments: false,
+  minMatch: "",
 };
 
 const moneyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -248,8 +330,73 @@ function parseFilterCurrency(value: string) {
   return /,\d{2}\s*$/.test(value) ? Number(digits) / 100 : Number(digits);
 }
 
-function toggleArrayValue(values: string[], value: string) {
-  return values.includes(value) ? values.filter((item) => item !== value) : [...values, value];
+function parseBrazilianDate(value: string) {
+  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (!match) return null;
+  const [, day, month, year] = match;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function parseDateInput(value: string) {
+  if (!value) return null;
+  const date = new Date(`${value}T12:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isDateWithinRange(value: string, start: string, end: string) {
+  if (!start && !end) return true;
+  const date = parseBrazilianDate(value);
+  if (!date) return false;
+  const startDate = parseDateInput(start);
+  const endDate = parseDateInput(end);
+  if (startDate && date < startDate) return false;
+  if (endDate && date > endDate) return false;
+  return true;
+}
+
+function formatDateRange(start: string, end: string) {
+  const formatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" });
+  const startDate = parseDateInput(start);
+  const endDate = parseDateInput(end);
+  if (startDate && endDate) return `${formatter.format(startDate)}–${formatter.format(endDate)}`;
+  if (startDate) return `desde ${formatter.format(startDate)}`;
+  if (endDate) return `até ${formatter.format(endDate)}`;
+  return "";
+}
+
+function hasInvalidDateRange(filters: SearchFilters) {
+  return (
+    Boolean(
+      filters.publicationStart &&
+      filters.publicationEnd &&
+      filters.publicationStart > filters.publicationEnd,
+    ) ||
+    Boolean(
+      filters.proposalStart && filters.proposalEnd && filters.proposalStart > filters.proposalEnd,
+    ) ||
+    Boolean(filters.disputeStart && filters.disputeEnd && filters.disputeStart > filters.disputeEnd)
+  );
+}
+
+function getAdvancedFilterCount(filters: SearchFilters) {
+  return [
+    filters.agency,
+    filters.process,
+    filters.city,
+    filters.disputeMode,
+    filters.sphere,
+    filters.procurementType,
+    filters.status,
+    filters.minValue,
+    filters.maxValue,
+    filters.minMatch,
+    filters.favoritesOnly,
+    filters.highPotential,
+    filters.hasCatmat,
+    filters.hasDocuments,
+    filters.hideClosed,
+  ].filter(Boolean).length;
 }
 
 function getActiveFilterLabels(filters: SearchFilters) {
@@ -270,39 +417,19 @@ function getActiveFilterLabels(filters: SearchFilters) {
     labels.push(`Valor mínimo: ${moneyFormatter.format(parseFilterCurrency(filters.minValue))}`);
   if (filters.maxValue)
     labels.push(`Valor máximo: ${moneyFormatter.format(parseFilterCurrency(filters.maxValue))}`);
+  const publication = formatDateRange(filters.publicationStart, filters.publicationEnd);
+  const proposal = formatDateRange(filters.proposalStart, filters.proposalEnd);
+  const dispute = formatDateRange(filters.disputeStart, filters.disputeEnd);
+  if (publication) labels.push(`Publicação: ${publication}`);
+  if (proposal) labels.push(`Propostas: ${proposal}`);
+  if (dispute) labels.push(`Disputa: ${dispute}`);
+  if (filters.disputeMode) labels.push(`Modo de disputa: ${filters.disputeMode}`);
+  if (filters.sphere) labels.push(`Esfera: ${filters.sphere}`);
+  if (filters.procurementType) labels.push(`Contratação: ${filters.procurementType}`);
+  if (filters.status) labels.push(`Status: ${filters.status}`);
+  if (filters.hasDocuments) labels.push("Com documentos");
+  if (filters.minMatch) labels.push(`Aderência mínima: ${filters.minMatch}%`);
   return labels;
-}
-
-function FilterCheck({
-  id,
-  label,
-  count,
-  checked,
-  onCheckedChange,
-}: {
-  id: string;
-  label: string;
-  count?: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}) {
-  return (
-    <div className="flex min-h-9 items-center gap-2.5">
-      <Checkbox
-        id={id}
-        checked={checked}
-        onCheckedChange={(value) => onCheckedChange(value === true)}
-        className="size-[17px] rounded-[5px] border-slate-300 data-[state=checked]:border-[#21B84B] data-[state=checked]:bg-[#21B84B]"
-      />
-      <Label
-        htmlFor={id}
-        className="min-w-0 flex-1 cursor-pointer text-[12px] font-semibold text-ink"
-      >
-        {label}
-      </Label>
-      {count ? <span className="text-[10.5px] font-medium text-slate-text">{count}</span> : null}
-    </div>
-  );
 }
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -320,209 +447,330 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
   );
 }
 
-function FiltersPanel({
+function SearchableFilterSelect({
+  label,
+  value,
+  options,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <Label className="mb-1.5 block text-[10.5px] font-bold text-slate-text">{label}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-label={`${label}: ${value || "nenhum valor selecionado"}`}
+            className="flex min-h-11 w-full items-center justify-between gap-2 rounded-xl border border-hairline bg-page/35 px-3 text-left text-[11.5px] font-semibold text-ink outline-none transition-colors hover:border-[#29C454]/45 focus-visible:border-[#29C454] focus-visible:ring-2 focus-visible:ring-[#29C454]/15"
+          >
+            <span className={cn("truncate", !value && "text-slate-text")}>
+              {value || placeholder}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-slate-text" aria-hidden="true" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-[var(--radix-popover-trigger-width)] rounded-xl border-hairline p-0 shadow-lg"
+        >
+          <Command>
+            <CommandInput placeholder={`Digite para buscar ${label.toLocaleLowerCase("pt-BR")}`} />
+            <CommandList>
+              <CommandEmpty>Nenhuma opção encontrada.</CommandEmpty>
+              <CommandGroup>
+                {value ? (
+                  <CommandItem
+                    value="limpar-selecao"
+                    onSelect={() => {
+                      onChange("");
+                      setOpen(false);
+                    }}
+                    className="min-h-10 rounded-lg text-slate-text"
+                  >
+                    <X className="size-4" aria-hidden="true" /> Limpar seleção
+                  </CommandItem>
+                ) : null}
+                {options.map((option) => (
+                  <CommandItem
+                    key={option}
+                    value={option}
+                    onSelect={() => {
+                      onChange(option);
+                      setOpen(false);
+                    }}
+                    className="min-h-10 rounded-lg"
+                  >
+                    <Check
+                      className={cn("size-4", value === option ? "opacity-100" : "opacity-0")}
+                      aria-hidden="true"
+                    />
+                    {option}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
+function AdvancedToggle({
+  label,
+  description,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  description: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex min-h-[58px] cursor-pointer items-center justify-between gap-3 rounded-xl border border-hairline bg-page/30 px-3 py-2.5">
+      <span>
+        <span className="block text-[11.5px] font-extrabold text-ink">{label}</span>
+        <span className="mt-0.5 block text-[9.5px] font-medium text-slate-text">{description}</span>
+      </span>
+      <Switch
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        className="data-[state=checked]:bg-[#20B94C]"
+      />
+    </label>
+  );
+}
+
+function AdvancedFiltersPanel({
   filters,
   onChange,
   onClear,
   onApply,
-  compact = false,
+  onCancel,
 }: {
   filters: SearchFilters;
   onChange: (filters: SearchFilters) => void;
   onClear: () => void;
   onApply: () => void;
-  compact?: boolean;
+  onCancel: () => void;
 }) {
   const update = <Key extends keyof SearchFilters>(key: Key, value: SearchFilters[Key]) =>
     onChange({ ...filters, [key]: value });
-  const filterCount = getActiveFilterLabels(filters).length;
+  const filterCount = getAdvancedFilterCount(filters);
 
   return (
-    <div className={cn("flex min-h-0 flex-col bg-white", compact ? "h-full" : "rounded-[20px]")}>
-      <div className="flex items-center justify-between border-b border-hairline px-4 py-4">
+    <div className="flex h-full min-h-0 flex-col bg-white">
+      <div className="flex items-center justify-between border-b border-hairline px-4 py-4 sm:px-5">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl bg-brand-tint text-brand-strong">
-            <SlidersHorizontal className="size-[17px]" aria-hidden="true" />
+          <span className="grid size-10 place-items-center rounded-xl bg-brand-tint text-brand-strong">
+            <SlidersHorizontal className="size-[18px]" aria-hidden="true" />
           </span>
           <div>
-            <h2 className="text-[14px] font-extrabold text-ink">Filtros</h2>
-            <p className="text-[10.5px] font-medium text-slate-text">Refine sua busca</p>
+            <h2 className="text-[15px] font-extrabold text-ink">Mais filtros</h2>
+            <p className="text-[10.5px] font-medium text-slate-text">
+              Critérios avançados da busca
+            </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onClear}
-          className="min-h-10 rounded-lg px-2 text-[11px] font-bold text-brand-strong hover:bg-brand-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
-        >
-          Limpar
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={onClear}
+            className="min-h-10 rounded-lg px-2 text-[11px] font-bold text-brand-strong hover:bg-brand-tint"
+          >
+            Limpar
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            aria-label="Fechar filtros avançados"
+            className="grid size-10 place-items-center rounded-xl text-slate-text hover:bg-page hover:text-ink"
+          >
+            <X className="size-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
-        <FilterSection title="Essenciais">
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
+        <FilterSection title="Localização e órgão">
+          <SearchableFilterSelect
+            label="Município"
+            value={filters.city}
+            options={["São Paulo", "Campinas", "Guarulhos", "Santos"]}
+            placeholder="Digite ou selecione"
+            onChange={(value) => update("city", value)}
+          />
+          <SearchableFilterSelect
+            label="Órgão ou entidade"
+            value={filters.agency}
+            options={[
+              "Prefeitura Municipal de São Paulo",
+              "Prefeitura Municipal de Santos",
+              "Secretaria de Educação do Estado de São Paulo",
+              "Universidade Estadual de Campinas",
+            ]}
+            placeholder="Digite nome, sigla ou UASG"
+            onChange={(value) => update("agency", value)}
+          />
+          <SearchableFilterSelect
+            label="Esfera governamental"
+            value={filters.sphere}
+            options={["Municipal", "Estadual", "Federal"]}
+            placeholder="Digite ou selecione"
+            onChange={(value) => update("sphere", value)}
+          />
+        </FilterSection>
+
+        <FilterSection title="Processo e contratação">
           <div>
             <Label
-              htmlFor="filter-keyword"
-              className="mb-1.5 block text-[10.5px] font-bold text-slate-text"
-            >
-              Palavra-chave
-            </Label>
-            <Input
-              id="filter-keyword"
-              value={filters.keyword}
-              onChange={(event) => update("keyword", event.target.value)}
-              placeholder="Ex.: TI, software, obras"
-              className="h-10 rounded-xl border-hairline bg-page/40 text-[12px] shadow-none focus-visible:border-[#29C454] focus-visible:ring-[#29C454]/20"
-            />
-          </div>
-          <div>
-            <Label
-              htmlFor="filter-agency"
-              className="mb-1.5 block text-[10.5px] font-bold text-slate-text"
-            >
-              Órgão ou entidade
-            </Label>
-            <Input
-              id="filter-agency"
-              value={filters.agency}
-              onChange={(event) => update("agency", event.target.value)}
-              placeholder="Selecione ou digite"
-              className="h-10 rounded-xl border-hairline bg-page/40 text-[12px] shadow-none focus-visible:border-[#29C454] focus-visible:ring-[#29C454]/20"
-            />
-          </div>
-          <div>
-            <Label
-              htmlFor="filter-process"
+              htmlFor="filter-process-advanced"
               className="mb-1.5 block text-[10.5px] font-bold text-slate-text"
             >
               Número do processo
             </Label>
             <Input
-              id="filter-process"
+              id="filter-process-advanced"
               value={filters.process}
               onChange={(event) => update("process", event.target.value)}
               placeholder="Ex.: 845/2026"
-              className="h-10 rounded-xl border-hairline bg-page/40 text-[12px] shadow-none focus-visible:border-[#29C454] focus-visible:ring-[#29C454]/20"
+              className="h-11 rounded-xl border-hairline bg-page/35 text-[11.5px] shadow-none"
             />
           </div>
+          <SearchableFilterSelect
+            label="Modo de disputa"
+            value={filters.disputeMode}
+            options={["Aberto", "Fechado", "Aberto-fechado", "Fechado-aberto"]}
+            placeholder="Digite ou selecione"
+            onChange={(value) => update("disputeMode", value)}
+          />
+          <SearchableFilterSelect
+            label="Tipo de contratação"
+            value={filters.procurementType}
+            options={[
+              "Aquisição de bens",
+              "Contratação de serviços",
+              "Registro de preços",
+              "Obras e engenharia",
+            ]}
+            placeholder="Digite ou selecione"
+            onChange={(value) => update("procurementType", value)}
+          />
+          <SearchableFilterSelect
+            label="Status"
+            value={filters.status}
+            options={["Aberto", "Recebendo propostas", "Em disputa", "Encerrado"]}
+            placeholder="Digite ou selecione"
+            onChange={(value) => update("status", value)}
+          />
         </FilterSection>
 
-        <FilterSection title="Localização">
-          <div>
-            <Label className="mb-1.5 block text-[10.5px] font-bold text-slate-text">
-              Estado (UF)
-            </Label>
-            <Select
-              value={filters.state || "all"}
-              onValueChange={(value) => update("state", value === "all" ? "" : value)}
-            >
-              <SelectTrigger className="h-10 rounded-xl border-hairline bg-page/40 text-[12px] shadow-none focus:ring-[#29C454]/20">
-                <SelectValue placeholder="Todos os estados" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="all">Todos os estados</SelectItem>
-                <SelectItem value="SP">São Paulo (SP)</SelectItem>
-                <SelectItem value="MG">Minas Gerais (MG)</SelectItem>
-                <SelectItem value="PR">Paraná (PR)</SelectItem>
-                <SelectItem value="RS">Rio Grande do Sul (RS)</SelectItem>
-              </SelectContent>
-            </Select>
+        <FilterSection title="Valores e aderência">
+          <div className="grid grid-cols-2 gap-2.5">
+            <div>
+              <Label
+                htmlFor="filter-min-value-advanced"
+                className="mb-1.5 block text-[10.5px] font-bold text-slate-text"
+              >
+                Valor mínimo
+              </Label>
+              <Input
+                id="filter-min-value-advanced"
+                inputMode="decimal"
+                value={filters.minValue}
+                onChange={(event) => update("minValue", event.target.value)}
+                placeholder="R$ 0"
+                className="h-11 rounded-xl border-hairline bg-page/35 text-[11.5px] shadow-none"
+              />
+            </div>
+            <div>
+              <Label
+                htmlFor="filter-max-value-advanced"
+                className="mb-1.5 block text-[10.5px] font-bold text-slate-text"
+              >
+                Valor máximo
+              </Label>
+              <Input
+                id="filter-max-value-advanced"
+                inputMode="decimal"
+                value={filters.maxValue}
+                onChange={(event) => update("maxValue", event.target.value)}
+                placeholder="Sem limite"
+                className="h-11 rounded-xl border-hairline bg-page/35 text-[11.5px] shadow-none"
+              />
+            </div>
           </div>
-          <div>
-            <Label className="mb-1.5 block text-[10.5px] font-bold text-slate-text">
-              Município
-            </Label>
-            <Select
-              value={filters.city || "all"}
-              onValueChange={(value) => update("city", value === "all" ? "" : value)}
-            >
-              <SelectTrigger className="h-10 rounded-xl border-hairline bg-page/40 text-[12px] shadow-none focus:ring-[#29C454]/20">
-                <SelectValue placeholder="Todos os municípios" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="all">Todos os municípios</SelectItem>
-                <SelectItem value="São Paulo">São Paulo</SelectItem>
-                <SelectItem value="Campinas">Campinas</SelectItem>
-                <SelectItem value="Guarulhos">Guarulhos</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <SearchableFilterSelect
+            label="Aderência mínima"
+            value={filters.minMatch}
+            options={["70", "80", "85", "90"]}
+            placeholder="Digite ou selecione"
+            onChange={(value) => update("minMatch", value)}
+          />
         </FilterSection>
 
-        <FilterSection title="Modalidade">
-          {(
-            [
-              ["Pregão", "231.456"],
-              ["Concorrência", "48.231"],
-              ["Dispensa", "31.987"],
-              ["Tomada de preços", "8.765"],
-            ] as const
-          ).map(([label, count]) => (
-            <FilterCheck
-              key={label}
-              id={`modality-${label}`}
-              label={label}
-              count={count}
-              checked={filters.modalities.includes(label)}
-              onCheckedChange={() =>
-                update("modalities", toggleArrayValue(filters.modalities, label))
-              }
-            />
-          ))}
-        </FilterSection>
-
-        <FilterSection title="Categoria">
-          {[
-            "Equipamentos de TI",
-            "Saúde e medicamentos",
-            "Construção civil",
-            "Manutenção predial",
-          ].map((label) => (
-            <FilterCheck
-              key={label}
-              id={`category-${label}`}
-              label={label}
-              checked={filters.categories.includes(label)}
-              onCheckedChange={() =>
-                update("categories", toggleArrayValue(filters.categories, label))
-              }
-            />
-          ))}
-        </FilterSection>
-
-        <FilterSection title="Sinais de oportunidade">
-          <FilterCheck
-            id="high-potential"
-            label="Alto potencial de lucro"
+        <FilterSection title="Condições">
+          <AdvancedToggle
+            label="Somente favoritas"
+            description="Oportunidades salvas por você."
+            checked={filters.favoritesOnly}
+            onCheckedChange={(checked) => update("favoritesOnly", checked)}
+          />
+          <AdvancedToggle
+            label="Alto potencial"
+            description="Oportunidades com maior aderência."
             checked={filters.highPotential}
             onCheckedChange={(checked) => update("highPotential", checked)}
           />
-          <FilterCheck
-            id="has-catmat"
-            label="Com código CATMAT"
+          <AdvancedToggle
+            label="Com CATMAT/CATSER"
+            description="Classificação oficial do objeto."
             checked={filters.hasCatmat}
             onCheckedChange={(checked) => update("hasCatmat", checked)}
           />
-          <FilterCheck
-            id="hide-closed"
+          <AdvancedToggle
+            label="Somente com documentos"
+            description="Edital ou anexos disponíveis."
+            checked={filters.hasDocuments}
+            onCheckedChange={(checked) => update("hasDocuments", checked)}
+          />
+          <AdvancedToggle
             label="Ocultar encerradas"
+            description="Mantém oportunidades acionáveis."
             checked={filters.hideClosed}
             onCheckedChange={(checked) => update("hideClosed", checked)}
           />
         </FilterSection>
       </div>
 
-      <div className="border-t border-hairline bg-white p-4">
-        <Button
-          type="button"
-          onClick={onApply}
-          className="h-11 w-full rounded-xl bg-[#18B849] text-[12px] font-extrabold text-white shadow-none hover:bg-[#139E3E]"
-        >
-          Aplicar filtros{filterCount ? ` (${filterCount})` : ""}
-        </Button>
-        <p className="mt-2 text-center text-[10px] font-medium text-slate-text">
-          {filterCount ? `${filterCount} critérios selecionados` : "Nenhum filtro selecionado"}
-        </p>
+      <div className="border-t border-hairline bg-white p-4 sm:p-5">
+        <div className="grid grid-cols-[0.8fr_1.2fr] gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="h-11 rounded-xl border-hairline text-[11px] font-extrabold shadow-none"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={onApply}
+            className="h-11 rounded-xl bg-[#18B849] text-[11px] font-extrabold text-white shadow-none hover:bg-[#139E3E]"
+          >
+            Aplicar e buscar{filterCount ? ` (${filterCount})` : ""}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -716,75 +964,134 @@ function EssentialSearchFilters({
   const updateSingleChoice = (field: "platforms" | "modalities" | "categories", value: string) =>
     onChange({ ...filters, [field]: value === "all" ? [] : [value] });
 
+  const dateRange = (
+    title: string,
+    startKey: "publicationStart" | "proposalStart" | "disputeStart",
+    endKey: "publicationEnd" | "proposalEnd" | "disputeEnd",
+  ) => {
+    const invalid = Boolean(
+      filters[startKey] && filters[endKey] && filters[startKey] > filters[endKey],
+    );
+    return (
+      <fieldset
+        className={cn(
+          "min-w-0 rounded-xl border bg-white p-2.5",
+          invalid ? "border-red-300" : "border-hairline",
+        )}
+      >
+        <legend className="px-1 text-[9.5px] font-extrabold text-ink">{title}</legend>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5">
+          <div className="relative min-w-0">
+            <span className="sr-only">Data inicial</span>
+            <Input
+              type="date"
+              value={filters[startKey]}
+              max={filters[endKey] || undefined}
+              onChange={(event) => onChange({ ...filters, [startKey]: event.target.value })}
+              aria-label={`${title}: data inicial`}
+              className="h-10 min-w-0 rounded-lg border-hairline bg-page/25 px-2 text-[10px] shadow-none"
+            />
+          </div>
+          <span className="text-[10px] font-bold text-slate-text" aria-hidden="true">
+            até
+          </span>
+          <div className="relative min-w-0">
+            <span className="sr-only">Data final</span>
+            <Input
+              type="date"
+              value={filters[endKey]}
+              min={filters[startKey] || undefined}
+              onChange={(event) => onChange({ ...filters, [endKey]: event.target.value })}
+              aria-label={`${title}: data final`}
+              className="h-10 min-w-0 rounded-lg border-hairline bg-page/25 px-2 text-[10px] shadow-none"
+            />
+          </div>
+        </div>
+        {invalid ? (
+          <p className="mt-1.5 text-[9px] font-semibold text-red-600">
+            A data final deve ser igual ou posterior à inicial.
+          </p>
+        ) : null}
+      </fieldset>
+    );
+  };
+
   return (
-    <div className="mt-2.5 grid min-w-0 grid-cols-2 gap-2 rounded-[16px] border border-hairline bg-page/35 p-2.5 sm:grid-cols-4 sm:p-3">
-      <div className="min-w-0">
-        <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Plataforma</Label>
-        <Select
-          value={filters.platforms[0] ?? "all"}
-          onValueChange={(value) => updateSingleChoice("platforms", value)}
-        >
-          <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
-            <SelectValue placeholder="Todas" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="ComprasNet">ComprasNet</SelectItem>
-            <SelectItem value="Licitanet">Licitanet</SelectItem>
-            <SelectItem value="Portal de Compras Públicas">Portal de Compras Públicas</SelectItem>
-          </SelectContent>
-        </Select>
+    <div className="mt-2.5 min-w-0 rounded-[16px] border border-hairline bg-page/35 p-2.5 sm:p-3">
+      <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="min-w-0">
+          <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Plataforma</Label>
+          <Select
+            value={filters.platforms[0] ?? "all"}
+            onValueChange={(value) => updateSingleChoice("platforms", value)}
+          >
+            <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">Todas</SelectItem>
+              <SelectItem value="ComprasNet">ComprasNet</SelectItem>
+              <SelectItem value="Licitanet">Licitanet</SelectItem>
+              <SelectItem value="Portal de Compras Públicas">Portal de Compras Públicas</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="min-w-0">
+          <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Estado</Label>
+          <Select
+            value={filters.state || "all"}
+            onValueChange={(value) => onChange({ ...filters, state: value === "all" ? "" : value })}
+          >
+            <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="SP">São Paulo</SelectItem>
+              <SelectItem value="MG">Minas Gerais</SelectItem>
+              <SelectItem value="PR">Paraná</SelectItem>
+              <SelectItem value="RS">Rio Grande do Sul</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="min-w-0">
+          <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Modalidade</Label>
+          <Select
+            value={filters.modalities[0] ?? "all"}
+            onValueChange={(value) => updateSingleChoice("modalities", value)}
+          >
+            <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">Todas</SelectItem>
+              <SelectItem value="Pregão">Pregão</SelectItem>
+              <SelectItem value="Concorrência">Concorrência</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="min-w-0">
+          <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Categoria</Label>
+          <Select
+            value={filters.categories[0] ?? "all"}
+            onValueChange={(value) => updateSingleChoice("categories", value)}
+          >
+            <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">Todas</SelectItem>
+              <SelectItem value="Equipamentos de TI">Equipamentos de TI</SelectItem>
+              <SelectItem value="Limpeza e conservação">Limpeza e conservação</SelectItem>
+              <SelectItem value="Construção civil">Construção civil</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div className="min-w-0">
-        <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Estado</Label>
-        <Select
-          value={filters.state || "all"}
-          onValueChange={(value) => onChange({ ...filters, state: value === "all" ? "" : value })}
-        >
-          <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
-            <SelectValue placeholder="Todos" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="SP">São Paulo</SelectItem>
-            <SelectItem value="MG">Minas Gerais</SelectItem>
-            <SelectItem value="PR">Paraná</SelectItem>
-            <SelectItem value="RS">Rio Grande do Sul</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="hidden min-w-0 sm:block">
-        <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Modalidade</Label>
-        <Select
-          value={filters.modalities[0] ?? "all"}
-          onValueChange={(value) => updateSingleChoice("modalities", value)}
-        >
-          <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
-            <SelectValue placeholder="Todas" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="Pregão">Pregão</SelectItem>
-            <SelectItem value="Concorrência">Concorrência</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="hidden min-w-0 sm:block">
-        <Label className="mb-1.5 block text-[9.5px] font-bold text-slate-text">Categoria</Label>
-        <Select
-          value={filters.categories[0] ?? "all"}
-          onValueChange={(value) => updateSingleChoice("categories", value)}
-        >
-          <SelectTrigger className="h-10 w-full min-w-0 rounded-xl border-hairline bg-white text-[10.5px] shadow-none">
-            <SelectValue placeholder="Todas" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="Equipamentos de TI">Equipamentos de TI</SelectItem>
-            <SelectItem value="Limpeza e conservação">Limpeza e conservação</SelectItem>
-            <SelectItem value="Construção civil">Construção civil</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="mt-2.5 grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
+        {dateRange("Período de publicação", "publicationStart", "publicationEnd")}
+        {dateRange("Abertura de propostas", "proposalStart", "proposalEnd")}
+        {dateRange("Data da disputa", "disputeStart", "disputeEnd")}
       </div>
     </div>
   );
@@ -1643,8 +1950,8 @@ export function TenderSearchPage() {
   const [intelligentReviewOpen, setIntelligentReviewOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState<SearchFilters>(initialFilters);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>(initialFilters);
-  const [desktopFiltersOpen, setDesktopFiltersOpen] = useState(false);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
+  const advancedSnapshotRef = useRef<SearchFilters>(initialFilters);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [savedFilterName, setSavedFilterName] = useState("");
   const [sort, setSort] = useState("relevant");
@@ -1658,7 +1965,20 @@ export function TenderSearchPage() {
 
   const activeLabels = useMemo(() => getActiveFilterLabels(activeFilters), [activeFilters]);
   const draftLabels = useMemo(() => getActiveFilterLabels(draftFilters), [draftFilters]);
-  const canRunNormalSearch = Boolean(searchText.trim() || searchTerms.length || draftLabels.length);
+  const advancedFilterCount = useMemo(() => getAdvancedFilterCount(draftFilters), [draftFilters]);
+  const canRunNormalSearch =
+    Boolean(searchText.trim() || searchTerms.length || draftLabels.length) &&
+    !hasInvalidDateRange(draftFilters);
+
+  const openAdvancedFilters = () => {
+    advancedSnapshotRef.current = draftFilters;
+    setAdvancedFiltersOpen(true);
+  };
+
+  const cancelAdvancedFilters = () => {
+    setDraftFilters(advancedSnapshotRef.current);
+    setAdvancedFiltersOpen(false);
+  };
 
   const filteredTenders = useMemo(() => {
     const query = normalize(activeFilters.keyword);
@@ -1682,6 +2002,34 @@ export function TenderSearchPage() {
         return false;
       if (activeFilters.platforms.length && !activeFilters.platforms.includes(tender.platform))
         return false;
+      if (
+        !isDateWithinRange(
+          tender.publishedAt,
+          activeFilters.publicationStart,
+          activeFilters.publicationEnd,
+        )
+      )
+        return false;
+      if (
+        !isDateWithinRange(
+          tender.proposalDeadline,
+          activeFilters.proposalStart,
+          activeFilters.proposalEnd,
+        )
+      )
+        return false;
+      if (
+        !isDateWithinRange(tender.disputeAt, activeFilters.disputeStart, activeFilters.disputeEnd)
+      )
+        return false;
+      if (activeFilters.disputeMode && tender.disputeMode !== activeFilters.disputeMode)
+        return false;
+      if (activeFilters.sphere && tender.sphere !== activeFilters.sphere) return false;
+      if (activeFilters.procurementType && tender.procurementType !== activeFilters.procurementType)
+        return false;
+      if (activeFilters.status && tender.status !== activeFilters.status) return false;
+      if (activeFilters.hasDocuments && !tender.hasDocuments) return false;
+      if (activeFilters.minMatch && tender.match < Number(activeFilters.minMatch)) return false;
       if (tender.value < minimum || tender.value > maximum) return false;
       if (activeFilters.highPotential && tender.match < 88) return false;
 
@@ -1809,6 +2157,12 @@ export function TenderSearchPage() {
   }, [activeFilters.keyword, activeLabels.length, activeSearchTerms, filteredTenders.length]);
 
   const applyDraftFilters = () => {
+    if (hasInvalidDateRange(draftFilters)) {
+      toast.error("Revise os períodos informados.", {
+        description: "A data final precisa ser igual ou posterior à data inicial.",
+      });
+      return;
+    }
     const nextLabels = getActiveFilterLabels(draftFilters);
     if (!nextLabels.length && !searchTerms.length) {
       toast.info("Adicione pelo menos um critério para pesquisar.");
@@ -1818,7 +2172,7 @@ export function TenderSearchPage() {
     setSearchText(draftFilters.keyword);
     setMobileSearchCollapsed(true);
     setVisibleResultCount(4);
-    setMobileFiltersOpen(false);
+    setAdvancedFiltersOpen(false);
     setHasSearched(true);
     setSelectedTenderId(null);
     setHasOpenedDetail(false);
@@ -1846,6 +2200,21 @@ export function TenderSearchPage() {
     else if (label === "Abertos") next.hideClosed = false;
     else if (label.startsWith("Valor mínimo:")) next.minValue = "";
     else if (label.startsWith("Valor máximo:")) next.maxValue = "";
+    else if (label.startsWith("Publicação:")) {
+      next.publicationStart = "";
+      next.publicationEnd = "";
+    } else if (label.startsWith("Propostas:")) {
+      next.proposalStart = "";
+      next.proposalEnd = "";
+    } else if (label.startsWith("Disputa:")) {
+      next.disputeStart = "";
+      next.disputeEnd = "";
+    } else if (label.startsWith("Modo de disputa:")) next.disputeMode = "";
+    else if (label.startsWith("Esfera:")) next.sphere = "";
+    else if (label.startsWith("Contratação:")) next.procurementType = "";
+    else if (label.startsWith("Status:")) next.status = "";
+    else if (label === "Com documentos") next.hasDocuments = false;
+    else if (label.startsWith("Aderência mínima:")) next.minMatch = "";
     setActiveFilters(next);
     setDraftFilters(next);
   };
@@ -1890,6 +2259,12 @@ export function TenderSearchPage() {
   };
 
   const runNormalSearch = () => {
+    if (hasInvalidDateRange(draftFilters)) {
+      toast.error("Revise os períodos informados.", {
+        description: "A data final precisa ser igual ou posterior à data inicial.",
+      });
+      return;
+    }
     const pendingTerms = parseSearchTerms(searchText);
     const combinedTerms = [...searchTerms];
     const existing = new Set(
@@ -2056,25 +2431,7 @@ export function TenderSearchPage() {
             </div>
           </div>
 
-          <div
-            className={cn(
-              "grid min-w-0",
-              desktopFiltersOpen ? "xl:grid-cols-[250px_minmax(0,1fr)]" : "grid-cols-1",
-            )}
-          >
-            {desktopFiltersOpen ? (
-              <aside className="hidden min-h-0 border-r border-hairline bg-white xl:block">
-                <div className="sticky top-0 h-[calc(100dvh-170px)] min-h-[620px]">
-                  <FiltersPanel
-                    filters={draftFilters}
-                    onChange={setDraftFilters}
-                    onClear={clearFilters}
-                    onApply={applyDraftFilters}
-                  />
-                </div>
-              </aside>
-            ) : null}
-
+          <div className="grid min-w-0 grid-cols-1">
             <main className="min-w-0">
               <div className="border-b border-hairline p-3 sm:p-4 lg:p-5">
                 {mobileSearchCollapsed ? (
@@ -2100,7 +2457,7 @@ export function TenderSearchPage() {
 
                 <div className={cn(mobileSearchCollapsed && "hidden md:block")}>
                   {mode === "normal" ? (
-                    <div className="grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-3">
+                    <div className="grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_minmax(290px,360px)] lg:items-start lg:gap-3">
                       <div className="min-w-0">
                         <NormalSearchBuilder
                           input={searchText}
@@ -2115,19 +2472,13 @@ export function TenderSearchPage() {
                           onMatchModeChange={setMatchMode}
                           onEquivalentsChange={setIncludeEquivalents}
                         />
-                        {!hasSearched ? (
-                          <EssentialSearchFilters
-                            filters={draftFilters}
-                            onChange={setDraftFilters}
-                          />
-                        ) : null}
                       </div>
-                      <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_auto] gap-2 sm:flex sm:flex-wrap lg:max-w-[310px]">
+                      <div className="grid grid-cols-2 gap-2">
                         <Button
                           type="button"
                           onClick={runNormalSearch}
                           disabled={!canRunNormalSearch}
-                          className="h-11 rounded-[14px] bg-[#18B849] px-3 text-[11px] font-extrabold text-white shadow-none hover:bg-[#139E3E] sm:h-12 sm:px-5 sm:text-[12px]"
+                          className="col-span-2 h-12 rounded-[14px] bg-[#18B849] px-5 text-[12px] font-extrabold text-white shadow-none hover:bg-[#139E3E] lg:h-14"
                         >
                           <Search className="size-4" aria-hidden="true" />
                           Buscar
@@ -2135,28 +2486,14 @@ export function TenderSearchPage() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => setMobileFiltersOpen(true)}
-                          className="h-11 rounded-[14px] border-hairline px-2 text-[10.5px] font-extrabold shadow-none sm:h-12 sm:px-3 sm:text-[11.5px] xl:hidden"
+                          onClick={openAdvancedFilters}
+                          className="h-11 rounded-[14px] border-hairline px-2 text-[10.5px] font-extrabold shadow-none sm:h-12 sm:px-3 sm:text-[11.5px]"
                         >
                           <Filter className="size-4" aria-hidden="true" />
-                          {hasSearched ? "Filtros" : "Mais filtros"}
-                          {activeLabels.length ? (
+                          Mais filtros
+                          {advancedFilterCount ? (
                             <span className="rounded-full bg-brand-tint px-1.5 py-0.5 text-[9px] text-brand-strong">
-                              {activeLabels.length}
-                            </span>
-                          ) : null}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setDesktopFiltersOpen((open) => !open)}
-                          className="hidden h-12 rounded-[14px] border-hairline px-3 text-[11.5px] font-extrabold shadow-none xl:inline-flex"
-                        >
-                          <Filter className="size-4" aria-hidden="true" />
-                          {desktopFiltersOpen ? "Ocultar filtros" : "Mais filtros"}
-                          {activeLabels.length ? (
-                            <span className="rounded-full bg-brand-tint px-1.5 py-0.5 text-[9px] text-brand-strong">
-                              {activeLabels.length}
+                              {advancedFilterCount}
                             </span>
                           ) : null}
                         </Button>
@@ -2170,6 +2507,9 @@ export function TenderSearchPage() {
                           <span className="sm:hidden">Salvar</span>
                           <span className="hidden sm:inline">Salvar filtro</span>
                         </Button>
+                      </div>
+                      <div className="min-w-0 lg:col-span-2">
+                        <EssentialSearchFilters filters={draftFilters} onChange={setDraftFilters} />
                       </div>
                     </div>
                   ) : (
@@ -2473,11 +2813,18 @@ export function TenderSearchPage() {
         </div>
       </div>
 
-      <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+      <Sheet
+        open={advancedFiltersOpen}
+        onOpenChange={(open) => {
+          if (open) openAdvancedFilters();
+          else cancelAdvancedFilters();
+        }}
+      >
         <SheetContent
           side="right"
           overlayClassName="bg-slate-950/35 backdrop-blur-[1px]"
-          className="z-[100] h-dvh w-full max-w-full gap-0 border-l border-hairline bg-white p-0 font-manrope sm:max-w-[440px] xl:hidden"
+          showCloseButton={false}
+          className="z-[100] h-dvh w-full max-w-full gap-0 border-l border-hairline bg-white p-0 font-manrope sm:max-w-[520px] xl:max-w-[560px]"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Filtros da busca</SheetTitle>
@@ -2485,12 +2832,31 @@ export function TenderSearchPage() {
               Selecione critérios para refinar as licitações encontradas.
             </SheetDescription>
           </SheetHeader>
-          <FiltersPanel
-            compact
+          <AdvancedFiltersPanel
             filters={draftFilters}
             onChange={setDraftFilters}
-            onClear={clearFilters}
+            onClear={() =>
+              setDraftFilters((current) => ({
+                ...current,
+                agency: "",
+                process: "",
+                city: "",
+                favoritesOnly: false,
+                highPotential: false,
+                hasCatmat: false,
+                hideClosed: false,
+                minValue: "",
+                maxValue: "",
+                disputeMode: "",
+                sphere: "",
+                procurementType: "",
+                status: "",
+                hasDocuments: false,
+                minMatch: "",
+              }))
+            }
             onApply={applyDraftFilters}
+            onCancel={cancelAdvancedFilters}
           />
         </SheetContent>
       </Sheet>

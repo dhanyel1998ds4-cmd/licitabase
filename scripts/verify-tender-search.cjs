@@ -83,10 +83,19 @@ const {
     }
 
     if (viewport.name === "mobile") {
+      await page.screenshot({
+        path: "artifacts/tender-search-mobile-initial.png",
+        fullPage: false,
+      });
       await page.getByRole("button", { name: /Mais filtros/ }).click();
-      await page.getByRole("heading", { name: "Filtros", exact: true }).waitFor();
-      await page.locator("#filter-process").fill("845/2026");
-      await page.getByRole("button", { name: /Aplicar filtros/ }).click();
+      await page.getByRole("heading", { name: "Mais filtros", exact: true }).waitFor();
+      await page.waitForTimeout(350);
+      await page.screenshot({
+        path: "artifacts/tender-search-mobile-advanced-filters.png",
+        fullPage: false,
+      });
+      await page.locator("#filter-process-advanced").fill("845/2026");
+      await page.getByRole("button", { name: /Aplicar e buscar/ }).click();
       await page.getByRole("heading", { name: "Resultados", exact: true }).waitFor();
       await page
         .getByRole("button", { name: /^Visualizar / })
