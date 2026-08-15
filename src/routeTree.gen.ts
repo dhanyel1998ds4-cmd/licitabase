@@ -24,15 +24,23 @@ import { Route as BotLancesHistoricoRouteImport } from './routes/bot-lances.hist
 import { Route as BotLancesMonitoramentoRouteImport } from './routes/bot-lances.monitoramento'
 import { Route as BotLancesRelatoriosRouteImport } from './routes/bot-lances.relatorios'
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
+import { Route as Dash2AjudaRouteImport } from './routes/dash2.ajuda'
 import { Route as PlanosCompararRouteImport } from './routes/planos.comparar'
 import { Route as BotLancesDisputasIndexRouteImport } from './routes/bot-lances.disputas.index'
 import { Route as BotLancesDisputasDisputeIdRouteImport } from './routes/bot-lances.disputas.$disputeId'
+import { Route as Dash2ConfiguracoesEmpresaRouteImport } from './routes/dash2.configuracoes.empresa'
+import { Route as Dash2ConfiguracoesEquipeRouteImport } from './routes/dash2.configuracoes.equipe'
+import { Route as Dash2ConfiguracoesNotificacoesRouteImport } from './routes/dash2.configuracoes.notificacoes'
+import { Route as Dash2ConfiguracoesPerfilRouteImport } from './routes/dash2.configuracoes.perfil'
+import { Route as Dash2ConfiguracoesPlanoRouteImport } from './routes/dash2.configuracoes.plano'
+import { Route as Dash2ConfiguracoesSegurancaRouteImport } from './routes/dash2.configuracoes.seguranca'
 import { Route as Dash2LicitacoesLicitacaoIdRouteImport } from './routes/dash2.licitacoes.$licitacaoId'
 import { Route as Dash2LicitacoesBuscarRouteImport } from './routes/dash2.licitacoes.buscar'
 import { Route as Dash2OperacaoAnotacoesRouteImport } from './routes/dash2.operacao.anotacoes'
 import { Route as Dash2OperacaoMinhasLicitacoesRouteImport } from './routes/dash2.operacao.minhas-licitacoes'
 import { Route as Dash2OportunidadesFavoritosRouteImport } from './routes/dash2.oportunidades.favoritos'
 import { Route as Dash2OportunidadesNovasRouteImport } from './routes/dash2.oportunidades.novas'
+import { Route as Dash2ConfiguracoesFaturasInvoiceIdRouteImport } from './routes/dash2.configuracoes.faturas.$invoiceId'
 import { Route as Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteImport } from './routes/dash2.operacao.minhas-licitacoes.$licitacaoId'
 import { Route as Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRouteImport } from './routes/dash2.operacao.minhas-licitacoes.$licitacaoId.disputa'
 import { Route as Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRouteImport } from './routes/dash2.operacao.minhas-licitacoes.$licitacaoId.proposta'
@@ -112,6 +120,11 @@ const ConviteTokenRoute = ConviteTokenRouteImport.update({
   path: '/convite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Dash2AjudaRoute = Dash2AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => Dash2Route,
+} as any)
 const PlanosCompararRoute = PlanosCompararRouteImport.update({
   id: '/planos/comparar',
   path: '/planos/comparar',
@@ -127,6 +140,41 @@ const BotLancesDisputasDisputeIdRoute =
     id: '/disputas/$disputeId',
     path: '/disputas/$disputeId',
     getParentRoute: () => BotLancesRoute,
+  } as any)
+const Dash2ConfiguracoesEmpresaRoute =
+  Dash2ConfiguracoesEmpresaRouteImport.update({
+    id: '/configuracoes/empresa',
+    path: '/configuracoes/empresa',
+    getParentRoute: () => Dash2Route,
+  } as any)
+const Dash2ConfiguracoesEquipeRoute =
+  Dash2ConfiguracoesEquipeRouteImport.update({
+    id: '/configuracoes/equipe',
+    path: '/configuracoes/equipe',
+    getParentRoute: () => Dash2Route,
+  } as any)
+const Dash2ConfiguracoesNotificacoesRoute =
+  Dash2ConfiguracoesNotificacoesRouteImport.update({
+    id: '/configuracoes/notificacoes',
+    path: '/configuracoes/notificacoes',
+    getParentRoute: () => Dash2Route,
+  } as any)
+const Dash2ConfiguracoesPerfilRoute =
+  Dash2ConfiguracoesPerfilRouteImport.update({
+    id: '/configuracoes/perfil',
+    path: '/configuracoes/perfil',
+    getParentRoute: () => Dash2Route,
+  } as any)
+const Dash2ConfiguracoesPlanoRoute = Dash2ConfiguracoesPlanoRouteImport.update({
+  id: '/configuracoes/plano',
+  path: '/configuracoes/plano',
+  getParentRoute: () => Dash2Route,
+} as any)
+const Dash2ConfiguracoesSegurancaRoute =
+  Dash2ConfiguracoesSegurancaRouteImport.update({
+    id: '/configuracoes/seguranca',
+    path: '/configuracoes/seguranca',
+    getParentRoute: () => Dash2Route,
   } as any)
 const Dash2LicitacoesLicitacaoIdRoute =
   Dash2LicitacoesLicitacaoIdRouteImport.update({
@@ -161,6 +209,12 @@ const Dash2OportunidadesNovasRoute = Dash2OportunidadesNovasRouteImport.update({
   path: '/oportunidades/novas',
   getParentRoute: () => Dash2Route,
 } as any)
+const Dash2ConfiguracoesFaturasInvoiceIdRoute =
+  Dash2ConfiguracoesFaturasInvoiceIdRouteImport.update({
+    id: '/configuracoes/faturas/$invoiceId',
+    path: '/configuracoes/faturas/$invoiceId',
+    getParentRoute: () => Dash2Route,
+  } as any)
 const Dash2OperacaoMinhasLicitacoesLicitacaoIdRoute =
   Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteImport.update({
     id: '/$licitacaoId',
@@ -195,9 +249,16 @@ export interface FileRoutesByFullPath {
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
   '/convite/$token': typeof ConviteTokenRoute
+  '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
+  '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
+  '/dash2/configuracoes/notificacoes': typeof Dash2ConfiguracoesNotificacoesRoute
+  '/dash2/configuracoes/perfil': typeof Dash2ConfiguracoesPerfilRoute
+  '/dash2/configuracoes/plano': typeof Dash2ConfiguracoesPlanoRoute
+  '/dash2/configuracoes/seguranca': typeof Dash2ConfiguracoesSegurancaRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
@@ -205,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas/': typeof BotLancesDisputasIndexRoute
+  '/dash2/configuracoes/faturas/$invoiceId': typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteWithChildren
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRoute
@@ -223,9 +285,16 @@ export interface FileRoutesByTo {
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
   '/convite/$token': typeof ConviteTokenRoute
+  '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances': typeof BotLancesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
+  '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
+  '/dash2/configuracoes/notificacoes': typeof Dash2ConfiguracoesNotificacoesRoute
+  '/dash2/configuracoes/perfil': typeof Dash2ConfiguracoesPerfilRoute
+  '/dash2/configuracoes/plano': typeof Dash2ConfiguracoesPlanoRoute
+  '/dash2/configuracoes/seguranca': typeof Dash2ConfiguracoesSegurancaRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
@@ -233,6 +302,7 @@ export interface FileRoutesByTo {
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas': typeof BotLancesDisputasIndexRoute
+  '/dash2/configuracoes/faturas/$invoiceId': typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteWithChildren
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRoute
@@ -253,9 +323,16 @@ export interface FileRoutesById {
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
   '/convite/$token': typeof ConviteTokenRoute
+  '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
+  '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
+  '/dash2/configuracoes/notificacoes': typeof Dash2ConfiguracoesNotificacoesRoute
+  '/dash2/configuracoes/perfil': typeof Dash2ConfiguracoesPerfilRoute
+  '/dash2/configuracoes/plano': typeof Dash2ConfiguracoesPlanoRoute
+  '/dash2/configuracoes/seguranca': typeof Dash2ConfiguracoesSegurancaRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
@@ -263,6 +340,7 @@ export interface FileRoutesById {
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas/': typeof BotLancesDisputasIndexRoute
+  '/dash2/configuracoes/faturas/$invoiceId': typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteWithChildren
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRoute
@@ -284,9 +362,16 @@ export interface FileRouteTypes {
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
     | '/convite/$token'
+    | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances/'
     | '/bot-lances/disputas/$disputeId'
+    | '/dash2/configuracoes/empresa'
+    | '/dash2/configuracoes/equipe'
+    | '/dash2/configuracoes/notificacoes'
+    | '/dash2/configuracoes/perfil'
+    | '/dash2/configuracoes/plano'
+    | '/dash2/configuracoes/seguranca'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
     | '/dash2/operacao/anotacoes'
@@ -294,6 +379,7 @@ export interface FileRouteTypes {
     | '/dash2/oportunidades/favoritos'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas/'
+    | '/dash2/configuracoes/faturas/$invoiceId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta'
@@ -312,9 +398,16 @@ export interface FileRouteTypes {
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
     | '/convite/$token'
+    | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances'
     | '/bot-lances/disputas/$disputeId'
+    | '/dash2/configuracoes/empresa'
+    | '/dash2/configuracoes/equipe'
+    | '/dash2/configuracoes/notificacoes'
+    | '/dash2/configuracoes/perfil'
+    | '/dash2/configuracoes/plano'
+    | '/dash2/configuracoes/seguranca'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
     | '/dash2/operacao/anotacoes'
@@ -322,6 +415,7 @@ export interface FileRouteTypes {
     | '/dash2/oportunidades/favoritos'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas'
+    | '/dash2/configuracoes/faturas/$invoiceId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta'
@@ -341,9 +435,16 @@ export interface FileRouteTypes {
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
     | '/convite/$token'
+    | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances/'
     | '/bot-lances/disputas/$disputeId'
+    | '/dash2/configuracoes/empresa'
+    | '/dash2/configuracoes/equipe'
+    | '/dash2/configuracoes/notificacoes'
+    | '/dash2/configuracoes/perfil'
+    | '/dash2/configuracoes/plano'
+    | '/dash2/configuracoes/seguranca'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
     | '/dash2/operacao/anotacoes'
@@ -351,6 +452,7 @@ export interface FileRouteTypes {
     | '/dash2/oportunidades/favoritos'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas/'
+    | '/dash2/configuracoes/faturas/$invoiceId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta'
@@ -477,6 +579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dash2/ajuda': {
+      id: '/dash2/ajuda'
+      path: '/ajuda'
+      fullPath: '/dash2/ajuda'
+      preLoaderRoute: typeof Dash2AjudaRouteImport
+      parentRoute: typeof Dash2Route
+    }
     '/planos/comparar': {
       id: '/planos/comparar'
       path: '/planos/comparar'
@@ -497,6 +606,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/bot-lances/disputas/$disputeId'
       preLoaderRoute: typeof BotLancesDisputasDisputeIdRouteImport
       parentRoute: typeof BotLancesRoute
+    }
+    '/dash2/configuracoes/empresa': {
+      id: '/dash2/configuracoes/empresa'
+      path: '/configuracoes/empresa'
+      fullPath: '/dash2/configuracoes/empresa'
+      preLoaderRoute: typeof Dash2ConfiguracoesEmpresaRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/configuracoes/equipe': {
+      id: '/dash2/configuracoes/equipe'
+      path: '/configuracoes/equipe'
+      fullPath: '/dash2/configuracoes/equipe'
+      preLoaderRoute: typeof Dash2ConfiguracoesEquipeRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/configuracoes/notificacoes': {
+      id: '/dash2/configuracoes/notificacoes'
+      path: '/configuracoes/notificacoes'
+      fullPath: '/dash2/configuracoes/notificacoes'
+      preLoaderRoute: typeof Dash2ConfiguracoesNotificacoesRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/configuracoes/perfil': {
+      id: '/dash2/configuracoes/perfil'
+      path: '/configuracoes/perfil'
+      fullPath: '/dash2/configuracoes/perfil'
+      preLoaderRoute: typeof Dash2ConfiguracoesPerfilRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/configuracoes/plano': {
+      id: '/dash2/configuracoes/plano'
+      path: '/configuracoes/plano'
+      fullPath: '/dash2/configuracoes/plano'
+      preLoaderRoute: typeof Dash2ConfiguracoesPlanoRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/configuracoes/seguranca': {
+      id: '/dash2/configuracoes/seguranca'
+      path: '/configuracoes/seguranca'
+      fullPath: '/dash2/configuracoes/seguranca'
+      preLoaderRoute: typeof Dash2ConfiguracoesSegurancaRouteImport
+      parentRoute: typeof Dash2Route
     }
     '/dash2/licitacoes/$licitacaoId': {
       id: '/dash2/licitacoes/$licitacaoId'
@@ -538,6 +689,13 @@ declare module '@tanstack/react-router' {
       path: '/oportunidades/novas'
       fullPath: '/dash2/oportunidades/novas'
       preLoaderRoute: typeof Dash2OportunidadesNovasRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/configuracoes/faturas/$invoiceId': {
+      id: '/dash2/configuracoes/faturas/$invoiceId'
+      path: '/configuracoes/faturas/$invoiceId'
+      fullPath: '/dash2/configuracoes/faturas/$invoiceId'
+      preLoaderRoute: typeof Dash2ConfiguracoesFaturasInvoiceIdRouteImport
       parentRoute: typeof Dash2Route
     }
     '/dash2/operacao/minhas-licitacoes/$licitacaoId': {
@@ -622,15 +780,30 @@ const Dash2OperacaoMinhasLicitacoesRouteWithChildren =
   )
 
 interface Dash2RouteChildren {
+  Dash2AjudaRoute: typeof Dash2AjudaRoute
+  Dash2ConfiguracoesEmpresaRoute: typeof Dash2ConfiguracoesEmpresaRoute
+  Dash2ConfiguracoesEquipeRoute: typeof Dash2ConfiguracoesEquipeRoute
+  Dash2ConfiguracoesNotificacoesRoute: typeof Dash2ConfiguracoesNotificacoesRoute
+  Dash2ConfiguracoesPerfilRoute: typeof Dash2ConfiguracoesPerfilRoute
+  Dash2ConfiguracoesPlanoRoute: typeof Dash2ConfiguracoesPlanoRoute
+  Dash2ConfiguracoesSegurancaRoute: typeof Dash2ConfiguracoesSegurancaRoute
   Dash2LicitacoesLicitacaoIdRoute: typeof Dash2LicitacoesLicitacaoIdRoute
   Dash2LicitacoesBuscarRoute: typeof Dash2LicitacoesBuscarRoute
   Dash2OperacaoAnotacoesRoute: typeof Dash2OperacaoAnotacoesRoute
   Dash2OperacaoMinhasLicitacoesRoute: typeof Dash2OperacaoMinhasLicitacoesRouteWithChildren
   Dash2OportunidadesFavoritosRoute: typeof Dash2OportunidadesFavoritosRoute
   Dash2OportunidadesNovasRoute: typeof Dash2OportunidadesNovasRoute
+  Dash2ConfiguracoesFaturasInvoiceIdRoute: typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
 }
 
 const Dash2RouteChildren: Dash2RouteChildren = {
+  Dash2AjudaRoute: Dash2AjudaRoute,
+  Dash2ConfiguracoesEmpresaRoute: Dash2ConfiguracoesEmpresaRoute,
+  Dash2ConfiguracoesEquipeRoute: Dash2ConfiguracoesEquipeRoute,
+  Dash2ConfiguracoesNotificacoesRoute: Dash2ConfiguracoesNotificacoesRoute,
+  Dash2ConfiguracoesPerfilRoute: Dash2ConfiguracoesPerfilRoute,
+  Dash2ConfiguracoesPlanoRoute: Dash2ConfiguracoesPlanoRoute,
+  Dash2ConfiguracoesSegurancaRoute: Dash2ConfiguracoesSegurancaRoute,
   Dash2LicitacoesLicitacaoIdRoute: Dash2LicitacoesLicitacaoIdRoute,
   Dash2LicitacoesBuscarRoute: Dash2LicitacoesBuscarRoute,
   Dash2OperacaoAnotacoesRoute: Dash2OperacaoAnotacoesRoute,
@@ -638,6 +811,8 @@ const Dash2RouteChildren: Dash2RouteChildren = {
     Dash2OperacaoMinhasLicitacoesRouteWithChildren,
   Dash2OportunidadesFavoritosRoute: Dash2OportunidadesFavoritosRoute,
   Dash2OportunidadesNovasRoute: Dash2OportunidadesNovasRoute,
+  Dash2ConfiguracoesFaturasInvoiceIdRoute:
+    Dash2ConfiguracoesFaturasInvoiceIdRoute,
 }
 
 const Dash2RouteWithChildren = Dash2Route._addFileChildren(Dash2RouteChildren)

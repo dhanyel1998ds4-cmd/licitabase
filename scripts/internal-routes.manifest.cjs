@@ -23,4 +23,18 @@ module.exports = [
     path: "/dash2/operacao/anotacoes",
     file: "src/routes/dash2.operacao.anotacoes.tsx",
   },
+  { path: "/dash2/configuracoes/perfil", file: "src/routes/dash2.configuracoes.perfil.tsx" },
+  { path: "/dash2/configuracoes/empresa", file: "src/routes/dash2.configuracoes.empresa.tsx" },
+  { path: "/dash2/configuracoes/equipe", file: "src/routes/dash2.configuracoes.equipe.tsx" },
+  { path: "/dash2/configuracoes/plano", file: "src/routes/dash2.configuracoes.plano.tsx" },
+  { path: "/dash2/configuracoes/seguranca", file: "src/routes/dash2.configuracoes.seguranca.tsx" },
+  {
+    path: "/dash2/configuracoes/notificacoes",
+    file: "src/routes/dash2.configuracoes.notificacoes.tsx",
+  },
+  {
+    path: "/dash2/configuracoes/faturas/:invoiceId",
+    file: "src/routes/dash2.configuracoes.faturas.$invoiceId.tsx",
+  },
+  { path: "/dash2/ajuda", file: "src/routes/dash2.ajuda.tsx" },
 ];

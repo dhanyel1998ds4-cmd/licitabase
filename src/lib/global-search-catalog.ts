@@ -51,7 +51,14 @@ export type GlobalSearchRoute =
   | "/bot-lances/monitoramento"
   | "/bot-lances/relatorios"
   | "/bot-lances/historico"
-  | "/bot-lances/configuracoes";
+  | "/bot-lances/configuracoes"
+  | "/dash2/configuracoes/perfil"
+  | "/dash2/configuracoes/empresa"
+  | "/dash2/configuracoes/equipe"
+  | "/dash2/configuracoes/plano"
+  | "/dash2/configuracoes/seguranca"
+  | "/dash2/configuracoes/notificacoes"
+  | "/dash2/ajuda";
 export type GlobalSearchAction = "open-notifications" | "open-alicitante" | "open-user-menu";
 
 export type GlobalSearchItem = {
@@ -267,7 +274,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["perfil", "conta", "dados pessoais", "cadastro", "identidade"],
     synonyms: ["minha conta", "informações da conta", "configuração pessoal"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/perfil",
   },
   {
     id: "account-profile-photo",
@@ -280,7 +288,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["foto", "imagem", "perfil", "rosto", "identidade"],
     synonyms: ["avatar", "alterar foto", "foto do usuário"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/perfil",
   },
   {
     id: "account-name",
@@ -293,7 +302,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["nome", "usuário", "dados pessoais", "cadastro"],
     synonyms: ["alterar nome", "nome completo"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/perfil",
   },
   {
     id: "account-email",
@@ -306,7 +316,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["email", "e-mail", "contato", "login"],
     synonyms: ["correio eletrônico", "alterar email"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/perfil",
   },
   {
     id: "account-phone",
@@ -319,7 +330,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["telefone", "contato", "número", "whatsapp"],
     synonyms: ["celular", "fone", "número de telefone"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/perfil",
   },
   {
     id: "company-workspace",
@@ -341,7 +353,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     ],
     synonyms: ["dados da empresa", "organização", "espaço de trabalho"],
     permission: ["admin"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/empresa",
   },
   {
     id: "company-registration",
@@ -355,7 +368,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     keywords: ["cnpj", "razão social", "nome fantasia", "empresa", "cadastro"],
     synonyms: ["dados cadastrais", "cadastro da empresa"],
     permission: ["admin"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/empresa",
   },
   {
     id: "multiple-companies",
@@ -384,7 +398,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     keywords: ["equipe", "usuário", "convite", "função", "permissão", "acesso", "configuração"],
     synonyms: ["membros", "colaboradores", "níveis de acesso"],
     permission: ["admin"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/equipe",
   },
   {
     id: "billing-plan",
@@ -407,7 +422,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     ],
     synonyms: ["assinatura", "mensalidade", "financeiro"],
     permission: ["admin"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/plano",
   },
   {
     id: "security-access",
@@ -420,7 +436,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["segurança", "senha", "sessão", "acesso", "autenticação", "2fa", "configuração"],
     synonyms: ["alterar senha", "login", "sessões abertas"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/seguranca",
   },
   {
     id: "change-password",
@@ -455,7 +472,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
       "config",
     ],
     synonyms: ["configurar alertas", "avisos", "alertas por email"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/notificacoes",
   },
   {
     id: "search-bids",
@@ -566,7 +584,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta"],
     keywords: ["ajuda", "suporte", "atendimento", "dúvida", "problema"],
     synonyms: ["central de ajuda", "falar com suporte"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/ajuda",
   },
   {
     id: "saved-filters",

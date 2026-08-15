@@ -14,7 +14,6 @@ import {
 import { forwardRef, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Drawer,
@@ -50,6 +49,16 @@ const fallbackAccountMenuItems: Record<string, Omit<AccountMenuItem, "id">> = {
   "help-support": { icon: LifeBuoy, label: "Ajuda e suporte" },
 };
 
+const accountMenuRoutes = {
+  "account-profile": "/dash2/configuracoes/perfil",
+  "company-workspace": "/dash2/configuracoes/empresa",
+  "team-permissions": "/dash2/configuracoes/equipe",
+  "billing-plan": "/dash2/configuracoes/plano",
+  "security-access": "/dash2/configuracoes/seguranca",
+  "notification-preferences": "/dash2/configuracoes/notificacoes",
+  "help-support": "/dash2/ajuda",
+} as const;
+
 const menuGroups: AccountMenuItem[][] = accountMenuGroups.map((group) =>
   group.map((id) => {
     const catalogItem = getGlobalSearchItem(id);
@@ -77,13 +86,52 @@ const currentUser: AccountIdentity = {
   workspace: "Iridia Soluções",
 };
 
-function UserIdentity({
-  compact = false,
-  user = currentUser,
-}: {
-  compact?: boolean;
-  user?: AccountIdentity;
-}) {
+function getCurrentUser() {
+  if (typeof window === "undefined") return currentUser;
+
+  try {
+    const stored = window.localStorage.getItem("licitabase:account:profile");
+    if (!stored) return currentUser;
+
+    const profile = JSON.parse(stored) as Partial<{
+      name: string;
+      role: string;
+      avatar: string;
+    }>;
+    const name = profile.name?.trim();
+
+    return {
+      ...currentUser,
+      name: name?.split(" ")[0] || currentUser.name,
+      initials:
+        name
+          ?.split(" ")
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((part) => part[0])
+          .join("") || currentUser.initials,
+      role: profile.role?.trim() || currentUser.role,
+      avatarUrl: profile.avatar || undefined,
+    };
+  } catch {
+    return currentUser;
+  }
+}
+
+function UserIdentity({ compact = false, user }: { compact?: boolean; user?: AccountIdentity }) {
+  const [storedUser, setStoredUser] = useState(getCurrentUser);
+  const identity = user ?? storedUser;
+
+  useEffect(() => {
+    const handleAccountUpdate = (event: Event) => {
+      const detail = (event as CustomEvent<{ key?: string }>).detail;
+      if (detail?.key === "profile") setStoredUser(getCurrentUser());
+    };
+
+    window.addEventListener("licitabase:account-updated", handleAccountUpdate);
+    return () => window.removeEventListener("licitabase:account-updated", handleAccountUpdate);
+  }, []);
+
   return (
     <div className={cn("flex min-w-0 items-center gap-3", compact && "gap-2")}>
       <Avatar
@@ -92,10 +140,10 @@ function UserIdentity({
           compact ? "size-9" : "size-11",
         )}
       >
-        {user.avatarUrl ? (
+        {identity.avatarUrl ? (
           <AvatarImage
-            src={user.avatarUrl}
-            alt={`Foto de ${user.name}`}
+            src={identity.avatarUrl}
+            alt={`Foto de ${identity.name}`}
             className="object-cover object-center"
           />
         ) : null}
@@ -105,18 +153,18 @@ function UserIdentity({
             compact ? "text-[12.5px]" : "text-[13px]",
           )}
         >
-          {user.initials}
+          {identity.initials}
         </AvatarFallback>
       </Avatar>
       <div className={cn("min-w-0 text-left", compact && "hidden md:block")}>
         <p className={cn("truncate font-bold text-ink", compact ? "text-[13px]" : "text-[15px]")}>
-          {user.name}
+          {identity.name}
         </p>
         {!compact && (
           <>
-            <p className="mt-0.5 text-[12px] font-medium text-slate-text">{user.role}</p>
+            <p className="mt-0.5 text-[12px] font-medium text-slate-text">{identity.role}</p>
             <p className="mt-1 truncate text-[12.5px] font-semibold text-brand-strong">
-              {user.workspace}
+              {identity.workspace}
             </p>
           </>
         )}
@@ -251,10 +299,13 @@ export function UserAccountMenu() {
     };
   }, [desktopOpen]);
 
-  const showComingSoon = (label: string) => {
-    toast.info(`${label} está em preparação.`, {
-      description: "A navegação será ativada quando esta área estiver disponível.",
-    });
+  const handleNavigation = (itemId: string) => {
+    const destination = accountMenuRoutes[itemId as keyof typeof accountMenuRoutes];
+    if (!destination) return;
+
+    setDesktopOpen(false);
+    setDrawerOpen(false);
+    void navigate({ to: destination });
   };
 
   const handleLogout = () => {
@@ -296,10 +347,7 @@ export function UserAccountMenu() {
                       key={item.id}
                       item={item}
                       mobile
-                      onSelect={() => {
-                        setDrawerOpen(false);
-                        showComingSoon(item.label);
-                      }}
+                      onSelect={() => handleNavigation(item.id)}
                     />
                   ))}
                 </div>
@@ -345,14 +393,7 @@ export function UserAccountMenu() {
                 <div key={group[0]!.id}>
                   {groupIndex > 0 && <div className="mx-2 my-1 h-px bg-hairline" />}
                   {group.map((item) => (
-                    <MenuRow
-                      key={item.id}
-                      item={item}
-                      onSelect={() => {
-                        setDesktopOpen(false);
-                        showComingSoon(item.label);
-                      }}
-                    />
+                    <MenuRow key={item.id} item={item} onSelect={() => handleNavigation(item.id)} />
                   ))}
                 </div>
               ))}

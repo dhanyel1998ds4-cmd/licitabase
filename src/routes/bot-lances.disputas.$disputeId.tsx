@@ -36,6 +36,7 @@ import {
 } from "@/components/bot/panels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -803,25 +804,19 @@ function DisputeDetail() {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={assistedStrategy}
+              <Switch
+                checked={assistedStrategy}
                 aria-label="Ativar estratégia assistida"
-                onClick={() => {
-                  setAssistedStrategy((enabled) => !enabled);
+                onCheckedChange={(enabled) => {
+                  setAssistedStrategy(enabled);
                   setNotice(
-                    assistedStrategy
-                      ? "Estratégia assistida desativada. Os lances dependerão da sua ação manual."
-                      : "Estratégia assistida ativada para sugerir o próximo lance.",
+                    enabled
+                      ? "Estratégia assistida ativada para sugerir o próximo lance."
+                      : "Estratégia assistida desativada. Os lances dependerão da sua ação manual.",
                   );
                 }}
-                className={`relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454] ${assistedStrategy ? "bg-[#18B849]" : "bg-slate-300"}`}
-              >
-                <span
-                  className={`absolute top-1 size-4 rounded-full bg-white shadow-sm transition-transform ${assistedStrategy ? "translate-x-6" : "translate-x-1"}`}
-                />
-              </button>
+                className="mt-0.5 data-[state=checked]:bg-[#18B849] data-[state=unchecked]:bg-slate-300"
+              />
             </div>
             <ConfigList rows={disputeBotConfig} />
           </CardShell>
