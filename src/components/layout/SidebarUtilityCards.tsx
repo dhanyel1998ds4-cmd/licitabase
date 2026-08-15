@@ -409,11 +409,11 @@ export function SidebarUtilityCards({ collapsed }: { collapsed: boolean }) {
             onClick={() => openAlicitanteAssistant()}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#29C454]/35 bg-[#29C454]/[0.12] px-3 text-[11px] font-bold text-[#8af6a8] transition-colors hover:bg-[#29C454]/[0.2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
           >
-            <span className="grid size-6 shrink-0 place-items-end overflow-hidden rounded-full border border-white/65 bg-[#E8FFF0] shadow-[0_2px_8px_rgba(0,0,0,0.18)]">
+            <span className="relative grid size-8 shrink-0 place-items-end overflow-hidden rounded-[11px] border border-[#29C454] bg-white shadow-[0_2px_7px_rgba(19,155,69,0.14)]">
               <img
-                src="/images/alicitante-card.png"
+                src="/images/alicitante-assistant.png"
                 alt=""
-                className="h-9 w-9 max-w-none object-cover [object-position:52%_7%]"
+                className="size-full max-w-none scale-[2.1] object-cover [object-position:50%_36%]"
               />
             </span>
             Alicitante
