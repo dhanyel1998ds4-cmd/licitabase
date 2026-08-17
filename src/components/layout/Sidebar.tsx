@@ -87,6 +87,7 @@ const navGroups: NavGroup[] = [
     items: [
       navigationItem("team-permissions", "/equipe"),
       navigationItem("integrations", "/integracoes"),
+      navigationItem("email-templates", "/dash2/gestao/templates-emails"),
       navigationItem("billing-plan", "/planos"),
     ],
   },

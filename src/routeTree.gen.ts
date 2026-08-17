@@ -34,6 +34,7 @@ import { Route as Dash2ConfiguracoesNotificacoesRouteImport } from './routes/das
 import { Route as Dash2ConfiguracoesPerfilRouteImport } from './routes/dash2.configuracoes.perfil'
 import { Route as Dash2ConfiguracoesPlanoRouteImport } from './routes/dash2.configuracoes.plano'
 import { Route as Dash2ConfiguracoesSegurancaRouteImport } from './routes/dash2.configuracoes.seguranca'
+import { Route as Dash2GestaoTemplatesEmailsRouteImport } from './routes/dash2.gestao.templates-emails'
 import { Route as Dash2LicitacoesLicitacaoIdRouteImport } from './routes/dash2.licitacoes.$licitacaoId'
 import { Route as Dash2LicitacoesBuscarRouteImport } from './routes/dash2.licitacoes.buscar'
 import { Route as Dash2OperacaoAnotacoesRouteImport } from './routes/dash2.operacao.anotacoes'
@@ -176,6 +177,12 @@ const Dash2ConfiguracoesSegurancaRoute =
     path: '/configuracoes/seguranca',
     getParentRoute: () => Dash2Route,
   } as any)
+const Dash2GestaoTemplatesEmailsRoute =
+  Dash2GestaoTemplatesEmailsRouteImport.update({
+    id: '/gestao/templates-emails',
+    path: '/gestao/templates-emails',
+    getParentRoute: () => Dash2Route,
+  } as any)
 const Dash2LicitacoesLicitacaoIdRoute =
   Dash2LicitacoesLicitacaoIdRouteImport.update({
     id: '/licitacoes/$licitacaoId',
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/dash2/configuracoes/perfil': typeof Dash2ConfiguracoesPerfilRoute
   '/dash2/configuracoes/plano': typeof Dash2ConfiguracoesPlanoRoute
   '/dash2/configuracoes/seguranca': typeof Dash2ConfiguracoesSegurancaRoute
+  '/dash2/gestao/templates-emails': typeof Dash2GestaoTemplatesEmailsRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
@@ -295,6 +303,7 @@ export interface FileRoutesByTo {
   '/dash2/configuracoes/perfil': typeof Dash2ConfiguracoesPerfilRoute
   '/dash2/configuracoes/plano': typeof Dash2ConfiguracoesPlanoRoute
   '/dash2/configuracoes/seguranca': typeof Dash2ConfiguracoesSegurancaRoute
+  '/dash2/gestao/templates-emails': typeof Dash2GestaoTemplatesEmailsRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
@@ -333,6 +342,7 @@ export interface FileRoutesById {
   '/dash2/configuracoes/perfil': typeof Dash2ConfiguracoesPerfilRoute
   '/dash2/configuracoes/plano': typeof Dash2ConfiguracoesPlanoRoute
   '/dash2/configuracoes/seguranca': typeof Dash2ConfiguracoesSegurancaRoute
+  '/dash2/gestao/templates-emails': typeof Dash2GestaoTemplatesEmailsRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/dash2/configuracoes/perfil'
     | '/dash2/configuracoes/plano'
     | '/dash2/configuracoes/seguranca'
+    | '/dash2/gestao/templates-emails'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
     | '/dash2/operacao/anotacoes'
@@ -408,6 +419,7 @@ export interface FileRouteTypes {
     | '/dash2/configuracoes/perfil'
     | '/dash2/configuracoes/plano'
     | '/dash2/configuracoes/seguranca'
+    | '/dash2/gestao/templates-emails'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
     | '/dash2/operacao/anotacoes'
@@ -445,6 +457,7 @@ export interface FileRouteTypes {
     | '/dash2/configuracoes/perfil'
     | '/dash2/configuracoes/plano'
     | '/dash2/configuracoes/seguranca'
+    | '/dash2/gestao/templates-emails'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
     | '/dash2/operacao/anotacoes'
@@ -649,6 +662,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Dash2ConfiguracoesSegurancaRouteImport
       parentRoute: typeof Dash2Route
     }
+    '/dash2/gestao/templates-emails': {
+      id: '/dash2/gestao/templates-emails'
+      path: '/gestao/templates-emails'
+      fullPath: '/dash2/gestao/templates-emails'
+      preLoaderRoute: typeof Dash2GestaoTemplatesEmailsRouteImport
+      parentRoute: typeof Dash2Route
+    }
     '/dash2/licitacoes/$licitacaoId': {
       id: '/dash2/licitacoes/$licitacaoId'
       path: '/licitacoes/$licitacaoId'
@@ -787,6 +807,7 @@ interface Dash2RouteChildren {
   Dash2ConfiguracoesPerfilRoute: typeof Dash2ConfiguracoesPerfilRoute
   Dash2ConfiguracoesPlanoRoute: typeof Dash2ConfiguracoesPlanoRoute
   Dash2ConfiguracoesSegurancaRoute: typeof Dash2ConfiguracoesSegurancaRoute
+  Dash2GestaoTemplatesEmailsRoute: typeof Dash2GestaoTemplatesEmailsRoute
   Dash2LicitacoesLicitacaoIdRoute: typeof Dash2LicitacoesLicitacaoIdRoute
   Dash2LicitacoesBuscarRoute: typeof Dash2LicitacoesBuscarRoute
   Dash2OperacaoAnotacoesRoute: typeof Dash2OperacaoAnotacoesRoute
@@ -804,6 +825,7 @@ const Dash2RouteChildren: Dash2RouteChildren = {
   Dash2ConfiguracoesPerfilRoute: Dash2ConfiguracoesPerfilRoute,
   Dash2ConfiguracoesPlanoRoute: Dash2ConfiguracoesPlanoRoute,
   Dash2ConfiguracoesSegurancaRoute: Dash2ConfiguracoesSegurancaRoute,
+  Dash2GestaoTemplatesEmailsRoute: Dash2GestaoTemplatesEmailsRoute,
   Dash2LicitacoesLicitacaoIdRoute: Dash2LicitacoesLicitacaoIdRoute,
   Dash2LicitacoesBuscarRoute: Dash2LicitacoesBuscarRoute,
   Dash2OperacaoAnotacoesRoute: Dash2OperacaoAnotacoesRoute,

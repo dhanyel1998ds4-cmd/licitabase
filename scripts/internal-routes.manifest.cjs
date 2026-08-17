@@ -37,4 +37,8 @@ module.exports = [
     file: "src/routes/dash2.configuracoes.faturas.$invoiceId.tsx",
   },
   { path: "/dash2/ajuda", file: "src/routes/dash2.ajuda.tsx" },
+  {
+    path: "/dash2/gestao/templates-emails",
+    file: "src/routes/dash2.gestao.templates-emails.tsx",
+  },
 ];

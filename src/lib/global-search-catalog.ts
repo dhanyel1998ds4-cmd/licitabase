@@ -58,6 +58,7 @@ export type GlobalSearchRoute =
   | "/dash2/configuracoes/plano"
   | "/dash2/configuracoes/seguranca"
   | "/dash2/configuracoes/notificacoes"
+  | "/dash2/gestao/templates-emails"
   | "/dash2/ajuda";
 export type GlobalSearchAction = "open-notifications" | "open-alicitante" | "open-user-menu";
 
@@ -424,6 +425,22 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     permission: ["admin"],
     status: "available",
     route: "/dash2/configuracoes/plano",
+  },
+  {
+    id: "email-templates",
+    title: "Templates de e-mail",
+    navigationLabel: "Templates de e-mail",
+    description: "Visualize as prévias dos comunicados e e-mails da LicitaBase",
+    type: "resource",
+    group: "Gestão",
+    breadcrumb: ["Gestão", "Templates de e-mail"],
+    icon: Mail,
+    filters: ["Gestão", "Configurações"],
+    keywords: ["email", "e-mail", "template", "comunicado", "alerta", "preview"],
+    synonyms: ["modelos de e-mail", "galeria de e-mails", "prévia de comunicado"],
+    permission: ["admin"],
+    status: "available",
+    route: "/dash2/gestao/templates-emails",
   },
   {
     id: "security-access",
