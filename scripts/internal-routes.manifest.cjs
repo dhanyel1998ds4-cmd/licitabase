@@ -1,5 +1,10 @@
 module.exports = [
   { path: "/categorias", file: "src/routes/categorias.tsx" },
+  { path: "/categorias/:categoryId", file: "src/routes/categorias.$categoryId.tsx" },
+  {
+    path: "/categorias/:categoryId/estado/:stateId",
+    file: "src/routes/categorias.$categoryId.estado.$stateId.tsx",
+  },
   { path: "/itens", file: "src/routes/itens.tsx" },
   { path: "/onboarding", file: "src/routes/onboarding.tsx" },
   { path: "/dash2/licitacoes/buscar", file: "src/routes/dash2.licitacoes.buscar.tsx" },

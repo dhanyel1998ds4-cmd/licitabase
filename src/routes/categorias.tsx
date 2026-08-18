@@ -1,12 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { InterestCategoriesPage } from "@/components/opportunity-discovery/InterestCategoriesPage";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { InternalWorkspacePage } from "@/components/layout/InternalWorkspacePage";
 
 export const Route = createFileRoute("/categorias")({
   head: () => ({ meta: [{ title: "Categorias de interesse — LicitaBase" }] }),
   component: () => (
     <InternalWorkspacePage>
-      <InterestCategoriesPage />
+      <Outlet />
     </InternalWorkspacePage>
   ),
 });

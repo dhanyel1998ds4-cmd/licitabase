@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   BellRing,
   Check,
@@ -543,14 +544,14 @@ export function InterestCategoriesPage() {
                     <Pencil className="size-3.5" />
                     Editar
                   </Button>
-                  <button
-                    type="button"
-                    aria-label={`Ver detalhes de ${category.name}`}
-                    onClick={() => setEditor(category)}
+                  <Link
+                    to="/categorias/$categoryId"
+                    params={{ categoryId: category.id }}
+                    aria-label={`Ver oportunidades de ${category.name}`}
                     className="grid size-11 place-items-center rounded-xl text-slate-text hover:bg-[#E8F8ED] hover:text-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
                   >
                     <ChevronRight className="size-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>

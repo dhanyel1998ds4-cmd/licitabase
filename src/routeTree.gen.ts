@@ -25,6 +25,8 @@ import { Route as BotLancesConfiguracoesRouteImport } from './routes/bot-lances.
 import { Route as BotLancesHistoricoRouteImport } from './routes/bot-lances.historico'
 import { Route as BotLancesMonitoramentoRouteImport } from './routes/bot-lances.monitoramento'
 import { Route as BotLancesRelatoriosRouteImport } from './routes/bot-lances.relatorios'
+import { Route as CategoriasIndexRouteImport } from './routes/categorias.index'
+import { Route as CategoriasCategoryIdRouteImport } from './routes/categorias.$categoryId'
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as Dash2AjudaRouteImport } from './routes/dash2.ajuda'
 import { Route as PlanosCompararRouteImport } from './routes/planos.comparar'
@@ -43,6 +45,7 @@ import { Route as Dash2OperacaoAnotacoesRouteImport } from './routes/dash2.opera
 import { Route as Dash2OperacaoMinhasLicitacoesRouteImport } from './routes/dash2.operacao.minhas-licitacoes'
 import { Route as Dash2OportunidadesFavoritosRouteImport } from './routes/dash2.oportunidades.favoritos'
 import { Route as Dash2OportunidadesNovasRouteImport } from './routes/dash2.oportunidades.novas'
+import { Route as CategoriasCategoryIdEstadoStateIdRouteImport } from './routes/categorias.$categoryId.estado.$stateId'
 import { Route as Dash2ConfiguracoesFaturasInvoiceIdRouteImport } from './routes/dash2.configuracoes.faturas.$invoiceId'
 import { Route as Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteImport } from './routes/dash2.operacao.minhas-licitacoes.$licitacaoId'
 import { Route as Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRouteImport } from './routes/dash2.operacao.minhas-licitacoes.$licitacaoId.disputa'
@@ -127,6 +130,16 @@ const BotLancesRelatoriosRoute = BotLancesRelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
   getParentRoute: () => BotLancesRoute,
+} as any)
+const CategoriasIndexRoute = CategoriasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CategoriasRoute,
+} as any)
+const CategoriasCategoryIdRoute = CategoriasCategoryIdRouteImport.update({
+  id: '/$categoryId',
+  path: '/$categoryId',
+  getParentRoute: () => CategoriasRoute,
 } as any)
 const ConviteTokenRoute = ConviteTokenRouteImport.update({
   id: '/convite/$token',
@@ -228,6 +241,12 @@ const Dash2OportunidadesNovasRoute = Dash2OportunidadesNovasRouteImport.update({
   path: '/oportunidades/novas',
   getParentRoute: () => Dash2Route,
 } as any)
+const CategoriasCategoryIdEstadoStateIdRoute =
+  CategoriasCategoryIdEstadoStateIdRouteImport.update({
+    id: '/estado/$stateId',
+    path: '/estado/$stateId',
+    getParentRoute: () => CategoriasCategoryIdRoute,
+  } as any)
 const Dash2ConfiguracoesFaturasInvoiceIdRoute =
   Dash2ConfiguracoesFaturasInvoiceIdRouteImport.update({
     id: '/configuracoes/faturas/$invoiceId',
@@ -257,7 +276,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
-  '/categorias': typeof CategoriasRoute
+  '/categorias': typeof CategoriasRouteWithChildren
   '/dash2': typeof Dash2RouteWithChildren
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
@@ -269,10 +288,12 @@ export interface FileRoutesByFullPath {
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
+  '/categorias/$categoryId': typeof CategoriasCategoryIdRouteWithChildren
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
+  '/categorias/': typeof CategoriasIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
   '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
@@ -288,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas/': typeof BotLancesDisputasIndexRoute
+  '/categorias/$categoryId/estado/$stateId': typeof CategoriasCategoryIdEstadoStateIdRoute
   '/dash2/configuracoes/faturas/$invoiceId': typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteWithChildren
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
@@ -296,7 +318,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
-  '/categorias': typeof CategoriasRoute
   '/dash2': typeof Dash2RouteWithChildren
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
@@ -308,10 +329,12 @@ export interface FileRoutesByTo {
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
+  '/categorias/$categoryId': typeof CategoriasCategoryIdRouteWithChildren
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances': typeof BotLancesIndexRoute
+  '/categorias': typeof CategoriasIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
   '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
@@ -327,6 +350,7 @@ export interface FileRoutesByTo {
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas': typeof BotLancesDisputasIndexRoute
+  '/categorias/$categoryId/estado/$stateId': typeof CategoriasCategoryIdEstadoStateIdRoute
   '/dash2/configuracoes/faturas/$invoiceId': typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteWithChildren
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
@@ -337,7 +361,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
-  '/categorias': typeof CategoriasRoute
+  '/categorias': typeof CategoriasRouteWithChildren
   '/dash2': typeof Dash2RouteWithChildren
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
@@ -349,10 +373,12 @@ export interface FileRoutesById {
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
+  '/categorias/$categoryId': typeof CategoriasCategoryIdRouteWithChildren
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
+  '/categorias/': typeof CategoriasIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
   '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
@@ -368,6 +394,7 @@ export interface FileRoutesById {
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
   '/dash2/oportunidades/novas': typeof Dash2OportunidadesNovasRoute
   '/bot-lances/disputas/': typeof BotLancesDisputasIndexRoute
+  '/categorias/$categoryId/estado/$stateId': typeof CategoriasCategoryIdEstadoStateIdRoute
   '/dash2/configuracoes/faturas/$invoiceId': typeof Dash2ConfiguracoesFaturasInvoiceIdRoute
   '/dash2/operacao/minhas-licitacoes/$licitacaoId': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteWithChildren
   '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa': typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
@@ -391,10 +418,12 @@ export interface FileRouteTypes {
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
+    | '/categorias/$categoryId'
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances/'
+    | '/categorias/'
     | '/bot-lances/disputas/$disputeId'
     | '/dash2/configuracoes/empresa'
     | '/dash2/configuracoes/equipe'
@@ -410,6 +439,7 @@ export interface FileRouteTypes {
     | '/dash2/oportunidades/favoritos'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas/'
+    | '/categorias/$categoryId/estado/$stateId'
     | '/dash2/configuracoes/faturas/$invoiceId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa'
@@ -418,7 +448,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cadastro'
-    | '/categorias'
     | '/dash2'
     | '/itens'
     | '/login'
@@ -430,10 +459,12 @@ export interface FileRouteTypes {
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
+    | '/categorias/$categoryId'
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances'
+    | '/categorias'
     | '/bot-lances/disputas/$disputeId'
     | '/dash2/configuracoes/empresa'
     | '/dash2/configuracoes/equipe'
@@ -449,6 +480,7 @@ export interface FileRouteTypes {
     | '/dash2/oportunidades/favoritos'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas'
+    | '/categorias/$categoryId/estado/$stateId'
     | '/dash2/configuracoes/faturas/$invoiceId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa'
@@ -470,10 +502,12 @@ export interface FileRouteTypes {
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
+    | '/categorias/$categoryId'
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances/'
+    | '/categorias/'
     | '/bot-lances/disputas/$disputeId'
     | '/dash2/configuracoes/empresa'
     | '/dash2/configuracoes/equipe'
@@ -489,6 +523,7 @@ export interface FileRouteTypes {
     | '/dash2/oportunidades/favoritos'
     | '/dash2/oportunidades/novas'
     | '/bot-lances/disputas/'
+    | '/categorias/$categoryId/estado/$stateId'
     | '/dash2/configuracoes/faturas/$invoiceId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId'
     | '/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa'
@@ -499,7 +534,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BotLancesRoute: typeof BotLancesRouteWithChildren
   CadastroRoute: typeof CadastroRoute
-  CategoriasRoute: typeof CategoriasRoute
+  CategoriasRoute: typeof CategoriasRouteWithChildren
   Dash2Route: typeof Dash2RouteWithChildren
   ItensRoute: typeof ItensRoute
   LoginRoute: typeof LoginRoute
@@ -624,6 +659,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/bot-lances/relatorios'
       preLoaderRoute: typeof BotLancesRelatoriosRouteImport
       parentRoute: typeof BotLancesRoute
+    }
+    '/categorias/': {
+      id: '/categorias/'
+      path: '/'
+      fullPath: '/categorias/'
+      preLoaderRoute: typeof CategoriasIndexRouteImport
+      parentRoute: typeof CategoriasRoute
+    }
+    '/categorias/$categoryId': {
+      id: '/categorias/$categoryId'
+      path: '/$categoryId'
+      fullPath: '/categorias/$categoryId'
+      preLoaderRoute: typeof CategoriasCategoryIdRouteImport
+      parentRoute: typeof CategoriasRoute
     }
     '/convite/$token': {
       id: '/convite/$token'
@@ -751,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Dash2OportunidadesNovasRouteImport
       parentRoute: typeof Dash2Route
     }
+    '/categorias/$categoryId/estado/$stateId': {
+      id: '/categorias/$categoryId/estado/$stateId'
+      path: '/estado/$stateId'
+      fullPath: '/categorias/$categoryId/estado/$stateId'
+      preLoaderRoute: typeof CategoriasCategoryIdEstadoStateIdRouteImport
+      parentRoute: typeof CategoriasCategoryIdRoute
+    }
     '/dash2/configuracoes/faturas/$invoiceId': {
       id: '/dash2/configuracoes/faturas/$invoiceId'
       path: '/configuracoes/faturas/$invoiceId'
@@ -804,6 +860,32 @@ const BotLancesRouteChildren: BotLancesRouteChildren = {
 
 const BotLancesRouteWithChildren = BotLancesRoute._addFileChildren(
   BotLancesRouteChildren,
+)
+
+interface CategoriasCategoryIdRouteChildren {
+  CategoriasCategoryIdEstadoStateIdRoute: typeof CategoriasCategoryIdEstadoStateIdRoute
+}
+
+const CategoriasCategoryIdRouteChildren: CategoriasCategoryIdRouteChildren = {
+  CategoriasCategoryIdEstadoStateIdRoute:
+    CategoriasCategoryIdEstadoStateIdRoute,
+}
+
+const CategoriasCategoryIdRouteWithChildren =
+  CategoriasCategoryIdRoute._addFileChildren(CategoriasCategoryIdRouteChildren)
+
+interface CategoriasRouteChildren {
+  CategoriasCategoryIdRoute: typeof CategoriasCategoryIdRouteWithChildren
+  CategoriasIndexRoute: typeof CategoriasIndexRoute
+}
+
+const CategoriasRouteChildren: CategoriasRouteChildren = {
+  CategoriasCategoryIdRoute: CategoriasCategoryIdRouteWithChildren,
+  CategoriasIndexRoute: CategoriasIndexRoute,
+}
+
+const CategoriasRouteWithChildren = CategoriasRoute._addFileChildren(
+  CategoriasRouteChildren,
 )
 
 interface Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteChildren {
@@ -883,7 +965,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BotLancesRoute: BotLancesRouteWithChildren,
   CadastroRoute: CadastroRoute,
-  CategoriasRoute: CategoriasRoute,
+  CategoriasRoute: CategoriasRouteWithChildren,
   Dash2Route: Dash2RouteWithChildren,
   ItensRoute: ItensRoute,
   LoginRoute: LoginRoute,
