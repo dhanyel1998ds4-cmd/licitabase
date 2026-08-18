@@ -40,6 +40,8 @@ export type GlobalSearchRole = "admin" | "member";
 export type GlobalSearchFilter =
   "Todos" | "Páginas" | "Oportunidades" | "Operação" | "Conta" | "Gestão" | "Configurações";
 export type GlobalSearchRoute =
+  | "/categorias"
+  | "/itens"
   | "/dash2"
   | "/dash2/licitacoes/buscar"
   | "/dash2/licitacoes/$licitacaoId"
@@ -519,7 +521,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Configurações"],
     keywords: ["categoria", "setor", "interesse", "objeto", "segmento"],
     synonyms: ["áreas de interesse", "preferências de busca"],
-    status: "coming-soon",
+    status: "available",
+    route: "/categorias",
   },
   {
     id: "bid-items",
@@ -532,7 +535,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades"],
     keywords: ["item", "produto", "quantidade", "preço", "especificação"],
     synonyms: ["itens do edital", "objetos da licitação"],
-    status: "coming-soon",
+    status: "available",
+    route: "/itens",
   },
   {
     id: "documents",

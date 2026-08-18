@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BotLancesRouteImport } from './routes/bot-lances'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as Dash2RouteImport } from './routes/dash2'
+import { Route as ItensRouteImport } from './routes/itens'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LpRouteImport } from './routes/lp'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -61,9 +63,19 @@ const CadastroRoute = CadastroRouteImport.update({
   path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Dash2Route = Dash2RouteImport.update({
   id: '/dash2',
   path: '/dash2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItensRoute = ItensRouteImport.update({
+  id: '/itens',
+  path: '/itens',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -245,7 +257,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/categorias': typeof CategoriasRoute
   '/dash2': typeof Dash2RouteWithChildren
+  '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/onboarding': typeof OnboardingRoute
@@ -282,7 +296,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/categorias': typeof CategoriasRoute
   '/dash2': typeof Dash2RouteWithChildren
+  '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/onboarding': typeof OnboardingRoute
@@ -321,7 +337,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/categorias': typeof CategoriasRoute
   '/dash2': typeof Dash2RouteWithChildren
+  '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/onboarding': typeof OnboardingRoute
@@ -361,7 +379,9 @@ export interface FileRouteTypes {
     | '/'
     | '/bot-lances'
     | '/cadastro'
+    | '/categorias'
     | '/dash2'
+    | '/itens'
     | '/login'
     | '/lp'
     | '/onboarding'
@@ -398,7 +418,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cadastro'
+    | '/categorias'
     | '/dash2'
+    | '/itens'
     | '/login'
     | '/lp'
     | '/onboarding'
@@ -436,7 +458,9 @@ export interface FileRouteTypes {
     | '/'
     | '/bot-lances'
     | '/cadastro'
+    | '/categorias'
     | '/dash2'
+    | '/itens'
     | '/login'
     | '/lp'
     | '/onboarding'
@@ -475,7 +499,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BotLancesRoute: typeof BotLancesRouteWithChildren
   CadastroRoute: typeof CadastroRoute
+  CategoriasRoute: typeof CategoriasRoute
   Dash2Route: typeof Dash2RouteWithChildren
+  ItensRoute: typeof ItensRoute
   LoginRoute: typeof LoginRoute
   LpRoute: typeof LpRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -508,11 +534,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dash2': {
       id: '/dash2'
       path: '/dash2'
       fullPath: '/dash2'
       preLoaderRoute: typeof Dash2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/itens': {
+      id: '/itens'
+      path: '/itens'
+      fullPath: '/itens'
+      preLoaderRoute: typeof ItensRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -843,7 +883,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BotLancesRoute: BotLancesRouteWithChildren,
   CadastroRoute: CadastroRoute,
+  CategoriasRoute: CategoriasRoute,
   Dash2Route: Dash2RouteWithChildren,
+  ItensRoute: ItensRoute,
   LoginRoute: LoginRoute,
   LpRoute: LpRoute,
   OnboardingRoute: OnboardingRoute,
