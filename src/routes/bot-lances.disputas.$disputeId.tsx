@@ -4,6 +4,8 @@ import {
   Activity,
   Archive,
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   Bot,
   CheckCircle2,
   CircleAlert,
@@ -55,6 +57,7 @@ import {
   disputePerformance,
   createLiveSessionTimeline,
   getLiveDisputeSession,
+  getLiveDisputeItems,
   type DisputeRankingRow,
   disputeRanking,
   disputeTimeline,
@@ -213,6 +216,8 @@ export const Route = createFileRoute("/bot-lances/disputas/$disputeId")({
 function DisputeDetail() {
   const { dispute } = Route.useLoaderData();
   const liveSession = getLiveDisputeSession(dispute.id);
+  const itemFixtures = useMemo(() => getLiveDisputeItems(dispute.id), [dispute.id]);
+  const [activeItemNumber, setActiveItemNumber] = useState(() => itemFixtures[0]?.number ?? 1);
   const sessionTimeline = useMemo(
     () => (liveSession ? createLiveSessionTimeline(liveSession) : realtimeDisputeTimeline),
     [liveSession],
@@ -364,19 +369,54 @@ function DisputeDetail() {
     }
   }, [savedOutcome]);
 
+  useEffect(() => {
+    const activeItem =
+      itemFixtures.find((item) => item.number === activeItemNumber) ?? itemFixtures[0];
+    if (!activeItem) return;
+
+    if (activeItem.number !== activeItemNumber) setActiveItemNumber(activeItem.number);
+    const initialOurBid = currencyValue(activeItem.ourBid);
+    const initialMarketBid = currencyValue(activeItem.bestBid);
+    setOurBid(initialOurBid);
+    setMarketBid(initialMarketBid);
+    setPosition(activeItem.position === "1º" ? "1º" : "2º");
+    setBidCount(activeItem.bids);
+    setBidValue("");
+    setBidError("");
+    setDecisionSeconds(null);
+    setRankingRows(
+      createLiveRankingRows(
+        initialOurBid,
+        initialMarketBid,
+        activeItem.position === "1º" ? "1º" : "2º",
+      ),
+    );
+  }, [activeItemNumber, itemFixtures]);
+
   const liveItems = useMemo<typeof disputeItems>(
-    () => [
-      {
-        ...(liveSession?.item ?? disputeItems[0]!),
-        ourBid: currency.format(ourBid),
-        bestBid: currency.format(marketBid),
-        position,
-        bids: bidCount,
-        nextEvent: formatElapsed(elapsedSeconds),
-      },
-    ],
-    [bidCount, elapsedSeconds, liveSession, marketBid, ourBid, position],
+    () =>
+      itemFixtures.map((item) =>
+        item.number === activeItemNumber
+          ? {
+              ...item,
+              ourBid: currency.format(ourBid),
+              bestBid: currency.format(marketBid),
+              position,
+              bids: bidCount,
+              nextEvent: formatElapsed(elapsedSeconds),
+            }
+          : item,
+      ),
+    [activeItemNumber, bidCount, elapsedSeconds, itemFixtures, marketBid, ourBid, position],
   );
+  const activeItemIndex = Math.max(
+    0,
+    liveItems.findIndex((item) => item.number === activeItemNumber),
+  );
+  const activeItem = liveItems[activeItemIndex] ?? liveItems[0];
+  const itemCount = liveItems.length;
+  const winningItems = liveItems.filter((item) => item.position === "1º").length;
+  const attentionItems = liveItems.filter((item) => item.position !== "1º").length;
 
   const stateCopy = {
     active: { label: "Ao vivo", tone: "brand" as const, detail: "Monitoramento em tempo real" },
@@ -655,7 +695,9 @@ function DisputeDetail() {
         <MetricCard
           value={position}
           label="Nossa posição"
-          hint={position === "1º" ? "Liderando o item principal" : "Reação necessária"}
+          hint={
+            position === "1º" ? `Liderando o item ${activeItem?.number ?? 1}` : "Reação necessária"
+          }
           tone={position === "1º" ? "brand" : "warn"}
         />
         <MetricCard
@@ -867,10 +909,55 @@ function DisputeDetail() {
         <div className="order-1 min-w-0 space-y-4 xl:order-2 xl:flex xl:h-full xl:min-h-0 xl:flex-col xl:space-y-0">
           <CardShell
             eyebrow="Sessão ao vivo"
-            title="Item 1 · posição e próximo lance"
-            description="Acompanhe a liderança e registre uma ação manual sem sair do contexto da disputa."
+            title={`Item ${activeItem?.number ?? 1}${itemCount > 1 ? ` de ${itemCount}` : ""} · posição e próximo lance`}
+            description={
+              itemCount > 1
+                ? "Escolha um item para acompanhar a liderança e agir sem perder o contexto da disputa."
+                : "Acompanhe a liderança e registre uma ação manual sem sair do contexto da disputa."
+            }
             className="xl:h-full"
           >
+            {itemCount > 1 ? (
+              <div className="mb-4 flex flex-col gap-3 rounded-xl border border-[#29C454]/15 bg-[#29C454]/[0.055] px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
+                  <span className="font-bold text-ink">{itemCount} itens ativos</span>
+                  <span className="text-[#15943a]">{winningItems} ganhando</span>
+                  {attentionItems > 0 ? (
+                    <span className="text-amber-700">{attentionItems} com atenção</span>
+                  ) : null}
+                </div>
+                <div
+                  className="flex items-center gap-2"
+                  aria-label="Navegar pelos itens da disputa"
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className={`${botOutlineButtonClassName} size-9 rounded-lg`}
+                    disabled={activeItemIndex === 0}
+                    onClick={() => setActiveItemNumber(liveItems[activeItemIndex - 1]!.number)}
+                    aria-label="Item anterior"
+                  >
+                    <ChevronLeft className="size-4" aria-hidden="true" />
+                  </Button>
+                  <span className="tnum min-w-16 text-center text-[12px] font-bold text-ink">
+                    Item {activeItemIndex + 1}/{itemCount}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className={`${botOutlineButtonClassName} size-9 rounded-lg`}
+                    disabled={activeItemIndex === itemCount - 1}
+                    onClick={() => setActiveItemNumber(liveItems[activeItemIndex + 1]!.number)}
+                    aria-label="Próximo item"
+                  >
+                    <ChevronRight className="size-4" aria-hidden="true" />
+                  </Button>
+                </div>
+              </div>
+            ) : null}
             <div className="mb-4 flex flex-col gap-3 rounded-xl border border-hairline bg-slate-50/70 px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2.5">
                 <span className="grid size-8 place-items-center rounded-lg bg-[#29C454]/10 text-[#15943a]">
@@ -1087,9 +1174,14 @@ function DisputeDetail() {
                 eyebrow="Disputa"
                 title="Itens em disputa"
                 className="xl:h-full"
-                bodyClassName="min-h-0 overflow-y-auto overscroll-contain p-0"
+                bodyClassName={`min-h-0 p-0 ${itemCount > 1 ? "overflow-y-auto overscroll-contain" : "overflow-visible"}`}
               >
-                <DisputeItemsTable items={liveItems} visual="dash2" />
+                <DisputeItemsTable
+                  items={liveItems}
+                  visual="dash2"
+                  activeItemNumber={activeItemNumber}
+                  {...(itemCount > 1 ? { onItemSelect: setActiveItemNumber } : {})}
+                />
               </CardShell>
             </TabsContent>
 

@@ -57,7 +57,9 @@ export function MobileDisputeCards({ items }: { items: Dispute[] }) {
               <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
                 Itens
               </dt>
-              <dd className="tnum mt-1 text-[13px] font-semibold text-ink">{dispute.items}</dd>
+              <dd className="tnum mt-1 text-[13px] font-semibold text-ink">
+                {dispute.items} {dispute.items === 1 ? "item" : "itens"}
+              </dd>
             </div>
             <div className="text-right">
               <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">

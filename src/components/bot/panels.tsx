@@ -123,11 +123,16 @@ export function DisputeList({
 export function DisputeItemsTable({
   items = disputeItems,
   visual = "legacy",
+  activeItemNumber,
+  onItemSelect,
 }: {
   items?: typeof disputeItems;
   visual?: StatusVisual;
+  activeItemNumber?: number;
+  onItemSelect?: (itemNumber: number) => void;
 }) {
   const compactOnly = visual === "dash2";
+  const selectable = Boolean(onItemSelect) && items.length > 1;
 
   return (
     <>
@@ -138,7 +143,29 @@ export function DisputeItemsTable({
         )}
       >
         {items.map((item) => (
-          <li key={item.number} className="px-4 py-4 sm:px-5">
+          <li
+            key={item.number}
+            className={cn(
+              "px-4 py-4 transition-colors sm:px-5",
+              selectable &&
+                "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
+              activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
+            )}
+            role={selectable ? "button" : undefined}
+            tabIndex={selectable ? 0 : undefined}
+            aria-current={activeItemNumber === item.number ? "true" : undefined}
+            onClick={selectable ? () => onItemSelect?.(item.number) : undefined}
+            onKeyDown={
+              selectable
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onItemSelect?.(item.number);
+                    }
+                  }
+                : undefined
+            }
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-[14px] font-bold text-navy">Item {item.number}</p>
@@ -217,7 +244,27 @@ export function DisputeItemsTable({
           </TableHeader>
           <TableBody>
             {items.map((item) => (
-              <TableRow key={item.number}>
+              <TableRow
+                key={item.number}
+                className={cn(
+                  selectable &&
+                    "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
+                  activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
+                )}
+                tabIndex={selectable ? 0 : undefined}
+                aria-current={activeItemNumber === item.number ? "true" : undefined}
+                onClick={selectable ? () => onItemSelect?.(item.number) : undefined}
+                onKeyDown={
+                  selectable
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onItemSelect?.(item.number);
+                        }
+                      }
+                    : undefined
+                }
+              >
                 <TableCell className="w-[34%] max-w-[200px] md:max-w-[360px]">
                   <p className="text-[12px] md:text-[13px] font-bold text-navy">
                     Item {item.number}

@@ -160,7 +160,9 @@ function DisputesPage() {
                   <TableCell>
                     <StatusPill tone={disputeStatusTone(d.status)}>{d.status}</StatusPill>
                   </TableCell>
-                  <TableCell className="tnum text-right text-[13px] text-ink">{d.items}</TableCell>
+                  <TableCell className="tnum whitespace-nowrap text-right text-[13px] font-semibold text-ink">
+                    {d.items} {d.items === 1 ? "item" : "itens"}
+                  </TableCell>
                   <TableCell className="tnum text-right text-[13px] text-ink">{d.bids}</TableCell>
                   <TableCell className="tnum text-right text-[13px] font-bold text-ink">
                     {d.estimatedValue}

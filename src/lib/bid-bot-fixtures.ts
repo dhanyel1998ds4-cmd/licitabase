@@ -90,7 +90,7 @@ export const disputes: Dispute[] = [
     date: "06/08, 09:00",
     status: "Ativa",
     estimatedValue: "R$ 42.496,67",
-    items: 1,
+    items: 30,
     bids: "28",
     uasg: "986477",
     notice: "Pregão 845/2026",
@@ -114,7 +114,7 @@ export const disputes: Dispute[] = [
     date: "07/08, 08:59",
     status: "Ativa",
     estimatedValue: "R$ 697.106,40",
-    items: 1,
+    items: 5,
     bids: "12",
     uasg: "926611",
     notice: "Pregão 077/2026",
@@ -302,6 +302,89 @@ export const liveDisputeSessions: Record<string, LiveDisputeSession> = {
     },
   },
 };
+
+/**
+ * Itens mostrados nas salas demonstrativas. A quantidade não é apenas um
+ * número na listagem: ela determina a fila de trabalho da sala, o seletor do
+ * item atual e o volume que a aba de itens precisa comportar.
+ */
+type LiveDisputeItem = (typeof disputeItems)[number];
+
+function buildItem(
+  number: number,
+  description: string,
+  amount: number,
+  position: "1º" | "2º" | "3º" = "1º",
+  bids = 8,
+): LiveDisputeItem {
+  const ourBid = Math.max(amount - (position === "1º" ? 0 : 0.2), 0);
+  const bestBid = position === "1º" ? ourBid : Math.max(amount - 0.35, 0);
+  return {
+    number,
+    description,
+    ourBid: new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(ourBid),
+    ourBidAt: "07/08, 09:12",
+    bestBid: new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(bestBid),
+    bestBidAt: "07/08, 09:12",
+    discount: position === "1º" ? "-11,2%" : "-10,8%",
+    bids,
+    position,
+    nextEvent: "13:01",
+    checks: `${8 + number * 3}x verificações`,
+  };
+}
+
+const guarulhosItems = Array.from({ length: 30 }, (_, index) => {
+  const number = index + 1;
+  const descriptions = [
+    "Computador desktop corporativo com monitor, SSD e garantia on-site.",
+    "Monitor profissional de 24 polegadas com painel IPS e ajuste de altura.",
+    "Placa de vídeo dedicada para estações de trabalho gráficas.",
+    "Notebook corporativo com processador de alto desempenho e memória ampliada.",
+    "Kit de periféricos para posto de atendimento da Secretaria de Habitação.",
+  ];
+  const position = number % 9 === 0 ? "2º" : number % 13 === 0 ? "3º" : "1º";
+  return buildItem(
+    number,
+    descriptions[index % descriptions.length]!,
+    42496.67 + number * 173.42,
+    position,
+    6 + number,
+  );
+});
+
+const vitoriaItems: LiveDisputeItem[] = [
+  buildItem(
+    1,
+    "Manutenção preventiva e corretiva de elevadores e plataformas.",
+    697106.4,
+    "1º",
+    12,
+  ),
+  buildItem(
+    2,
+    "Manutenção elétrica dos prédios administrativos e do plenário.",
+    168450.35,
+    "2º",
+    9,
+  ),
+  buildItem(3, "Manutenção de ar-condicionado e renovação de componentes.", 124980.9, "1º", 15),
+  buildItem(4, "Serviços hidráulicos, reparos e substituições emergenciais.", 98670.12, "3º", 7),
+  buildItem(
+    5,
+    "Manutenção de rede, segurança eletrônica e cabeamento estruturado.",
+    142905.55,
+    "1º",
+    11,
+  ),
+];
+
+export function getLiveDisputeItems(disputeId: string): LiveDisputeItem[] {
+  if (disputeId === "d-4") return guarulhosItems;
+  if (disputeId === "d-6") return vitoriaItems;
+  const session = liveDisputeSessions[disputeId];
+  return session ? [session.item] : disputeItems;
+}
 
 export function getLiveDisputeSession(disputeId: string) {
   return liveDisputeSessions[disputeId];
