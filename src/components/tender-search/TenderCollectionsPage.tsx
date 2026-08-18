@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Bookmark, FileSearch, MapPin, Send, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/dash2/Panel";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks } from "@/components/dash2/PageHowItWorks";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { tenders } from "@/components/tender-search/TenderSearchPage";
 import { useTenderDecisions, type TenderDecision } from "@/hooks/use-tender-decisions";
@@ -38,28 +40,67 @@ export function TenderCollectionsPage({
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
       <div className="space-y-5 sm:space-y-6">
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-[12px] font-bold text-brand-strong">
-              {initialDecision === "interested" ? "Minha operação" : "Explorar licitações"}
-            </p>
-            <h1 className="mt-1 text-[24px] font-extrabold tracking-[-0.02em] text-ink sm:text-[28px]">
-              {title}
-            </h1>
-            <p className="mt-2 text-[13px] text-slate-text">
-              {decision === "interested"
-                ? "Oportunidades que já entraram na sua operação."
-                : "Oportunidades salvas durante sua análise."}
-            </p>
-          </div>
-          <Button
-            asChild
-            variant="outline"
-            className="min-h-11 rounded-xl border-hairline text-[12px] font-bold"
-          >
-            <Link to="/dash2/licitacoes/buscar">Buscar licitações</Link>
-          </Button>
-        </header>
+        <PageContextHeader
+          context={initialDecision === "interested" ? "operation" : "explore"}
+          title={title}
+          description={
+            decision === "interested"
+              ? "Oportunidades que já entraram na sua operação."
+              : "Oportunidades salvas durante sua análise."
+          }
+          actions={
+            <Button
+              asChild
+              variant="outline"
+              className="min-h-11 rounded-xl border-hairline text-[12px] font-bold"
+            >
+              <Link to="/dash2/licitacoes/buscar">Buscar licitações</Link>
+            </Button>
+          }
+        />
+        <PageHowItWorks
+          title={
+            decision === "interested"
+              ? "Transforme análise em acompanhamento operacional"
+              : "Guarde oportunidades sem perder o momento de agir"
+          }
+          description={
+            decision === "interested"
+              ? "Acompanhe as oportunidades que já entraram na operação e avance cada uma no momento certo."
+              : "Use favoritos e “ver depois” para separar leituras rápidas de decisões que exigem análise."
+          }
+          steps={
+            decision === "interested"
+              ? [
+                  {
+                    title: "Revise a oportunidade",
+                    description: "Confira prazo, aderência e responsável.",
+                  },
+                  {
+                    title: "Avance a etapa",
+                    description: "Leve o processo para proposta, disputa ou pós-disputa.",
+                  },
+                  {
+                    title: "Mantenha o histórico",
+                    description: "Registre a decisão sem perder o contexto.",
+                  },
+                ]
+              : [
+                  {
+                    title: "Salve durante a análise",
+                    description: "Marque uma oportunidade para não perdê-la.",
+                  },
+                  {
+                    title: "Retome pelo contexto",
+                    description: "Veja dados-chave sem repetir a busca.",
+                  },
+                  {
+                    title: "Decida o destino",
+                    description: "Abra, remova ou envie para a operação.",
+                  },
+                ]
+          }
+        />
         {initialDecision === "favorite" ? (
           <Tabs value={decision} onValueChange={(value) => setDecision(value as TenderDecision)}>
             <TabsList className="h-auto max-w-full justify-start gap-1 overflow-x-auto rounded-xl border border-hairline bg-white p-1">

@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Bot, CalendarDays, Flag, MapPin, Plus, Sparkles } from "lucide-react";
 import { Panel } from "@/components/dash2/Panel";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks } from "@/components/dash2/PageHowItWorks";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
+import {
+  ActionRail,
+  ResourceList,
+  ResourceListGridHeader,
+  ResourceListGridRow,
+  ResourceListRow,
+} from "@/components/dash2/ResourceList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { tenders } from "@/components/tender-search/TenderSearchPage";
@@ -29,6 +39,14 @@ const operationStageLabel = {
   finalized: "Finalizada",
 } as const;
 
+const operationListColumns = [
+  { id: "deadline", width: 128, min: 110, max: 210 },
+  { id: "stage", width: 132, min: 112, max: 210 },
+  { id: "context", width: 134, min: 116, max: 230 },
+  { id: "value", width: 154, min: 126, max: 260 },
+  { id: "action", width: 166, min: 138, max: 260 },
+];
+
 type OperationItem = {
   id: string;
   title: string;
@@ -45,8 +63,13 @@ type OperationItem = {
   bids?: string;
 };
 
-export function OperationPipelinePage() {
+export function OperationPipelinePage({ mode = "mine" }: { mode?: "mine" | "pipeline" }) {
   const [stage, setStage] = useState<Stage>("Todas");
+  const { gridTemplateColumns: operationGridTemplateColumns, getResizeHandleProps } =
+    useResizableColumns({
+      storageKey: "licitabase.operation-list-widths.v1",
+      columns: operationListColumns,
+    });
   const { triage } = useOpportunityTriage();
   const { decisions } = useTenderDecisions();
   const { outcomes } = useBotOperationOutcomes();
@@ -175,26 +198,48 @@ export function OperationPipelinePage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
       <div className="space-y-5 sm:space-y-6">
-        <header className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <p className="text-[12px] font-bold text-brand-strong">Minha operação</p>
-            <h1 className="mt-1 text-[24px] font-extrabold tracking-[-0.02em] text-ink sm:text-[28px]">
-              Minhas licitações
-            </h1>
-            <p className="mt-2 text-[13px] text-slate-text">
-              Acompanhe cada oportunidade desde a análise até a conclusão da disputa.
-            </p>
-          </div>
-          <Button
-            asChild
-            className="min-h-11 rounded-xl bg-[#18B849] text-[12px] font-extrabold text-white hover:bg-[#139e3e]"
-          >
-            <Link to="/dash2/oportunidades/novas">
-              <Plus className="size-4" />
-              Analisar oportunidades
-            </Link>
-          </Button>
-        </header>
+        <PageContextHeader
+          context="operation"
+          title={mode === "pipeline" ? "Pipeline de licitações" : "Minhas licitações"}
+          description={
+            mode === "pipeline"
+              ? "Priorize oportunidades, distribua responsabilidades e avance cada processo no momento certo."
+              : "Acompanhe cada oportunidade desde a análise até a conclusão da disputa."
+          }
+          className="xl:items-end"
+          actions={
+            <>
+              <Button
+                asChild
+                className="min-h-11 rounded-xl bg-[#18B849] text-[12px] font-extrabold text-white hover:bg-[#139e3e]"
+              >
+                <Link to="/dash2/oportunidades/novas">
+                  <Plus className="size-4" />
+                  Analisar oportunidades
+                </Link>
+              </Button>
+            </>
+          }
+        />
+
+        <PageHowItWorks
+          title="Acompanhe a oportunidade até o resultado"
+          description="O pipeline reúne a decisão, o responsável e a próxima ação de cada licitação sem misturar o que ainda está em análise com o que já está em disputa."
+          steps={[
+            {
+              title: "Priorize",
+              description: "Comece pelas oportunidades com prazo e aderência relevantes.",
+            },
+            {
+              title: "Avance a etapa",
+              description: "Registre análise, proposta, disputa ou pós-disputa.",
+            },
+            {
+              title: "Feche o ciclo",
+              description: "Consulte o resultado e preserve o histórico da decisão.",
+            },
+          ]}
+        />
 
         <Tabs value={stage} onValueChange={(value) => setStage(value as Stage)}>
           <TabsList className="h-auto max-w-full justify-start gap-1 overflow-x-auto rounded-xl border border-hairline bg-white p-1">
@@ -235,118 +280,188 @@ export function OperationPipelinePage() {
           </TabsList>
         </Tabs>
 
-        <div className="grid gap-3">
+        <ResourceList className="overflow-hidden rounded-2xl border border-hairline bg-white shadow-[0_1px_3px_0_rgba(0,0,0,0.02),0_1px_2px_0_rgba(0,0,0,0.06)]">
+          <ResourceListGridHeader
+            gridTemplateColumns={operationGridTemplateColumns}
+            className="px-5 py-3"
+          >
+            <span className="relative">
+              Licitação
+              <button
+                {...getResizeHandleProps("deadline")}
+                aria-label="Redimensionar largura da coluna Prazo"
+              />
+            </span>
+            <span className="relative">
+              Prazo
+              <button
+                {...getResizeHandleProps("stage")}
+                aria-label="Redimensionar largura da coluna Etapa"
+              />
+            </span>
+            <span className="relative">
+              Etapa
+              <button
+                {...getResizeHandleProps("context")}
+                aria-label="Redimensionar largura da coluna Contexto"
+              />
+            </span>
+            <span className="relative">
+              Contexto
+              <button
+                {...getResizeHandleProps("value")}
+                aria-label="Redimensionar largura da coluna Valor"
+              />
+            </span>
+            <span className="relative text-right">
+              Valor
+              <button
+                {...getResizeHandleProps("action")}
+                aria-label="Redimensionar largura da coluna Ação"
+              />
+            </span>
+            <span className="text-right">Ação</span>
+          </ResourceListGridHeader>
           {visibleItems.map((item) => (
-            <Panel key={`${item.source}-${item.id}`} className="p-4 sm:p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-tint text-brand-strong">
-                  {item.source === "bot" ? (
-                    <Bot className="size-5" />
-                  ) : item.priority === "high" ? (
-                    <Flag className="size-5" />
-                  ) : (
-                    <Sparkles className="size-5" />
-                  )}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-700">
-                      {operationStageLabel[item.stage]}
-                    </span>
+            <ResourceListRow key={`${item.source}-${item.id}`}>
+              <ResourceListGridRow gridTemplateColumns={operationGridTemplateColumns}>
+                <div className="flex min-w-0 gap-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-tint text-brand-strong">
                     {item.source === "bot" ? (
-                      <span
-                        className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${item.botStatus === "Ativa" ? "bg-brand-tint text-brand-strong" : item.botStatus === "Pausada" || item.botStatus === "Pós-disputa" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-text"}`}
-                      >
-                        {item.stage === "dispute"
-                          ? `Bot ${item.botStatus === "Ativa" ? "ativo" : "pausado"}`
-                          : item.botStatus}
-                      </span>
+                      <Bot className="size-5" />
                     ) : item.priority === "high" ? (
-                      <span className="rounded-full bg-red-50 px-2 py-1 text-[10px] font-extrabold text-red-700">
-                        Prioridade alta
-                      </span>
-                    ) : null}
-                    {item.source === "bot" ? (
-                      <span className="text-[11px] font-bold text-slate-text">
-                        {item.bids === "—"
-                          ? "Aguardando lances"
-                          : `${item.bids} lances registrados`}
-                      </span>
+                      <Flag className="size-5" />
                     ) : (
-                      <span className="text-[11px] font-bold text-slate-text">
-                        {item.match}% aderência
-                      </span>
+                      <Sparkles className="size-5" />
                     )}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-700">
+                        {operationStageLabel[item.stage]}
+                      </span>
+                      {item.source === "bot" ? (
+                        <span
+                          className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${item.botStatus === "Ativa" ? "bg-brand-tint text-brand-strong" : item.botStatus === "Pausada" || item.botStatus === "Pós-disputa" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-text"}`}
+                        >
+                          {item.stage === "dispute"
+                            ? `Bot ${item.botStatus === "Ativa" ? "ativo" : "pausado"}`
+                            : item.botStatus}
+                        </span>
+                      ) : item.priority === "high" ? (
+                        <span className="rounded-full bg-red-50 px-2 py-1 text-[10px] font-extrabold text-red-700">
+                          Prioridade alta
+                        </span>
+                      ) : null}
+                      {item.source === "bot" ? (
+                        <span className="text-[11px] font-bold text-slate-text">
+                          {item.bids === "—"
+                            ? "Aguardando lances"
+                            : `${item.bids} lances registrados`}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-bold text-slate-text">
+                          {item.match}% aderência
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="mt-2 text-[15px] font-extrabold leading-snug text-ink">
+                      {item.title}
+                    </h2>
+                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-slate-text">
+                      <span className="flex items-center gap-1.5 xl:hidden">
+                        <MapPin className="size-3.5" />
+                        {item.agency} · {item.location}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <CalendarDays className="size-3.5" />
+                        {item.deadline}
+                      </span>
+                      <span className="font-semibold text-ink xl:hidden">{item.value}</span>
+                    </div>
+                    {item.note ? (
+                      <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-[12px] leading-relaxed text-slate-text">
+                        {item.note}
+                      </p>
+                    ) : null}
                   </div>
-                  <h2 className="mt-2 text-[15px] font-extrabold leading-snug text-ink">
-                    {item.title}
-                  </h2>
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-slate-text">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="size-3.5" />
-                      {item.agency} · {item.location}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <CalendarDays className="size-3.5" />
-                      {item.deadline}
-                    </span>
-                    <span className="font-semibold text-ink">{item.value}</span>
-                  </div>
-                  {item.note ? (
-                    <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-[12px] leading-relaxed text-slate-text">
-                      {item.note}
+                </div>
+                <div className="hidden text-[12px] font-semibold text-slate-text xl:block">
+                  {item.deadline}
+                </div>
+                <div className="hidden xl:block">
+                  <span className="inline-flex rounded-full bg-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-700">
+                    {operationStageLabel[item.stage]}
+                  </span>
+                </div>
+                <div className="hidden xl:block">
+                  <p className="text-[12px] font-bold text-ink">
+                    {item.source === "bot"
+                      ? item.stage === "dispute"
+                        ? `Bot ${item.botStatus === "Ativa" ? "ativo" : "pausado"}`
+                        : item.botStatus
+                      : `${item.match}% aderência`}
+                  </p>
+                  {item.source === "bot" ? (
+                    <p className="mt-1 text-[10px] text-slate-text">
+                      {item.bids === "—" ? "Aguardando lances" : `${item.bids} lances`}
                     </p>
                   ) : null}
                 </div>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="min-h-11 shrink-0 rounded-xl border-hairline text-[12px] font-bold"
-                >
-                  {item.source === "search" ? (
-                    <Link to="/dash2/licitacoes/$licitacaoId" params={{ licitacaoId: item.id }}>
-                      Ver detalhes
-                      <ArrowRight className="size-4" />
-                    </Link>
-                  ) : item.source === "bot" ? (
-                    item.stage === "post-dispute" || item.stage === "finalized" ? (
+                <div className="hidden text-right text-[13px] font-extrabold tabular-nums text-ink xl:block">
+                  {item.value}
+                </div>
+                <ActionRail className="xl:pl-4">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="min-h-11 shrink-0 rounded-xl border-hairline text-[12px] font-bold"
+                  >
+                    {item.source === "search" ? (
+                      <Link to="/dash2/licitacoes/$licitacaoId" params={{ licitacaoId: item.id }}>
+                        Ver detalhes
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    ) : item.source === "bot" ? (
+                      item.stage === "post-dispute" || item.stage === "finalized" ? (
+                        <Link
+                          to="/dash2/operacao/minhas-licitacoes/$licitacaoId"
+                          params={{ licitacaoId: item.id }}
+                        >
+                          {item.stage === "post-dispute"
+                            ? "Conferir resultado"
+                            : "Consultar resultado"}
+                          <ArrowRight className="size-4" />
+                        </Link>
+                      ) : (
+                        <Link to="/bot-lances/disputas/$disputeId" params={{ disputeId: item.id }}>
+                          Abrir sessão do bot
+                          <ArrowRight className="size-4" />
+                        </Link>
+                      )
+                    ) : item.stage === "dispute" ? (
+                      <Link
+                        to="/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa"
+                        params={{ licitacaoId: item.id }}
+                      >
+                        Acompanhar disputa
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    ) : (
                       <Link
                         to="/dash2/operacao/minhas-licitacoes/$licitacaoId"
                         params={{ licitacaoId: item.id }}
                       >
-                        {item.stage === "post-dispute"
-                          ? "Conferir resultado"
-                          : "Consultar resultado"}
+                        {item.stage === "proposal" ? "Editar proposta" : "Abrir participação"}
                         <ArrowRight className="size-4" />
                       </Link>
-                    ) : (
-                      <Link to="/bot-lances/disputas/$disputeId" params={{ disputeId: item.id }}>
-                        Abrir sessão do bot
-                        <ArrowRight className="size-4" />
-                      </Link>
-                    )
-                  ) : item.stage === "dispute" ? (
-                    <Link
-                      to="/dash2/operacao/minhas-licitacoes/$licitacaoId/disputa"
-                      params={{ licitacaoId: item.id }}
-                    >
-                      Acompanhar disputa
-                      <ArrowRight className="size-4" />
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/dash2/operacao/minhas-licitacoes/$licitacaoId"
-                      params={{ licitacaoId: item.id }}
-                    >
-                      {item.stage === "proposal" ? "Editar proposta" : "Abrir participação"}
-                      <ArrowRight className="size-4" />
-                    </Link>
-                  )}
-                </Button>
-              </div>
-            </Panel>
+                    )}
+                  </Button>
+                </ActionRail>
+              </ResourceListGridRow>
+            </ResourceListRow>
           ))}
-        </div>
+        </ResourceList>
 
         {!visibleItems.length ? (
           <Panel className="grid min-h-[300px] place-items-center p-5 text-center sm:p-6">

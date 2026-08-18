@@ -62,6 +62,25 @@ function SettingsPage() {
       <BotPageHeader
         title="Configurações"
         description="Parâmetros aplicados às disputas automatizadas da sua operação."
+        guide={{
+          title: "Defina limites seguros antes de automatizar lances",
+          description:
+            "A estratégia só entra em ação dentro das regras que você configurou. Revise cada limite e salve quando a política estiver pronta.",
+          steps: [
+            {
+              title: "Escolha a estratégia",
+              description: "Defina como o bot reage a uma mudança de preço.",
+            },
+            {
+              title: "Configure proteções",
+              description: "Estabeleça decremento, piso e limites por item.",
+            },
+            {
+              title: "Salve e acompanhe",
+              description: "Aplique a configuração e monitore as sessões ativas.",
+            },
+          ],
+        }}
         actions={
           <Button
             type="submit"

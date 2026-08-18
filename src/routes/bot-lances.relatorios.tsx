@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { reportMetrics, reportRows } from "@/lib/bid-bot-fixtures";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
 
 export const Route = createFileRoute("/bot-lances/relatorios")({
   head: () => ({
@@ -36,12 +37,42 @@ export const Route = createFileRoute("/bot-lances/relatorios")({
   component: ReportsPage,
 });
 
+const reportsTableColumns = [
+  { id: "disputes", width: 108, min: 92, max: 170 },
+  { id: "bids", width: 98, min: 82, max: 160 },
+  { id: "wins", width: 100, min: 84, max: 165 },
+  { id: "savings", width: 180, min: 142, max: 300 },
+];
+
 function ReportsPage() {
+  const { getColumnWidth, getResizeHandleProps } = useResizableColumns({
+    storageKey: "licitabase.bot-reports-table-widths.v1",
+    columns: reportsTableColumns,
+  });
   return (
     <>
       <BotPageHeader
         title="Relatórios"
         description="Desempenho consolidado das disputas automatizadas por período."
+        guide={{
+          title: "Use os resultados para melhorar a próxima estratégia",
+          description:
+            "Compare períodos, identifique onde o bot teve melhor desempenho e leve esse aprendizado para as próximas configurações.",
+          steps: [
+            {
+              title: "Leia os indicadores",
+              description: "Comece por vitórias, lances e economia gerada.",
+            },
+            {
+              title: "Compare períodos",
+              description: "Observe mudanças de desempenho ao longo da operação.",
+            },
+            {
+              title: "Ajuste a estratégia",
+              description: "Use os achados para recalibrar regras e limites.",
+            },
+          ],
+        }}
         actions={
           <Button variant="outline" size="sm" className={botOutlineButtonClassName}>
             <Download className="size-4" aria-hidden="true" />
@@ -59,13 +90,44 @@ function ReportsPage() {
       <CardShell eyebrow="Consolidado" title="Desempenho por período" bodyClassName="p-0">
         <MobileReportCards items={reportRows} />
         <div className="hidden overflow-x-auto lg:block">
-          <Table>
+          <Table className="table-fixed">
+            <colgroup>
+              <col />
+              <col style={{ width: getColumnWidth("disputes") }} />
+              <col style={{ width: getColumnWidth("bids") }} />
+              <col style={{ width: getColumnWidth("wins") }} />
+              <col style={{ width: getColumnWidth("savings") }} />
+            </colgroup>
             <TableHeader>
               <TableRow>
-                <TableHead>Período</TableHead>
-                <TableHead className="text-right">Disputas</TableHead>
-                <TableHead className="text-right">Lances</TableHead>
-                <TableHead className="text-right">Vitórias</TableHead>
+                <TableHead className="relative">
+                  Período
+                  <button
+                    {...getResizeHandleProps("disputes")}
+                    aria-label="Redimensionar largura da coluna Disputas"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Disputas
+                  <button
+                    {...getResizeHandleProps("bids")}
+                    aria-label="Redimensionar largura da coluna Lances"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Lances
+                  <button
+                    {...getResizeHandleProps("wins")}
+                    aria-label="Redimensionar largura da coluna Vitórias"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Vitórias
+                  <button
+                    {...getResizeHandleProps("savings")}
+                    aria-label="Redimensionar largura da coluna Economia gerada"
+                  />
+                </TableHead>
                 <TableHead className="text-right">Economia gerada</TableHead>
               </TableRow>
             </TableHeader>

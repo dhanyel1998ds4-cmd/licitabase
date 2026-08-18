@@ -16,16 +16,19 @@ export type SidebarNavItemProps = {
   inverted?: boolean;
   onActiveLayout?: ((layout: { top: number; height: number }) => void) | undefined;
   sharedIndicatorReady?: boolean;
+  indicatorLayoutVersion?: string | undefined;
 };
 
 function useActiveIndicatorLayout({
   active,
   element,
   onActiveLayout,
+  layoutVersion,
 }: {
   active: boolean;
   element: RefObject<HTMLAnchorElement | null>;
   onActiveLayout?: ((layout: { top: number; height: number }) => void) | undefined;
+  layoutVersion?: string | undefined;
 }) {
   useLayoutEffect(() => {
     if (!active || !onActiveLayout || !element.current) return;
@@ -54,7 +57,7 @@ function useActiveIndicatorLayout({
       observer.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [active, element, onActiveLayout]);
+  }, [active, element, layoutVersion, onActiveLayout]);
 }
 
 function Badge({ children, inverted = false }: { children: number; inverted?: boolean }) {
@@ -82,12 +85,18 @@ export function SidebarNavItem({
   inverted = false,
   onActiveLayout,
   sharedIndicatorReady = false,
+  indicatorLayoutVersion,
 }: SidebarNavItemProps) {
   const showSubItems =
     !collapsed && !!subItems?.length && !!currentPath && currentPath.startsWith(url);
   const linkRef = useRef<HTMLAnchorElement>(null);
   const indicatorActive = active && !showSubItems;
-  useActiveIndicatorLayout({ active: indicatorActive, element: linkRef, onActiveLayout });
+  useActiveIndicatorLayout({
+    active: indicatorActive,
+    element: linkRef,
+    onActiveLayout,
+    layoutVersion: indicatorLayoutVersion,
+  });
   const activeItemClass =
     inverted && !collapsed && showSubItems
       ? "z-20 border-transparent bg-transparent font-bold text-white/85 shadow-none"
@@ -104,6 +113,7 @@ export function SidebarNavItem({
       to={url as "/dash2"}
       aria-current={active ? "page" : undefined}
       aria-label={label}
+      data-sidebar-active-indicator-target={indicatorActive ? "true" : undefined}
       className={cn(
         "sidebar-nav-link relative flex min-h-11 w-full items-center gap-3 overflow-hidden rounded-xl border border-transparent px-3 text-[14px] transition-all duration-200",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
@@ -173,6 +183,7 @@ export function SidebarNavItem({
                 inverted={inverted}
                 onActiveLayout={onActiveLayout}
                 sharedIndicatorReady={sharedIndicatorReady}
+                indicatorLayoutVersion={indicatorLayoutVersion}
               />
             );
           })}
@@ -189,6 +200,7 @@ function SidebarSubNavItem({
   inverted,
   onActiveLayout,
   sharedIndicatorReady,
+  indicatorLayoutVersion,
 }: {
   url: string;
   label: string;
@@ -196,9 +208,15 @@ function SidebarSubNavItem({
   inverted: boolean;
   onActiveLayout?: ((layout: { top: number; height: number }) => void) | undefined;
   sharedIndicatorReady: boolean;
+  indicatorLayoutVersion?: string | undefined;
 }) {
   const linkRef = useRef<HTMLAnchorElement>(null);
-  useActiveIndicatorLayout({ active, element: linkRef, onActiveLayout });
+  useActiveIndicatorLayout({
+    active,
+    element: linkRef,
+    onActiveLayout,
+    layoutVersion: indicatorLayoutVersion,
+  });
 
   return (
     <li>
@@ -206,6 +224,7 @@ function SidebarSubNavItem({
         ref={linkRef}
         to={url as "/dash2"}
         aria-current={active ? "page" : undefined}
+        data-sidebar-active-indicator-target={active ? "true" : undefined}
         className={cn(
           "sidebar-nav-sub-link relative z-20 flex min-h-10 items-center overflow-hidden rounded-lg px-2.5 text-[13.5px] transition-all duration-200",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",

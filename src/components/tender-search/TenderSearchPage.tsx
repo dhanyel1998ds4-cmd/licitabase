@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- the detail route reuses the local demo catalog. */
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
@@ -31,6 +31,8 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks } from "@/components/dash2/PageHowItWorks";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -83,6 +85,12 @@ import {
 } from "@/lib/tender-search-intelligence";
 import { cn } from "@/lib/utils";
 import { useTenderDecisions } from "@/hooks/use-tender-decisions";
+import {
+  consumeActiveSavedTenderFilter,
+  readSavedTenderFilters,
+  writeSavedTenderFilters,
+  type SavedTenderFilter,
+} from "@/lib/saved-tender-filters";
 
 type SearchMode = "normal" | "intelligent";
 
@@ -1777,11 +1785,17 @@ function SaveFilterDialog({
   open,
   onOpenChange,
   criteria,
+  query,
+  categories,
+  regions,
   onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   criteria: string[];
+  query: string;
+  categories: string[];
+  regions: string[];
   onSaved: (name: string) => void;
 }) {
   const [name, setName] = useState("Notebooks · SP · Pregão");
@@ -1801,6 +1815,20 @@ function SaveFilterDialog({
         "licitabase:last-saved-filter",
         JSON.stringify({ name: trimmedName, alerts, favorite, frequency, criteria }),
       );
+      const savedFilter: SavedTenderFilter = {
+        id: `filter-${Date.now()}`,
+        name: trimmedName,
+        query,
+        criteria,
+        categories,
+        regions,
+        alertFrequency: alerts ? (frequency as SavedTenderFilter["alertFrequency"]) : "off",
+        enabled: alerts,
+        newMatches: 0,
+        lastRun: "Ainda não executado",
+        createdAt: "agora",
+      };
+      writeSavedTenderFilters([savedFilter, ...readSavedTenderFilters()]);
     } catch {
       // O protótipo continua funcional quando o armazenamento local estiver indisponível.
     }
@@ -1979,6 +2007,29 @@ export function TenderSearchPage() {
   const [mobileSearchCollapsed, setMobileSearchCollapsed] = useState(false);
   const [hasOpenedDetail, setHasOpenedDetail] = useState(false);
   const [visibleResultCount, setVisibleResultCount] = useState(4);
+
+  useEffect(() => {
+    const savedFilter = consumeActiveSavedTenderFilter();
+    if (!savedFilter) return;
+
+    const nextFilters: SearchFilters = {
+      ...initialFilters,
+      categories: savedFilter.categories,
+      state: savedFilter.regions.length === 1 ? (savedFilter.regions[0] ?? "") : "",
+    };
+    const terms = parseSearchTerms(savedFilter.query);
+    setDraftFilters(nextFilters);
+    setActiveFilters(nextFilters);
+    setSearchText(savedFilter.query);
+    setSearchTerms(terms);
+    setActiveSearchTerms(terms);
+    setSavedFilterName(savedFilter.name);
+    setHasSearched(true);
+    setMobileSearchCollapsed(true);
+    toast.success(`Filtro “${savedFilter.name}” aplicado`, {
+      description: "Os critérios salvos já estão refletidos nos resultados.",
+    });
+  }, []);
 
   const activeLabels = useMemo(() => getActiveFilterLabels(activeFilters), [activeFilters]);
   const draftLabels = useMemo(() => getActiveFilterLabels(draftFilters), [draftFilters]);
@@ -2391,28 +2442,43 @@ export function TenderSearchPage() {
       className="tender-search-page min-h-0 min-w-0 w-full max-w-[100vw] flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-[#F8FAFC] font-manrope"
     >
       <div className="min-w-0 w-full max-w-full px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-          <div>
-            <div className="flex flex-nowrap items-center gap-2 sm:gap-2.5">
-              <span className="h-8 w-1 rounded-full bg-[#29C454]" aria-hidden="true" />
-              <h1 className="min-w-0 whitespace-nowrap text-[22px] font-extrabold tracking-[-0.03em] text-ink min-[390px]:text-[23px] sm:text-[28px]">
-                Buscar licitações
-              </h1>
-              <span className="hidden shrink-0 rounded-full border border-[#29C454]/15 bg-brand-tint px-2 py-1 text-[8px] font-extrabold uppercase tracking-[0.05em] text-brand-strong min-[360px]:inline-flex sm:px-2.5 sm:text-[9px] sm:tracking-[0.07em]">
-                Demonstração
-              </span>
-            </div>
-            <p className="mt-1.5 line-clamp-1 pl-3 text-[11px] font-medium text-slate-text sm:text-[13px]">
-              Encontre oportunidades abertas para propostas com busca e filtros precisos.
-            </p>
-          </div>
-          {savedFilterName ? (
-            <div className="inline-flex min-h-10 items-center gap-2 self-start rounded-xl border border-[#29C454]/20 bg-brand-tint px-3 text-[10.5px] font-bold text-brand-strong sm:self-auto">
-              <Check className="size-3.5" aria-hidden="true" />
-              Filtro salvo: {savedFilterName}
-            </div>
-          ) : null}
-        </header>
+        <PageContextHeader
+          context="explore"
+          title="Buscar licitações"
+          description="Encontre oportunidades abertas para propostas com busca e filtros precisos."
+          badge={
+            <span className="hidden rounded-full border border-[#29C454]/15 bg-brand-tint px-2 py-1 text-[8px] font-extrabold uppercase tracking-[0.05em] text-brand-strong min-[360px]:inline-flex sm:px-2.5 sm:text-[9px] sm:tracking-[0.07em]">
+              Demonstração
+            </span>
+          }
+          actions={
+            savedFilterName ? (
+              <div className="inline-flex min-h-10 items-center gap-2 self-start rounded-xl border border-[#29C454]/20 bg-brand-tint px-3 text-[10.5px] font-bold text-brand-strong sm:self-auto">
+                <Check className="size-3.5" aria-hidden="true" />
+                Filtro salvo: {savedFilterName}
+              </div>
+            ) : null
+          }
+        />
+
+        <PageHowItWorks
+          title="Encontre oportunidades com o nível certo de precisão"
+          description="Comece pela pesquisa normal para encontrar termos conhecidos ou use a busca inteligente para transformar uma necessidade em critérios de edital."
+          steps={[
+            {
+              title: "Defina a busca",
+              description: "Escolha pesquisa normal ou inteligente e informe seu contexto.",
+            },
+            {
+              title: "Refine os resultados",
+              description: "Aplique prazo, região, valor e critérios de aderência.",
+            },
+            {
+              title: "Decida o próximo passo",
+              description: "Abra o edital, salve o filtro ou envie para sua operação.",
+            },
+          ]}
+        />
 
         <div className="mt-4 min-w-0 max-w-full overflow-hidden rounded-2xl border border-hairline bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:mt-6">
           <div className="border-b border-hairline p-2.5 sm:p-4 lg:p-5">
@@ -2920,6 +2986,9 @@ export function TenderSearchPage() {
         open={saveDialogOpen}
         onOpenChange={setSaveDialogOpen}
         criteria={activeLabels}
+        query={activeSearchTerms.map((term) => term.value).join(" ") || searchText}
+        categories={activeFilters.categories}
+        regions={activeFilters.state ? [activeFilters.state] : []}
         onSaved={setSavedFilterName}
       />
     </div>

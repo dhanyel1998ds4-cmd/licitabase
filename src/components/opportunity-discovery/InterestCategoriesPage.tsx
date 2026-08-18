@@ -15,8 +15,10 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Panel } from "@/components/dash2/Panel";
 import { InternalPageState } from "@/components/dash2/InternalPageState";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks } from "@/components/dash2/PageHowItWorks";
+import { Panel } from "@/components/dash2/Panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -27,6 +29,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 type InterestCategory = {
@@ -40,28 +43,165 @@ type InterestCategory = {
   lastMatch: string;
   alertFrequency: "Imediato" | "Resumo diário" | "Pausado";
   active: boolean;
+  origin: "standard" | "custom";
+  /** Identifica a categoria do catálogo, mesmo após o usuário personalizar nome e termos. */
+  standardId?: string;
 };
 
-const suggestedCategories = [
+const standardCategories = [
   {
-    name: "Equipamentos de TI",
-    description: "Computadores, monitores, periféricos e infraestrutura.",
-    terms: ["notebook", "monitor", "computador"],
+    id: "saude-medicamentos",
+    name: "Saúde e medicamentos",
+    description: "Medicamentos, insumos, materiais e demandas de saúde.",
+    terms: ["medicamento", "insumo", "saúde"],
+    coverage: "103.955 editais monitorados",
   },
   {
-    name: "Serviços de tecnologia",
-    description: "Software, suporte, nuvem e serviços especializados.",
-    terms: ["software", "suporte técnico", "desenvolvimento"],
-  },
-  {
-    name: "Material de escritório",
-    description: "Suprimentos, mobiliário e itens de expediente.",
-    terms: ["papel", "mobiliário", "material de expediente"],
-  },
-  {
+    id: "manutencao-predial",
     name: "Manutenção predial",
-    description: "Reparos, conservação e serviços de infraestrutura.",
+    description: "Reparos, conservação e infraestrutura de edifícios.",
     terms: ["manutenção", "conservação", "reparo"],
+    coverage: "96.215 editais monitorados",
+  },
+  {
+    id: "construcao-civil",
+    name: "Construção civil",
+    description: "Obras, projetos, materiais e serviços de engenharia.",
+    terms: ["obra", "engenharia", "reforma"],
+    coverage: "72.882 editais monitorados",
+  },
+  {
+    id: "veiculos-transporte",
+    name: "Veículos e transporte",
+    description: "Veículos, peças, locação, logística e transporte especializado.",
+    terms: ["veículo", "transporte", "peça"],
+    coverage: "59.784 editais monitorados",
+  },
+  {
+    id: "educacao-capacitacao",
+    name: "Educação e capacitação",
+    description: "Cursos, formação, materiais pedagógicos e capacitação profissional.",
+    terms: ["capacitação", "curso", "educação"],
+    coverage: "51.810 editais monitorados",
+  },
+  {
+    id: "alimentacao-refeicao",
+    name: "Alimentação e refeição",
+    description: "Gêneros, merenda, refeições e fornecimento de alimentos.",
+    terms: ["alimentação", "refeição", "gêneros"],
+    coverage: "50.813 editais monitorados",
+  },
+  {
+    id: "eventos-producoes-artisticas",
+    name: "Eventos e produções artísticas",
+    description: "Eventos, locação, produção cultural e serviços artísticos.",
+    terms: ["evento", "produção", "cultural"],
+    coverage: "40.435 editais monitorados",
+  },
+  {
+    id: "equipamentos-medico-hospitalares",
+    name: "Equipamentos médico-hospitalares",
+    description: "Equipamentos, aparelhos e materiais para atendimento em saúde.",
+    terms: ["hospitalar", "equipamento médico", "aparelho"],
+    coverage: "31.655 editais monitorados",
+  },
+  {
+    id: "equipamentos-informatica",
+    name: "Equipamentos de informática",
+    description: "Computadores, monitores, periféricos e infraestrutura de TI.",
+    terms: ["notebook", "monitor", "computador"],
+    coverage: "26.295 editais monitorados",
+  },
+  {
+    id: "servicos-limpeza",
+    name: "Serviços de limpeza",
+    description: "Limpeza, conservação, materiais e apoio operacional.",
+    terms: ["limpeza", "conservação", "higienização"],
+    coverage: "24.064 editais monitorados",
+  },
+  {
+    id: "energia-utilidades",
+    name: "Energia e utilidades",
+    description: "Energia, água, saneamento, iluminação e utilidades públicas.",
+    terms: ["energia", "iluminação", "saneamento"],
+    coverage: "23.709 editais monitorados",
+  },
+  {
+    id: "consultoria",
+    name: "Consultoria",
+    description: "Consultoria técnica, gestão, diagnósticos e assessoria especializada.",
+    terms: ["consultoria", "assessoria", "diagnóstico"],
+    coverage: "22.035 editais monitorados",
+  },
+  {
+    id: "material-escritorio",
+    name: "Material de escritório",
+    description: "Papelaria, itens de expediente e suprimentos corporativos.",
+    terms: ["papelaria", "expediente", "suprimento"],
+    coverage: "21.255 editais monitorados",
+  },
+  {
+    id: "mobiliario",
+    name: "Mobiliário",
+    description: "Móveis corporativos, escolares, planejados e equipamentos de apoio.",
+    terms: ["mobiliário", "mesa", "cadeira"],
+    coverage: "20.983 editais monitorados",
+  },
+  {
+    id: "meio-ambiente-sustentabilidade",
+    name: "Meio ambiente e sustentabilidade",
+    description: "Gestão ambiental, resíduos, preservação e sustentabilidade.",
+    terms: ["ambiental", "resíduo", "sustentabilidade"],
+    coverage: "16.873 editais monitorados",
+  },
+  {
+    id: "aquisicao-licencas",
+    name: "Aquisição de licenças",
+    description: "Licenças de uso, softwares, assinaturas e direitos de acesso.",
+    terms: ["licença", "assinatura", "licenciamento"],
+    coverage: "14.383 editais monitorados",
+  },
+  {
+    id: "servicos-ti",
+    name: "Serviços de TI",
+    description: "Suporte, nuvem, infraestrutura e serviços de tecnologia.",
+    terms: ["suporte técnico", "nuvem", "infraestrutura"],
+    coverage: "10.832 editais monitorados",
+  },
+  {
+    id: "agropecuaria-insumos-rurais",
+    name: "Agropecuária e insumos rurais",
+    description: "Insumos, máquinas, assistência e serviços para o setor rural.",
+    terms: ["agropecuária", "semente", "fertilizante"],
+    coverage: "10.575 editais monitorados",
+  },
+  {
+    id: "telecomunicacoes",
+    name: "Telecomunicações",
+    description: "Telefonia, conectividade, redes e comunicação de dados.",
+    terms: ["telecom", "internet", "rede"],
+    coverage: "9.993 editais monitorados",
+  },
+  {
+    id: "vigilancia-seguranca",
+    name: "Vigilância e segurança",
+    description: "Vigilância patrimonial, controle de acesso e segurança eletrônica.",
+    terms: ["vigilância", "segurança", "monitoramento"],
+    coverage: "6.651 editais monitorados",
+  },
+  {
+    id: "combustiveis-lubrificantes",
+    name: "Combustíveis e lubrificantes",
+    description: "Combustíveis, abastecimento, óleos e lubrificantes.",
+    terms: ["combustível", "diesel", "lubrificante"],
+    coverage: "5.904 editais monitorados",
+  },
+  {
+    id: "desenvolvimento-software",
+    name: "Desenvolvimento de software",
+    description: "Sistemas sob demanda, plataformas e evolução de produtos digitais.",
+    terms: ["software", "desenvolvimento", "sistema"],
+    coverage: "1.834 editais monitorados",
   },
 ];
 
@@ -77,6 +217,8 @@ const initialCategories: InterestCategory[] = [
     lastMatch: "há 8 min",
     alertFrequency: "Imediato",
     active: true,
+    origin: "standard",
+    standardId: "equipamentos-informatica",
   },
   {
     id: "servicos",
@@ -89,6 +231,8 @@ const initialCategories: InterestCategory[] = [
     lastMatch: "há 42 min",
     alertFrequency: "Resumo diário",
     active: true,
+    origin: "standard",
+    standardId: "servicos-ti",
   },
   {
     id: "escritorio",
@@ -101,6 +245,8 @@ const initialCategories: InterestCategory[] = [
     lastMatch: "ontem, 16:25",
     alertFrequency: "Pausado",
     active: false,
+    origin: "standard",
+    standardId: "material-escritorio",
   },
 ];
 
@@ -308,6 +454,8 @@ function CategoryEditor({
                 lastMatch: "ainda sem correspondências",
                 alertFrequency: frequency,
                 active: true,
+                origin: category?.origin ?? "custom",
+                ...(category?.standardId ? { standardId: category.standardId } : {}),
               })
             }
             className="min-h-11 rounded-xl bg-[#18B849] text-[12px] font-extrabold text-white hover:bg-[#139e3e]"
@@ -326,6 +474,7 @@ export function InterestCategoriesPage() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"todos" | "ativos" | "pausados">("todos");
   const [editor, setEditor] = useState<InterestCategory | "new" | null>(null);
+  const [activeTab, setActiveTab] = useState<"mine" | "standard">("mine");
 
   const visibleCategories = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("pt-BR");
@@ -360,28 +509,51 @@ export function InterestCategoriesPage() {
 
   return (
     <>
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-brand-strong">
-            Explorar licitações
-          </p>
-          <h1 className="mt-1 text-[24px] font-extrabold tracking-[-0.025em] text-ink sm:text-[28px]">
-            Categorias de interesse
-          </h1>
-          <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-slate-text">
-            Configure os setores, termos e regiões que tornam uma oportunidade relevante para a sua
-            operação.
-          </p>
-        </div>
-        <Button
-          type="button"
-          onClick={() => setEditor("new")}
-          className="min-h-11 rounded-xl bg-[#18B849] px-4 text-[12px] font-extrabold text-white hover:bg-[#139e3e]"
-        >
-          <Plus className="size-4" />
-          Adicionar interesse
-        </Button>
-      </header>
+      <PageContextHeader
+        context="explore"
+        title="Categorias de interesse"
+        description="Configure os setores, termos e regiões que tornam uma oportunidade relevante para a sua operação."
+        actions={
+          <Button
+            type="button"
+            onClick={() => setEditor("new")}
+            className="min-h-11 rounded-xl bg-[#18B849] px-4 text-[12px] font-extrabold text-white hover:bg-[#139e3e]"
+          >
+            <Plus className="size-4" />
+            Criar categoria personalizada
+          </Button>
+        }
+      />
+
+      <PageHowItWorks
+        title="A LicitaBase prioriza o que você decidiu acompanhar"
+        description="Comece com uma categoria padrão ou crie uma configuração exclusiva para termos, regiões e alertas da sua operação."
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setActiveTab("standard")}
+            className="rounded-xl border-hairline text-[11px] font-bold"
+          >
+            <Filter className="size-4" />
+            Explorar categorias padrão
+          </Button>
+        }
+        steps={[
+          {
+            title: "Comece por uma base",
+            description: "Selecione uma categoria padrão do catálogo.",
+          },
+          {
+            title: "Ajuste os critérios",
+            description: "Defina termos, regiões e frequência de alerta.",
+          },
+          {
+            title: "Priorize oportunidades",
+            description: "Abra a região e analise os editais compatíveis.",
+          },
+        ]}
+      />
 
       <div className="grid gap-3 min-[480px]:grid-cols-3 sm:gap-4">
         <Metric
@@ -406,241 +578,220 @@ export function InterestCategoriesPage() {
         />
       </div>
 
-      <Panel className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-hairline p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-          <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-strong">
-              Sua configuração
-            </p>
-            <h2 className="mt-1 text-[17px] font-extrabold text-ink">
-              O que a LicitaBase deve priorizar
-            </h2>
-          </div>
-          <div className="flex flex-col gap-2 min-[480px]:flex-row">
-            <label className="relative min-w-0 flex-1 min-[480px]:w-64">
-              <span className="sr-only">Buscar categoria de interesse</span>
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-text" />
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Buscar interesse ou termo"
-                className="min-h-11 rounded-xl border-hairline pl-9 text-[12px]"
-              />
-            </label>
-            <div
-              className="flex rounded-xl border border-hairline bg-slate-50 p-1"
-              aria-label="Filtrar por status"
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as "mine" | "standard")}
+        className="space-y-4"
+      >
+        <div className="flex overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <TabsList className="h-11 min-w-max rounded-xl border border-hairline bg-slate-50 p-1">
+            <TabsTrigger
+              value="mine"
+              className="min-h-9 rounded-lg px-3 text-[11px] font-extrabold sm:px-4"
             >
-              {(["todos", "ativos", "pausados"] as const).map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  aria-pressed={status === item}
-                  onClick={() => setStatus(item)}
-                  className={cn(
-                    "min-h-9 rounded-lg px-2.5 text-[10.5px] font-extrabold capitalize transition-colors",
-                    status === item
-                      ? "bg-white text-ink shadow-sm"
-                      : "text-slate-text hover:text-ink",
-                  )}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
+              Minhas categorias
+              <span className="ml-1.5 rounded-full bg-[#E8F8ED] px-1.5 py-0.5 text-[9px] font-extrabold text-[#15863a]">
+                {categories.length}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="standard"
+              className="min-h-9 rounded-lg px-3 text-[11px] font-extrabold sm:px-4"
+            >
+              Categorias padrão
+              <span className="ml-1.5 rounded-full bg-slate-200 px-1.5 py-0.5 text-[9px] font-extrabold text-slate-text">
+                {standardCategories.length}
+              </span>
+            </TabsTrigger>
+          </TabsList>
         </div>
-        <div className="divide-y divide-hairline">
-          {visibleCategories.map((category) => (
-            <article key={category.id} className="p-4 sm:p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-[15px] font-extrabold text-ink">{category.name}</h3>
-                    <span
+
+        <TabsContent value="mine" className="mt-0 space-y-5 sm:space-y-6">
+          <Panel className="overflow-hidden">
+            <div className="flex flex-col gap-3 border-b border-hairline p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+              <div>
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-strong">
+                  Sua configuração
+                </p>
+                <h2 className="mt-1 text-[17px] font-extrabold text-ink">
+                  O que a LicitaBase deve priorizar
+                </h2>
+              </div>
+              <div className="flex flex-col gap-2 min-[480px]:flex-row">
+                <label className="relative min-w-0 flex-1 min-[480px]:w-64">
+                  <span className="sr-only">Buscar categoria de interesse</span>
+                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-text" />
+                  <Input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Buscar interesse ou termo"
+                    className="min-h-11 rounded-xl border-hairline pl-9 text-[12px]"
+                  />
+                </label>
+                <div
+                  className="flex rounded-xl border border-hairline bg-slate-50 p-1"
+                  aria-label="Filtrar por status"
+                >
+                  {(["todos", "ativos", "pausados"] as const).map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      aria-pressed={status === item}
+                      onClick={() => setStatus(item)}
                       className={cn(
-                        "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-extrabold",
-                        statusCopy[category.alertFrequency],
+                        "min-h-9 rounded-lg px-2.5 text-[10.5px] font-extrabold capitalize transition-colors",
+                        status === item
+                          ? "bg-white text-ink shadow-sm"
+                          : "text-slate-text hover:text-ink",
                       )}
                     >
-                      {category.alertFrequency === "Pausado" ? (
-                        <CirclePause className="size-3" />
-                      ) : (
-                        <BellRing className="size-3" />
-                      )}
-                      {category.alertFrequency}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
-                    {category.description}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {category.terms.slice(0, 4).map((term) => (
-                      <span
-                        key={term}
-                        className="rounded-full bg-[#E8F8ED] px-2.5 py-1 text-[10.5px] font-bold text-[#15863a]"
-                      >
-                        {term}
-                      </span>
-                    ))}
-                    {category.terms.length > 4 ? (
-                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10.5px] font-bold text-slate-text">
-                        +{category.terms.length - 4}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-[11px] sm:flex sm:items-center sm:gap-6 lg:shrink-0">
-                  <div>
-                    <p className="font-bold uppercase tracking-[0.08em] text-slate-text">Regiões</p>
-                    <p className="mt-1 flex items-center gap-1 font-extrabold text-ink">
-                      <MapPin className="size-3.5 text-brand-strong" />
-                      {category.regions.join(", ")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-bold uppercase tracking-[0.08em] text-slate-text">
-                      Encontradas
-                    </p>
-                    <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[#15863a]">
-                      {category.matches}
-                    </p>
-                    <p className="text-[10px] text-slate-text">{category.lastMatch}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-2 lg:justify-end">
-                  <Switch
-                    checked={category.active}
-                    onCheckedChange={(checked) => {
-                      setCategories((current) =>
-                        current.map((item) =>
-                          item.id === category.id
-                            ? {
-                                ...item,
-                                active: checked,
-                                alertFrequency:
-                                  checked && item.alertFrequency === "Pausado"
-                                    ? "Resumo diário"
-                                    : checked
-                                      ? item.alertFrequency
-                                      : "Pausado",
-                              }
-                            : item,
-                        ),
-                      );
-                      toast.success(checked ? "Interesse ativado" : "Interesse pausado", {
-                        description: category.name,
-                      });
-                    }}
-                    aria-label={`${category.active ? "Pausar" : "Ativar"} ${category.name}`}
-                    className="data-[state=checked]:bg-[#18B849]"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setEditor(category)}
-                    className="min-h-11 rounded-xl border-hairline text-[11px] font-bold"
-                  >
-                    <Pencil className="size-3.5" />
-                    Editar
-                  </Button>
-                  <Link
-                    to="/categorias/$categoryId"
-                    params={{ categoryId: category.id }}
-                    aria-label={`Ver oportunidades de ${category.name}`}
-                    className="grid size-11 place-items-center rounded-xl text-slate-text hover:bg-[#E8F8ED] hover:text-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
-                  >
-                    <ChevronRight className="size-4" />
-                  </Link>
+                      {item}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </article>
-          ))}
-          {visibleCategories.length === 0 ? (
-            <div className="p-4 sm:p-5">
-              <InternalPageState
-                state="empty"
-                title="Nenhum interesse encontrado"
-                description="Ajuste sua busca ou adicione uma categoria para começar a priorizar oportunidades."
-                action={
-                  <Button
-                    type="button"
-                    onClick={() => setEditor("new")}
-                    className="min-h-11 rounded-xl bg-[#18B849] text-white hover:bg-[#139e3e]"
-                  >
-                    <Plus className="size-4" />
-                    Adicionar interesse
-                  </Button>
-                }
-              />
             </div>
-          ) : null}
-        </div>
-      </Panel>
+            <div className="divide-y divide-hairline">
+              {visibleCategories.map((category) => (
+                <article key={category.id} className="p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-[15px] font-extrabold text-ink">{category.name}</h3>
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-extrabold",
+                            statusCopy[category.alertFrequency],
+                          )}
+                        >
+                          {category.alertFrequency === "Pausado" ? (
+                            <CirclePause className="size-3" />
+                          ) : (
+                            <BellRing className="size-3" />
+                          )}
+                          {category.alertFrequency}
+                        </span>
+                        <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-text">
+                          {category.origin === "custom" ? "Personalizada" : "Padrão ajustada"}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
+                        {category.description}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {category.terms.slice(0, 4).map((term) => (
+                          <span
+                            key={term}
+                            className="rounded-full bg-[#E8F8ED] px-2.5 py-1 text-[10.5px] font-bold text-[#15863a]"
+                          >
+                            {term}
+                          </span>
+                        ))}
+                        {category.terms.length > 4 ? (
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10.5px] font-bold text-slate-text">
+                            +{category.terms.length - 4}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-[11px] sm:flex sm:items-center sm:gap-6 lg:shrink-0">
+                      <div>
+                        <p className="font-bold uppercase tracking-[0.08em] text-slate-text">
+                          Regiões
+                        </p>
+                        <p className="mt-1 flex items-center gap-1 font-extrabold text-ink">
+                          <MapPin className="size-3.5 text-brand-strong" />
+                          {category.regions.join(", ")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-bold uppercase tracking-[0.08em] text-slate-text">
+                          Encontradas
+                        </p>
+                        <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[#15863a]">
+                          {category.matches}
+                        </p>
+                        <p className="text-[10px] text-slate-text">{category.lastMatch}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 lg:justify-end">
+                      <Switch
+                        checked={category.active}
+                        onCheckedChange={(checked) => {
+                          setCategories((current) =>
+                            current.map((item) =>
+                              item.id === category.id
+                                ? {
+                                    ...item,
+                                    active: checked,
+                                    alertFrequency:
+                                      checked && item.alertFrequency === "Pausado"
+                                        ? "Resumo diário"
+                                        : checked
+                                          ? item.alertFrequency
+                                          : "Pausado",
+                                  }
+                                : item,
+                            ),
+                          );
+                          toast.success(checked ? "Interesse ativado" : "Interesse pausado", {
+                            description: category.name,
+                          });
+                        }}
+                        aria-label={`${category.active ? "Pausar" : "Ativar"} ${category.name}`}
+                        className="data-[state=checked]:bg-[#18B849]"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setEditor(category)}
+                        className="min-h-11 rounded-xl border-hairline text-[11px] font-bold"
+                      >
+                        <Pencil className="size-3.5" />
+                        Editar
+                      </Button>
+                      <Link
+                        to="/categorias/$categoryId"
+                        params={{ categoryId: category.id }}
+                        aria-label={`Ver oportunidades de ${category.name}`}
+                        className="grid size-11 place-items-center rounded-xl text-slate-text hover:bg-[#E8F8ED] hover:text-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29C454]"
+                      >
+                        <ChevronRight className="size-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+              {visibleCategories.length === 0 ? (
+                <div className="p-4 sm:p-5">
+                  <InternalPageState
+                    state="empty"
+                    title="Nenhum interesse encontrado"
+                    description="Ajuste sua busca ou adicione uma categoria para começar a priorizar oportunidades."
+                    action={
+                      <Button
+                        type="button"
+                        onClick={() => setEditor("new")}
+                        className="min-h-11 rounded-xl bg-[#18B849] text-white hover:bg-[#139e3e]"
+                      >
+                        <Plus className="size-4" />
+                        Adicionar interesse
+                      </Button>
+                    }
+                  />
+                </div>
+              ) : null}
+            </div>
+          </Panel>
+        </TabsContent>
 
-      <Panel className="p-4 sm:p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-strong">
-              Sugestões para você
-            </p>
-            <h2 className="mt-1 text-[16px] font-extrabold text-ink">
-              Amplie sua cobertura quando fizer sentido
-            </h2>
-            <p className="mt-1 text-[12px] text-slate-text">
-              Baseado no perfil da Iridia Soluções e nas pesquisas recentes.
-            </p>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              toast.info("Catálogo em preparação", {
-                description: "As sugestões abaixo já podem ser adicionadas à sua configuração.",
-              })
-            }
-            className="min-h-11 rounded-xl border-hairline text-[11px] font-bold"
-          >
-            <Filter className="size-4" />
-            Ver catálogo
-          </Button>
-        </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {suggestedCategories.map((suggestion) => (
-            <div
-              key={suggestion.name}
-              className="rounded-xl border border-hairline bg-[#FBFDFC] p-3.5"
-            >
-              <p className="text-[12px] font-extrabold text-ink">{suggestion.name}</p>
-              <p className="mt-1 min-h-9 text-[10.5px] leading-relaxed text-slate-text">
-                {suggestion.description}
-              </p>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() =>
-                  setEditor({
-                    id: `suggestion-${suggestion.name}`,
-                    name: suggestion.name,
-                    description: suggestion.description,
-                    terms: suggestion.terms,
-                    excludedTerms: [],
-                    regions: ["MG", "SP"],
-                    matches: 0,
-                    lastMatch: "ainda sem correspondências",
-                    alertFrequency: "Imediato",
-                    active: true,
-                  })
-                }
-                className="mt-3 min-h-9 rounded-lg px-2 text-[10.5px] font-extrabold text-brand-strong hover:bg-[#E8F8ED]"
-              >
-                <Plus className="size-3.5" />
-                Adicionar
-              </Button>
-            </div>
-          ))}
-        </div>
-      </Panel>
+        <TabsContent value="standard" className="mt-0">
+          <StandardCategoriesCatalog
+            categories={categories}
+            onConfigure={(category) => setEditor(category)}
+          />
+        </TabsContent>
+      </Tabs>
       {editor ? (
         <CategoryEditor
           category={editor === "new" ? undefined : editor}
@@ -649,6 +800,145 @@ export function InterestCategoriesPage() {
         />
       ) : null}
     </>
+  );
+}
+
+function StandardCategoriesCatalog({
+  categories,
+  onConfigure,
+}: {
+  categories: InterestCategory[];
+  onConfigure: (category: InterestCategory) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const visibleCategories = useMemo(() => {
+    const normalized = query.trim().toLocaleLowerCase("pt-BR");
+    return standardCategories.filter(
+      (category) =>
+        !normalized ||
+        `${category.name} ${category.description} ${category.terms.join(" ")}`
+          .toLocaleLowerCase("pt-BR")
+          .includes(normalized),
+    );
+  }, [query]);
+
+  return (
+    <Panel className="overflow-hidden">
+      <div className="flex flex-col gap-3 border-b border-hairline p-4 sm:p-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-strong">
+            Catálogo LicitaBase
+          </p>
+          <h2 className="mt-1 text-[17px] font-extrabold text-ink">
+            Comece por uma categoria pronta
+          </h2>
+          <p className="mt-1 max-w-2xl text-[12px] leading-relaxed text-slate-text">
+            Escolha uma base curada e adapte os termos, regiões e alertas antes de ativá-la na sua
+            operação.
+          </p>
+        </div>
+        <label className="relative min-w-0 lg:w-72">
+          <span className="sr-only">Buscar categoria padrão</span>
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-text" />
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Buscar categoria padrão"
+            className="min-h-11 rounded-xl border-hairline pl-9 text-[12px]"
+          />
+        </label>
+      </div>
+      <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 xl:grid-cols-3">
+        {visibleCategories.map((catalogCategory) => {
+          const configured = categories.find(
+            (category) =>
+              category.id === catalogCategory.id || category.standardId === catalogCategory.id,
+          );
+          return (
+            <article
+              key={catalogCategory.id}
+              className="flex min-h-56 flex-col rounded-xl border border-hairline bg-[#FBFDFC] p-3.5"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className="grid size-9 place-items-center rounded-lg bg-[#E8F8ED] text-[#15863a]">
+                  <Tags className="size-4" />
+                </span>
+                {configured ? (
+                  <span className="rounded-full bg-[#E8F8ED] px-2 py-1 text-[10px] font-extrabold text-[#15863a]">
+                    Na sua operação
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-text">
+                    Categoria padrão
+                  </span>
+                )}
+              </div>
+              <h3 className="mt-3 text-[13px] font-extrabold text-ink">{catalogCategory.name}</h3>
+              <p className="mt-1 min-h-9 text-[10.5px] leading-relaxed text-slate-text">
+                {catalogCategory.description}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {catalogCategory.terms.slice(0, 3).map((term) => (
+                  <span
+                    key={term}
+                    className="rounded-full bg-white px-2 py-1 text-[10px] font-bold text-slate-text ring-1 ring-hairline"
+                  >
+                    {term}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-3 text-[10.5px] font-bold text-[#15863a]">
+                {catalogCategory.coverage}
+              </p>
+              {configured ? (
+                <Link
+                  to="/categorias/$categoryId"
+                  params={{ categoryId: configured.id }}
+                  className="mt-auto inline-flex min-h-10 items-center gap-1.5 pt-3 text-[11px] font-extrabold text-brand-strong hover:text-[#15863a]"
+                >
+                  Ver oportunidades
+                  <ChevronRight className="size-3.5" />
+                </Link>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    onConfigure({
+                      id: catalogCategory.id,
+                      name: catalogCategory.name,
+                      description: catalogCategory.description,
+                      terms: catalogCategory.terms,
+                      excludedTerms: [],
+                      regions: ["MG", "SP"],
+                      matches: 0,
+                      lastMatch: "ainda sem correspondências",
+                      alertFrequency: "Imediato",
+                      active: true,
+                      origin: "standard",
+                      standardId: catalogCategory.id,
+                    })
+                  }
+                  className="mt-auto min-h-10 rounded-xl border-hairline px-3 text-[11px] font-extrabold text-ink hover:border-[#29C454]/45 hover:bg-[#E8F8ED] hover:text-[#15863a]"
+                >
+                  <Plus className="size-3.5" />
+                  Adicionar à operação
+                </Button>
+              )}
+            </article>
+          );
+        })}
+      </div>
+      {visibleCategories.length === 0 ? (
+        <div className="border-t border-hairline p-5">
+          <InternalPageState
+            state="empty"
+            title="Nenhuma categoria padrão encontrada"
+            description="Tente um termo mais amplo ou crie uma categoria personalizada para sua operação."
+          />
+        </div>
+      ) : null}
+    </Panel>
   );
 }
 

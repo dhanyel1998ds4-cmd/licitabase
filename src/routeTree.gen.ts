@@ -13,13 +13,20 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BotLancesRouteImport } from './routes/bot-lances'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as ConcorrentesRouteImport } from './routes/concorrentes'
 import { Route as Dash2RouteImport } from './routes/dash2'
+import { Route as DocumentosRouteImport } from './routes/documentos'
+import { Route as IntegracoesRouteImport } from './routes/integracoes'
 import { Route as ItensRouteImport } from './routes/itens'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LpRouteImport } from './routes/lp'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PipelineRouteImport } from './routes/pipeline'
+import { Route as RaioXRouteImport } from './routes/raio-x'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as RelatoriosRouteImport } from './routes/relatorios'
+import { Route as ScoreOrgaosRouteImport } from './routes/score-orgaos'
 import { Route as BotLancesIndexRouteImport } from './routes/bot-lances.index'
 import { Route as BotLancesConfiguracoesRouteImport } from './routes/bot-lances.configuracoes'
 import { Route as BotLancesHistoricoRouteImport } from './routes/bot-lances.historico'
@@ -27,11 +34,14 @@ import { Route as BotLancesMonitoramentoRouteImport } from './routes/bot-lances.
 import { Route as BotLancesRelatoriosRouteImport } from './routes/bot-lances.relatorios'
 import { Route as CategoriasIndexRouteImport } from './routes/categorias.index'
 import { Route as CategoriasCategoryIdRouteImport } from './routes/categorias.$categoryId'
+import { Route as ConcorrentesIndexRouteImport } from './routes/concorrentes.index'
+import { Route as ConcorrentesCategoryIdRouteImport } from './routes/concorrentes.$categoryId'
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as Dash2AjudaRouteImport } from './routes/dash2.ajuda'
 import { Route as PlanosCompararRouteImport } from './routes/planos.comparar'
 import { Route as BotLancesDisputasIndexRouteImport } from './routes/bot-lances.disputas.index'
 import { Route as BotLancesDisputasDisputeIdRouteImport } from './routes/bot-lances.disputas.$disputeId'
+import { Route as ConcorrentesCategoryIdCompanyIdRouteImport } from './routes/concorrentes.$categoryId.$companyId'
 import { Route as Dash2ConfiguracoesEmpresaRouteImport } from './routes/dash2.configuracoes.empresa'
 import { Route as Dash2ConfiguracoesEquipeRouteImport } from './routes/dash2.configuracoes.equipe'
 import { Route as Dash2ConfiguracoesNotificacoesRouteImport } from './routes/dash2.configuracoes.notificacoes'
@@ -41,6 +51,7 @@ import { Route as Dash2ConfiguracoesSegurancaRouteImport } from './routes/dash2.
 import { Route as Dash2GestaoTemplatesEmailsRouteImport } from './routes/dash2.gestao.templates-emails'
 import { Route as Dash2LicitacoesLicitacaoIdRouteImport } from './routes/dash2.licitacoes.$licitacaoId'
 import { Route as Dash2LicitacoesBuscarRouteImport } from './routes/dash2.licitacoes.buscar'
+import { Route as Dash2LicitacoesFiltrosSalvosRouteImport } from './routes/dash2.licitacoes.filtros-salvos'
 import { Route as Dash2OperacaoAnotacoesRouteImport } from './routes/dash2.operacao.anotacoes'
 import { Route as Dash2OperacaoMinhasLicitacoesRouteImport } from './routes/dash2.operacao.minhas-licitacoes'
 import { Route as Dash2OportunidadesFavoritosRouteImport } from './routes/dash2.oportunidades.favoritos'
@@ -71,9 +82,24 @@ const CategoriasRoute = CategoriasRouteImport.update({
   path: '/categorias',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConcorrentesRoute = ConcorrentesRouteImport.update({
+  id: '/concorrentes',
+  path: '/concorrentes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Dash2Route = Dash2RouteImport.update({
   id: '/dash2',
   path: '/dash2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentosRoute = DocumentosRouteImport.update({
+  id: '/documentos',
+  path: '/documentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegracoesRoute = IntegracoesRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ItensRoute = ItensRouteImport.update({
@@ -96,6 +122,16 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PipelineRoute = PipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RaioXRoute = RaioXRouteImport.update({
+  id: '/raio-x',
+  path: '/raio-x',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   id: '/recuperar-senha',
   path: '/recuperar-senha',
@@ -104,6 +140,16 @@ const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
 const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   id: '/redefinir-senha',
   path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosRoute = RelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoreOrgaosRoute = ScoreOrgaosRouteImport.update({
+  id: '/score-orgaos',
+  path: '/score-orgaos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BotLancesIndexRoute = BotLancesIndexRouteImport.update({
@@ -141,6 +187,16 @@ const CategoriasCategoryIdRoute = CategoriasCategoryIdRouteImport.update({
   path: '/$categoryId',
   getParentRoute: () => CategoriasRoute,
 } as any)
+const ConcorrentesIndexRoute = ConcorrentesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConcorrentesRoute,
+} as any)
+const ConcorrentesCategoryIdRoute = ConcorrentesCategoryIdRouteImport.update({
+  id: '/$categoryId',
+  path: '/$categoryId',
+  getParentRoute: () => ConcorrentesRoute,
+} as any)
 const ConviteTokenRoute = ConviteTokenRouteImport.update({
   id: '/convite/$token',
   path: '/convite/$token',
@@ -166,6 +222,12 @@ const BotLancesDisputasDisputeIdRoute =
     id: '/disputas/$disputeId',
     path: '/disputas/$disputeId',
     getParentRoute: () => BotLancesRoute,
+  } as any)
+const ConcorrentesCategoryIdCompanyIdRoute =
+  ConcorrentesCategoryIdCompanyIdRouteImport.update({
+    id: '/$companyId',
+    path: '/$companyId',
+    getParentRoute: () => ConcorrentesCategoryIdRoute,
   } as any)
 const Dash2ConfiguracoesEmpresaRoute =
   Dash2ConfiguracoesEmpresaRouteImport.update({
@@ -219,6 +281,12 @@ const Dash2LicitacoesBuscarRoute = Dash2LicitacoesBuscarRouteImport.update({
   path: '/licitacoes/buscar',
   getParentRoute: () => Dash2Route,
 } as any)
+const Dash2LicitacoesFiltrosSalvosRoute =
+  Dash2LicitacoesFiltrosSalvosRouteImport.update({
+    id: '/licitacoes/filtros-salvos',
+    path: '/licitacoes/filtros-salvos',
+    getParentRoute: () => Dash2Route,
+  } as any)
 const Dash2OperacaoAnotacoesRoute = Dash2OperacaoAnotacoesRouteImport.update({
   id: '/operacao/anotacoes',
   path: '/operacao/anotacoes',
@@ -277,24 +345,34 @@ export interface FileRoutesByFullPath {
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/categorias': typeof CategoriasRouteWithChildren
+  '/concorrentes': typeof ConcorrentesRouteWithChildren
   '/dash2': typeof Dash2RouteWithChildren
+  '/documentos': typeof DocumentosRoute
+  '/integracoes': typeof IntegracoesRoute
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/onboarding': typeof OnboardingRoute
+  '/pipeline': typeof PipelineRoute
+  '/raio-x': typeof RaioXRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/score-orgaos': typeof ScoreOrgaosRoute
   '/bot-lances/configuracoes': typeof BotLancesConfiguracoesRoute
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
   '/categorias/$categoryId': typeof CategoriasCategoryIdRouteWithChildren
+  '/concorrentes/$categoryId': typeof ConcorrentesCategoryIdRouteWithChildren
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/categorias/': typeof CategoriasIndexRoute
+  '/concorrentes/': typeof ConcorrentesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/concorrentes/$categoryId/$companyId': typeof ConcorrentesCategoryIdCompanyIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
   '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
   '/dash2/configuracoes/notificacoes': typeof Dash2ConfiguracoesNotificacoesRoute
@@ -304,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/dash2/gestao/templates-emails': typeof Dash2GestaoTemplatesEmailsRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
+  '/dash2/licitacoes/filtros-salvos': typeof Dash2LicitacoesFiltrosSalvosRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
   '/dash2/operacao/minhas-licitacoes': typeof Dash2OperacaoMinhasLicitacoesRouteWithChildren
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
@@ -319,23 +398,32 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/dash2': typeof Dash2RouteWithChildren
+  '/documentos': typeof DocumentosRoute
+  '/integracoes': typeof IntegracoesRoute
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/onboarding': typeof OnboardingRoute
+  '/pipeline': typeof PipelineRoute
+  '/raio-x': typeof RaioXRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/score-orgaos': typeof ScoreOrgaosRoute
   '/bot-lances/configuracoes': typeof BotLancesConfiguracoesRoute
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
   '/categorias/$categoryId': typeof CategoriasCategoryIdRouteWithChildren
+  '/concorrentes/$categoryId': typeof ConcorrentesCategoryIdRouteWithChildren
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances': typeof BotLancesIndexRoute
   '/categorias': typeof CategoriasIndexRoute
+  '/concorrentes': typeof ConcorrentesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/concorrentes/$categoryId/$companyId': typeof ConcorrentesCategoryIdCompanyIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
   '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
   '/dash2/configuracoes/notificacoes': typeof Dash2ConfiguracoesNotificacoesRoute
@@ -345,6 +433,7 @@ export interface FileRoutesByTo {
   '/dash2/gestao/templates-emails': typeof Dash2GestaoTemplatesEmailsRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
+  '/dash2/licitacoes/filtros-salvos': typeof Dash2LicitacoesFiltrosSalvosRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
   '/dash2/operacao/minhas-licitacoes': typeof Dash2OperacaoMinhasLicitacoesRouteWithChildren
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
@@ -362,24 +451,34 @@ export interface FileRoutesById {
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/categorias': typeof CategoriasRouteWithChildren
+  '/concorrentes': typeof ConcorrentesRouteWithChildren
   '/dash2': typeof Dash2RouteWithChildren
+  '/documentos': typeof DocumentosRoute
+  '/integracoes': typeof IntegracoesRoute
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/onboarding': typeof OnboardingRoute
+  '/pipeline': typeof PipelineRoute
+  '/raio-x': typeof RaioXRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/score-orgaos': typeof ScoreOrgaosRoute
   '/bot-lances/configuracoes': typeof BotLancesConfiguracoesRoute
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
   '/bot-lances/relatorios': typeof BotLancesRelatoriosRoute
   '/categorias/$categoryId': typeof CategoriasCategoryIdRouteWithChildren
+  '/concorrentes/$categoryId': typeof ConcorrentesCategoryIdRouteWithChildren
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/categorias/': typeof CategoriasIndexRoute
+  '/concorrentes/': typeof ConcorrentesIndexRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
+  '/concorrentes/$categoryId/$companyId': typeof ConcorrentesCategoryIdCompanyIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
   '/dash2/configuracoes/equipe': typeof Dash2ConfiguracoesEquipeRoute
   '/dash2/configuracoes/notificacoes': typeof Dash2ConfiguracoesNotificacoesRoute
@@ -389,6 +488,7 @@ export interface FileRoutesById {
   '/dash2/gestao/templates-emails': typeof Dash2GestaoTemplatesEmailsRoute
   '/dash2/licitacoes/$licitacaoId': typeof Dash2LicitacoesLicitacaoIdRoute
   '/dash2/licitacoes/buscar': typeof Dash2LicitacoesBuscarRoute
+  '/dash2/licitacoes/filtros-salvos': typeof Dash2LicitacoesFiltrosSalvosRoute
   '/dash2/operacao/anotacoes': typeof Dash2OperacaoAnotacoesRoute
   '/dash2/operacao/minhas-licitacoes': typeof Dash2OperacaoMinhasLicitacoesRouteWithChildren
   '/dash2/oportunidades/favoritos': typeof Dash2OportunidadesFavoritosRoute
@@ -407,24 +507,34 @@ export interface FileRouteTypes {
     | '/bot-lances'
     | '/cadastro'
     | '/categorias'
+    | '/concorrentes'
     | '/dash2'
+    | '/documentos'
+    | '/integracoes'
     | '/itens'
     | '/login'
     | '/lp'
     | '/onboarding'
+    | '/pipeline'
+    | '/raio-x'
     | '/recuperar-senha'
     | '/redefinir-senha'
+    | '/relatorios'
+    | '/score-orgaos'
     | '/bot-lances/configuracoes'
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
     | '/categorias/$categoryId'
+    | '/concorrentes/$categoryId'
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances/'
     | '/categorias/'
+    | '/concorrentes/'
     | '/bot-lances/disputas/$disputeId'
+    | '/concorrentes/$categoryId/$companyId'
     | '/dash2/configuracoes/empresa'
     | '/dash2/configuracoes/equipe'
     | '/dash2/configuracoes/notificacoes'
@@ -434,6 +544,7 @@ export interface FileRouteTypes {
     | '/dash2/gestao/templates-emails'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
+    | '/dash2/licitacoes/filtros-salvos'
     | '/dash2/operacao/anotacoes'
     | '/dash2/operacao/minhas-licitacoes'
     | '/dash2/oportunidades/favoritos'
@@ -449,23 +560,32 @@ export interface FileRouteTypes {
     | '/'
     | '/cadastro'
     | '/dash2'
+    | '/documentos'
+    | '/integracoes'
     | '/itens'
     | '/login'
     | '/lp'
     | '/onboarding'
+    | '/pipeline'
+    | '/raio-x'
     | '/recuperar-senha'
     | '/redefinir-senha'
+    | '/relatorios'
+    | '/score-orgaos'
     | '/bot-lances/configuracoes'
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
     | '/categorias/$categoryId'
+    | '/concorrentes/$categoryId'
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances'
     | '/categorias'
+    | '/concorrentes'
     | '/bot-lances/disputas/$disputeId'
+    | '/concorrentes/$categoryId/$companyId'
     | '/dash2/configuracoes/empresa'
     | '/dash2/configuracoes/equipe'
     | '/dash2/configuracoes/notificacoes'
@@ -475,6 +595,7 @@ export interface FileRouteTypes {
     | '/dash2/gestao/templates-emails'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
+    | '/dash2/licitacoes/filtros-salvos'
     | '/dash2/operacao/anotacoes'
     | '/dash2/operacao/minhas-licitacoes'
     | '/dash2/oportunidades/favoritos'
@@ -491,24 +612,34 @@ export interface FileRouteTypes {
     | '/bot-lances'
     | '/cadastro'
     | '/categorias'
+    | '/concorrentes'
     | '/dash2'
+    | '/documentos'
+    | '/integracoes'
     | '/itens'
     | '/login'
     | '/lp'
     | '/onboarding'
+    | '/pipeline'
+    | '/raio-x'
     | '/recuperar-senha'
     | '/redefinir-senha'
+    | '/relatorios'
+    | '/score-orgaos'
     | '/bot-lances/configuracoes'
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
     | '/bot-lances/relatorios'
     | '/categorias/$categoryId'
+    | '/concorrentes/$categoryId'
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
     | '/bot-lances/'
     | '/categorias/'
+    | '/concorrentes/'
     | '/bot-lances/disputas/$disputeId'
+    | '/concorrentes/$categoryId/$companyId'
     | '/dash2/configuracoes/empresa'
     | '/dash2/configuracoes/equipe'
     | '/dash2/configuracoes/notificacoes'
@@ -518,6 +649,7 @@ export interface FileRouteTypes {
     | '/dash2/gestao/templates-emails'
     | '/dash2/licitacoes/$licitacaoId'
     | '/dash2/licitacoes/buscar'
+    | '/dash2/licitacoes/filtros-salvos'
     | '/dash2/operacao/anotacoes'
     | '/dash2/operacao/minhas-licitacoes'
     | '/dash2/oportunidades/favoritos'
@@ -535,13 +667,20 @@ export interface RootRouteChildren {
   BotLancesRoute: typeof BotLancesRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   CategoriasRoute: typeof CategoriasRouteWithChildren
+  ConcorrentesRoute: typeof ConcorrentesRouteWithChildren
   Dash2Route: typeof Dash2RouteWithChildren
+  DocumentosRoute: typeof DocumentosRoute
+  IntegracoesRoute: typeof IntegracoesRoute
   ItensRoute: typeof ItensRoute
   LoginRoute: typeof LoginRoute
   LpRoute: typeof LpRoute
   OnboardingRoute: typeof OnboardingRoute
+  PipelineRoute: typeof PipelineRoute
+  RaioXRoute: typeof RaioXRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
+  RelatoriosRoute: typeof RelatoriosRoute
+  ScoreOrgaosRoute: typeof ScoreOrgaosRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
   PlanosCompararRoute: typeof PlanosCompararRoute
 }
@@ -576,11 +715,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/concorrentes': {
+      id: '/concorrentes'
+      path: '/concorrentes'
+      fullPath: '/concorrentes'
+      preLoaderRoute: typeof ConcorrentesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dash2': {
       id: '/dash2'
       path: '/dash2'
       fullPath: '/dash2'
       preLoaderRoute: typeof Dash2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documentos': {
+      id: '/documentos'
+      path: '/documentos'
+      fullPath: '/documentos'
+      preLoaderRoute: typeof DocumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integracoes': {
+      id: '/integracoes'
+      path: '/integracoes'
+      fullPath: '/integracoes'
+      preLoaderRoute: typeof IntegracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/itens': {
@@ -611,6 +771,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pipeline': {
+      id: '/pipeline'
+      path: '/pipeline'
+      fullPath: '/pipeline'
+      preLoaderRoute: typeof PipelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/raio-x': {
+      id: '/raio-x'
+      path: '/raio-x'
+      fullPath: '/raio-x'
+      preLoaderRoute: typeof RaioXRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recuperar-senha': {
       id: '/recuperar-senha'
       path: '/recuperar-senha'
@@ -623,6 +797,20 @@ declare module '@tanstack/react-router' {
       path: '/redefinir-senha'
       fullPath: '/redefinir-senha'
       preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios': {
+      id: '/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof RelatoriosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/score-orgaos': {
+      id: '/score-orgaos'
+      path: '/score-orgaos'
+      fullPath: '/score-orgaos'
+      preLoaderRoute: typeof ScoreOrgaosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bot-lances/': {
@@ -674,6 +862,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriasCategoryIdRouteImport
       parentRoute: typeof CategoriasRoute
     }
+    '/concorrentes/': {
+      id: '/concorrentes/'
+      path: '/'
+      fullPath: '/concorrentes/'
+      preLoaderRoute: typeof ConcorrentesIndexRouteImport
+      parentRoute: typeof ConcorrentesRoute
+    }
+    '/concorrentes/$categoryId': {
+      id: '/concorrentes/$categoryId'
+      path: '/$categoryId'
+      fullPath: '/concorrentes/$categoryId'
+      preLoaderRoute: typeof ConcorrentesCategoryIdRouteImport
+      parentRoute: typeof ConcorrentesRoute
+    }
     '/convite/$token': {
       id: '/convite/$token'
       path: '/convite/$token'
@@ -708,6 +910,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/bot-lances/disputas/$disputeId'
       preLoaderRoute: typeof BotLancesDisputasDisputeIdRouteImport
       parentRoute: typeof BotLancesRoute
+    }
+    '/concorrentes/$categoryId/$companyId': {
+      id: '/concorrentes/$categoryId/$companyId'
+      path: '/$companyId'
+      fullPath: '/concorrentes/$categoryId/$companyId'
+      preLoaderRoute: typeof ConcorrentesCategoryIdCompanyIdRouteImport
+      parentRoute: typeof ConcorrentesCategoryIdRoute
     }
     '/dash2/configuracoes/empresa': {
       id: '/dash2/configuracoes/empresa'
@@ -770,6 +979,13 @@ declare module '@tanstack/react-router' {
       path: '/licitacoes/buscar'
       fullPath: '/dash2/licitacoes/buscar'
       preLoaderRoute: typeof Dash2LicitacoesBuscarRouteImport
+      parentRoute: typeof Dash2Route
+    }
+    '/dash2/licitacoes/filtros-salvos': {
+      id: '/dash2/licitacoes/filtros-salvos'
+      path: '/licitacoes/filtros-salvos'
+      fullPath: '/dash2/licitacoes/filtros-salvos'
+      preLoaderRoute: typeof Dash2LicitacoesFiltrosSalvosRouteImport
       parentRoute: typeof Dash2Route
     }
     '/dash2/operacao/anotacoes': {
@@ -888,6 +1104,34 @@ const CategoriasRouteWithChildren = CategoriasRoute._addFileChildren(
   CategoriasRouteChildren,
 )
 
+interface ConcorrentesCategoryIdRouteChildren {
+  ConcorrentesCategoryIdCompanyIdRoute: typeof ConcorrentesCategoryIdCompanyIdRoute
+}
+
+const ConcorrentesCategoryIdRouteChildren: ConcorrentesCategoryIdRouteChildren =
+  {
+    ConcorrentesCategoryIdCompanyIdRoute: ConcorrentesCategoryIdCompanyIdRoute,
+  }
+
+const ConcorrentesCategoryIdRouteWithChildren =
+  ConcorrentesCategoryIdRoute._addFileChildren(
+    ConcorrentesCategoryIdRouteChildren,
+  )
+
+interface ConcorrentesRouteChildren {
+  ConcorrentesCategoryIdRoute: typeof ConcorrentesCategoryIdRouteWithChildren
+  ConcorrentesIndexRoute: typeof ConcorrentesIndexRoute
+}
+
+const ConcorrentesRouteChildren: ConcorrentesRouteChildren = {
+  ConcorrentesCategoryIdRoute: ConcorrentesCategoryIdRouteWithChildren,
+  ConcorrentesIndexRoute: ConcorrentesIndexRoute,
+}
+
+const ConcorrentesRouteWithChildren = ConcorrentesRoute._addFileChildren(
+  ConcorrentesRouteChildren,
+)
+
 interface Dash2OperacaoMinhasLicitacoesLicitacaoIdRouteChildren {
   Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute: typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdDisputaRoute
   Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRoute: typeof Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRoute
@@ -932,6 +1176,7 @@ interface Dash2RouteChildren {
   Dash2GestaoTemplatesEmailsRoute: typeof Dash2GestaoTemplatesEmailsRoute
   Dash2LicitacoesLicitacaoIdRoute: typeof Dash2LicitacoesLicitacaoIdRoute
   Dash2LicitacoesBuscarRoute: typeof Dash2LicitacoesBuscarRoute
+  Dash2LicitacoesFiltrosSalvosRoute: typeof Dash2LicitacoesFiltrosSalvosRoute
   Dash2OperacaoAnotacoesRoute: typeof Dash2OperacaoAnotacoesRoute
   Dash2OperacaoMinhasLicitacoesRoute: typeof Dash2OperacaoMinhasLicitacoesRouteWithChildren
   Dash2OportunidadesFavoritosRoute: typeof Dash2OportunidadesFavoritosRoute
@@ -950,6 +1195,7 @@ const Dash2RouteChildren: Dash2RouteChildren = {
   Dash2GestaoTemplatesEmailsRoute: Dash2GestaoTemplatesEmailsRoute,
   Dash2LicitacoesLicitacaoIdRoute: Dash2LicitacoesLicitacaoIdRoute,
   Dash2LicitacoesBuscarRoute: Dash2LicitacoesBuscarRoute,
+  Dash2LicitacoesFiltrosSalvosRoute: Dash2LicitacoesFiltrosSalvosRoute,
   Dash2OperacaoAnotacoesRoute: Dash2OperacaoAnotacoesRoute,
   Dash2OperacaoMinhasLicitacoesRoute:
     Dash2OperacaoMinhasLicitacoesRouteWithChildren,
@@ -966,13 +1212,20 @@ const rootRouteChildren: RootRouteChildren = {
   BotLancesRoute: BotLancesRouteWithChildren,
   CadastroRoute: CadastroRoute,
   CategoriasRoute: CategoriasRouteWithChildren,
+  ConcorrentesRoute: ConcorrentesRouteWithChildren,
   Dash2Route: Dash2RouteWithChildren,
+  DocumentosRoute: DocumentosRoute,
+  IntegracoesRoute: IntegracoesRoute,
   ItensRoute: ItensRoute,
   LoginRoute: LoginRoute,
   LpRoute: LpRoute,
   OnboardingRoute: OnboardingRoute,
+  PipelineRoute: PipelineRoute,
+  RaioXRoute: RaioXRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
+  RelatoriosRoute: RelatoriosRoute,
+  ScoreOrgaosRoute: ScoreOrgaosRoute,
   ConviteTokenRoute: ConviteTokenRoute,
   PlanosCompararRoute: PlanosCompararRoute,
 }

@@ -34,7 +34,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks, type HowItWorksStep } from "@/components/dash2/PageHowItWorks";
 import { Panel } from "@/components/dash2/Panel";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
+import { ResourceListGridHeader } from "@/components/dash2/ResourceList";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -161,6 +165,139 @@ const sectionContent: Record<
   },
 };
 
+const sectionGuides: Record<
+  AccountSection,
+  { title: string; description: string; steps: readonly HowItWorksStep[] }
+> = {
+  perfil: {
+    title: "Mantenha sua identidade de conta atualizada",
+    description:
+      "Seus dados pessoais ajudam a reconhecer responsáveis e manter a comunicação da operação correta.",
+    steps: [
+      {
+        title: "Revise seus dados",
+        description: "Confira nome, e-mail e informações que identificam sua conta.",
+      },
+      {
+        title: "Atualize o necessário",
+        description: "Faça alterações apenas nos campos que precisam ser corrigidos.",
+      },
+      {
+        title: "Salve com segurança",
+        description: "Confirme a atualização antes de voltar para a operação.",
+      },
+    ],
+  },
+  empresa: {
+    title: "Organize o workspace que sustenta sua operação",
+    description:
+      "Os dados da empresa aparecem nos fluxos compartilhados e ajudam a equipe a trabalhar no contexto certo.",
+    steps: [
+      {
+        title: "Confira o cadastro",
+        description: "Revise razão social, identificação e dados do workspace.",
+      },
+      {
+        title: "Atualize responsáveis",
+        description: "Mantenha os contatos e informações operacionais corretos.",
+      },
+      {
+        title: "Aplique à equipe",
+        description: "Salve para que todos trabalhem com o mesmo contexto.",
+      },
+    ],
+  },
+  equipe: {
+    title: "Dê a cada pessoa somente o acesso necessário",
+    description:
+      "Convide colaboradores, defina funções e mantenha a operação protegida sem travar o trabalho da equipe.",
+    steps: [
+      {
+        title: "Convide a pessoa",
+        description: "Envie o acesso para quem precisa participar do workspace.",
+      },
+      {
+        title: "Defina a função",
+        description: "Escolha permissões coerentes com a responsabilidade de cada membro.",
+      },
+      {
+        title: "Revise os acessos",
+        description: "Remova ou atualize permissões sempre que a equipe mudar.",
+      },
+    ],
+  },
+  plano: {
+    title: "Acompanhe assinatura, uso e cobranças em um só lugar",
+    description:
+      "Consulte o plano atual, recursos consumidos e documentos de faturamento antes de qualquer mudança.",
+    steps: [
+      {
+        title: "Confira o plano",
+        description: "Veja recursos incluídos, ciclo e capacidade disponível.",
+      },
+      { title: "Revise o consumo", description: "Entenda o uso do workspace e possíveis limites." },
+      {
+        title: "Consulte as faturas",
+        description: "Abra cobranças, método de pagamento e comprovantes.",
+      },
+    ],
+  },
+  seguranca: {
+    title: "Proteja a conta sem dificultar o acesso legítimo",
+    description:
+      "Revise credenciais, sessões e camadas de proteção para reduzir riscos no workspace.",
+    steps: [
+      {
+        title: "Atualize credenciais",
+        description: "Mantenha senha e métodos de recuperação em dia.",
+      },
+      {
+        title: "Revise sessões",
+        description: "Encerre acessos que não reconhece ou não são mais necessários.",
+      },
+      {
+        title: "Ative proteções",
+        description: "Use verificações adicionais sempre que estiverem disponíveis.",
+      },
+    ],
+  },
+  notificacoes: {
+    title: "Receba o que importa no canal certo",
+    description:
+      "Escolha quais acontecimentos merecem aviso imediato e quais podem entrar em um resumo.",
+    steps: [
+      { title: "Escolha os eventos", description: "Ative apenas alertas que exigem sua atenção." },
+      {
+        title: "Defina os canais",
+        description: "Combine avisos na plataforma, e-mail e WhatsApp.",
+      },
+      {
+        title: "Salve as preferências",
+        description: "Aplique a regra e confira os próximos avisos recebidos.",
+      },
+    ],
+  },
+  ajuda: {
+    title: "Encontre orientação ou fale com o suporte",
+    description:
+      "Pesquise materiais práticos primeiro e abra um chamado com contexto quando precisar de atendimento humano.",
+    steps: [
+      {
+        title: "Descreva a dúvida",
+        description: "Busque pelo assunto, recurso ou situação que encontrou.",
+      },
+      {
+        title: "Siga o guia",
+        description: "Abra uma orientação prática sem sair do seu contexto.",
+      },
+      {
+        title: "Abra um chamado",
+        description: "Envie o caso ao suporte se ainda precisar de ajuda.",
+      },
+    ],
+  },
+};
+
 function useStoredState<T>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] {
   const storageKey = `licitabase:account:${key}`;
   const [value, setValue] = useState<T>(() => {
@@ -200,25 +337,25 @@ export function AccountSettingsPage({ section }: { section: AccountSection }) {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
       <div className="space-y-5 sm:space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[12px] font-bold text-brand-strong">{current.eyebrow}</p>
-            <h1 className="mt-1 text-[24px] font-extrabold tracking-[-0.02em] text-ink sm:text-[28px]">
-              {current.title}
-            </h1>
-            <p className="mt-2 max-w-2xl text-[13px] text-slate-text">{current.description}</p>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setNavigationOpen(true)}
-            className="min-h-11 rounded-xl border-hairline bg-white text-[12px] font-bold text-ink lg:hidden"
-          >
-            <selectedItem.icon className="size-4 text-brand-strong" />
-            {selectedItem.label}
-            <ChevronRight className="size-4 text-slate-text" />
-          </Button>
-        </header>
+        <PageContextHeader
+          context={section === "ajuda" ? "support" : "settings"}
+          title={current.title}
+          description={current.description}
+          actions={
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setNavigationOpen(true)}
+              className="min-h-11 rounded-xl border-hairline bg-white text-[12px] font-bold text-ink lg:hidden"
+            >
+              <selectedItem.icon className="size-4 text-brand-strong" />
+              {selectedItem.label}
+              <ChevronRight className="size-4 text-slate-text" />
+            </Button>
+          }
+        />
+
+        <PageHowItWorks {...sectionGuides[section]} />
 
         <div className="grid items-start gap-5 lg:grid-cols-[252px_minmax(0,1fr)] lg:gap-6">
           <AccountNavigation section={section} className="hidden lg:block" />
@@ -553,11 +690,22 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
+const teamListColumns = [
+  { id: "role", width: 164, min: 130, max: 260 },
+  { id: "access", width: 132, min: 112, max: 220 },
+  { id: "actions", width: 56, min: 48, max: 96 },
+];
+
 function TeamSettings() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("Analista de licitações");
   const [memberInAction, setMemberInAction] = useState<string | null>(null);
+  const { gridTemplateColumns: teamGridTemplateColumns, getResizeHandleProps } =
+    useResizableColumns({
+      storageKey: "licitabase.team-list-widths.v1",
+      columns: teamListColumns,
+    });
   const [people, setPeople] = useStoredState("team", [
     {
       id: "jussefer",
@@ -632,20 +780,50 @@ function TeamSettings() {
           </Button>
         </div>
         <div className="mt-4 divide-y divide-hairline">
+          <ResourceListGridHeader
+            gridTemplateColumns={teamGridTemplateColumns}
+            className="px-1 py-3"
+          >
+            <span className="relative">
+              Pessoa
+              <button
+                {...getResizeHandleProps("role")}
+                aria-label="Redimensionar largura da coluna Função"
+              />
+            </span>
+            <span className="relative">
+              Função
+              <button
+                {...getResizeHandleProps("access")}
+                aria-label="Redimensionar largura da coluna Acesso"
+              />
+            </span>
+            <span className="relative">
+              Acesso
+              <button
+                {...getResizeHandleProps("actions")}
+                aria-label="Redimensionar largura da coluna Ações"
+              />
+            </span>
+            <span className="text-right">Ações</span>
+          </ResourceListGridHeader>
           {people.map(({ id, name, email, role, status }) => (
             <div
               key={email}
-              className="flex flex-col gap-3 py-3 first:pt-0 sm:flex-row sm:items-center"
+              className="flex flex-col gap-3 py-3 first:pt-0 sm:flex-row sm:items-center xl:grid xl:grid-cols-none xl:py-4"
+              style={{ gridTemplateColumns: teamGridTemplateColumns }}
             >
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#E8F8ED] text-[11px] font-extrabold text-brand-strong">
-                {(name ?? "")
-                  .split(" ")
-                  .map((part) => part[0])
-                  .join("")}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-extrabold text-ink">{name}</p>
-                <p className="truncate text-[11px] text-slate-text">{email}</p>
+              <div className="flex min-w-0 flex-1 items-center gap-3 xl:flex-none">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#E8F8ED] text-[11px] font-extrabold text-brand-strong">
+                  {(name ?? "")
+                    .split(" ")
+                    .map((part) => part[0])
+                    .join("")}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-extrabold text-ink">{name}</p>
+                  <p className="truncate text-[11px] text-slate-text">{email}</p>
+                </div>
               </div>
               <p className="text-[12px] font-semibold text-slate-text">{role}</p>
               <span

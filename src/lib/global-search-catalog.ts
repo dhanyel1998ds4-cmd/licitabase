@@ -42,8 +42,16 @@ export type GlobalSearchFilter =
 export type GlobalSearchRoute =
   | "/categorias"
   | "/itens"
+  | "/documentos"
+  | "/pipeline"
+  | "/raio-x"
+  | "/score-orgaos"
+  | "/relatorios"
+  | "/integracoes"
   | "/dash2"
+  | "/concorrentes"
   | "/dash2/licitacoes/buscar"
+  | "/dash2/licitacoes/filtros-salvos"
   | "/dash2/licitacoes/$licitacaoId"
   | "/dash2/oportunidades/novas"
   | "/dash2/oportunidades/favoritos"
@@ -386,7 +394,9 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     keywords: ["cnpj", "empresas", "múltiplos", "filial", "workspace"],
     synonyms: ["vários cnpjs", "multiempresa"],
     permission: ["admin"],
-    status: "coming-soon",
+    status: "available",
+    route: "/documentos",
+    contextPaths: ["/documentos"],
   },
   {
     id: "team-permissions",
@@ -469,7 +479,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Conta", "Configurações"],
     keywords: ["senha", "segurança", "trocar", "alterar", "login"],
     synonyms: ["nova senha", "redefinir senha", "mudar senha"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/configuracoes/seguranca",
   },
   {
     id: "notification-preferences",
@@ -550,7 +561,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Operação"],
     keywords: ["documento", "edital", "anexo", "arquivo", "pdf"],
     synonyms: ["arquivos", "documentação", "termo de referência"],
-    status: "coming-soon",
+    status: "available",
+    route: "/documentos",
   },
   {
     id: "bid-xray",
@@ -564,7 +576,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Operação"],
     keywords: ["raio x", "edital", "análise", "requisito", "habilitação", "risco"],
     synonyms: ["analisar edital", "resumo do edital", "inteligência do edital"],
-    status: "coming-soon",
+    status: "available",
+    route: "/raio-x",
   },
   {
     id: "agency-score",
@@ -578,7 +591,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Gestão"],
     keywords: ["score", "órgão", "risco", "prefeitura", "histórico", "compras"],
     synonyms: ["nota do órgão", "avaliação do comprador"],
-    status: "coming-soon",
+    status: "available",
+    route: "/score-orgaos",
   },
   {
     id: "integrations",
@@ -592,7 +606,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     keywords: ["integração", "portal", "conexão", "comprasnet", "licitanet", "pncp"],
     synonyms: ["portais conectados", "conectar plataforma"],
     permission: ["admin"],
-    status: "coming-soon",
+    status: "available",
+    route: "/integracoes",
   },
   {
     id: "help-support",
@@ -619,7 +634,9 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Configurações"],
     keywords: ["filtro", "salvo", "busca", "preferência"],
     synonyms: ["pesquisas salvas", "filtros favoritos"],
-    status: "coming-soon",
+    status: "available",
+    route: "/dash2/licitacoes/filtros-salvos",
+    contextPaths: ["/dash2/licitacoes/filtros-salvos"],
   },
   {
     id: "favorites",
@@ -649,7 +666,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Páginas", "Gestão"],
     keywords: ["relatório", "indicador", "gestão", "resultado", "análise"],
     synonyms: ["painel gerencial", "dados consolidados"],
-    status: "coming-soon",
+    status: "available",
+    route: "/relatorios",
   },
   {
     id: "workspace-sessions",
@@ -690,7 +708,8 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Operação"],
     keywords: ["pipeline", "etapa", "análise", "prioridade", "proposta", "disputa"],
     synonyms: ["funil de oportunidades", "kanban de licitações"],
-    status: "coming-soon",
+    status: "available",
+    route: "/pipeline",
   },
   {
     id: "my-bids",
@@ -730,7 +749,9 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     filters: ["Oportunidades", "Gestão"],
     keywords: ["concorrente", "fornecedor", "competição", "disputa", "histórico"],
     synonyms: ["concorrência", "empresas concorrentes"],
-    status: "coming-soon",
+    status: "available",
+    route: "/concorrentes",
+    contextPaths: ["/concorrentes"],
   },
 ];
 

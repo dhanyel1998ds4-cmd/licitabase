@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks, type HowItWorksStep } from "@/components/dash2/PageHowItWorks";
 import { cn } from "@/lib/utils";
 
 export const botInputClassName =
@@ -19,37 +21,34 @@ export function BotPageHeader({
   title,
   description,
   actions,
+  guide,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   actions?: ReactNode;
+  guide?: {
+    title: string;
+    description: string;
+    steps: readonly HowItWorksStep[];
+  };
 }) {
   return (
-    <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-      <div className="flex min-w-0 items-start gap-3">
-        <span className="mt-1 h-8 w-1 shrink-0 rounded-full bg-[#29C454]" aria-hidden="true" />
-        <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#15943a]">
-            {eyebrow}
-          </p>
-          <h1 className="mt-1 text-[24px] font-bold leading-tight tracking-[-0.025em] text-ink sm:text-[27px]">
-            {title}
-          </h1>
-          {description ? (
-            <p className="mt-1.5 max-w-[68ch] text-[13px] font-medium leading-6 text-slate-text sm:text-[14px]">
-              {description}
-            </p>
-          ) : null}
-        </div>
-      </div>
+    <>
+      <PageContextHeader
+        context="bot"
+        contextLabel={eyebrow}
+        title={title}
+        description={description}
+        actions={actions}
+        className="sm:items-start"
+        actionsClassName="[&>*]:focus-visible:ring-[#29C454]/20"
+      />
 
-      {actions ? (
-        <div className="flex w-full flex-col gap-2 min-[480px]:flex-row sm:w-auto sm:flex-wrap sm:items-center [&>*]:min-h-11 [&>*]:justify-center [&>*]:rounded-xl [&>*]:shadow-none [&>*]:focus-visible:ring-[#29C454]/20 min-[480px]:[&>*]:flex-1 sm:[&>*]:flex-none">
-          {actions}
-        </div>
+      {guide ? (
+        <PageHowItWorks title={guide.title} description={guide.description} steps={guide.steps} />
       ) : null}
-    </header>
+    </>
   );
 }
 

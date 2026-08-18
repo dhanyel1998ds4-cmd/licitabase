@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { historyRows } from "@/lib/bid-bot-fixtures";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
 
 export const Route = createFileRoute("/bot-lances/historico")({
   head: () => ({
@@ -47,9 +48,21 @@ function resultTone(result: string) {
 
 const resultFilters = ["Todos", "Vencemos", "Perdemos", "Cancelada"] as const;
 
+const historyTableColumns = [
+  { id: "dispute", width: 360, min: 220, max: 620 },
+  { id: "result", width: 130, min: 112, max: 200 },
+  { id: "bid", width: 148, min: 118, max: 240 },
+  { id: "bids", width: 88, min: 74, max: 140 },
+];
+
 function HistoryPage() {
   const [resultFilter, setResultFilter] = useState<(typeof resultFilters)[number]>("Todos");
   const [query, setQuery] = useState("");
+  const { getColumnWidth, getResizeHandleProps } = useResizableColumns({
+    storageKey: "licitabase.bot-history-table-widths.v1",
+    columns: historyTableColumns,
+    leadingColumn: "112px",
+  });
 
   const rows = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -68,6 +81,25 @@ function HistoryPage() {
       <BotPageHeader
         title="Histórico"
         description="Registro das disputas encerradas e seus resultados."
+        guide={{
+          title: "Recupere decisões e resultados sem perder o contexto",
+          description:
+            "Encontre uma sessão encerrada, revise seus lances e resultados e use o histórico como referência para a próxima oportunidade.",
+          steps: [
+            {
+              title: "Encontre a sessão",
+              description: "Filtre por resultado ou busque pela disputa e data.",
+            },
+            {
+              title: "Revise o resultado",
+              description: "Consulte lances, posição final e encerramento.",
+            },
+            {
+              title: "Reaproveite o aprendizado",
+              description: "Leve os achados para a estratégia seguinte.",
+            },
+          ],
+        }}
       />
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -100,13 +132,44 @@ function HistoryPage() {
       <CardShell eyebrow="Encerradas" title="Disputas finalizadas" bodyClassName="p-0">
         <MobileHistoryCards items={rows} />
         <div className="hidden overflow-x-auto lg:block">
-          <Table>
+          <Table className="table-fixed">
+            <colgroup>
+              <col style={{ width: 112 }} />
+              <col style={{ width: getColumnWidth("dispute") }} />
+              <col style={{ width: getColumnWidth("result") }} />
+              <col style={{ width: getColumnWidth("bid") }} />
+              <col style={{ width: getColumnWidth("bids") }} />
+            </colgroup>
             <TableHeader>
               <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Disputa</TableHead>
-                <TableHead>Resultado</TableHead>
-                <TableHead className="text-right">Nosso lance</TableHead>
+                <TableHead className="relative">
+                  Data
+                  <button
+                    {...getResizeHandleProps("dispute")}
+                    aria-label="Redimensionar largura da coluna Disputa"
+                  />
+                </TableHead>
+                <TableHead className="relative">
+                  Disputa
+                  <button
+                    {...getResizeHandleProps("result")}
+                    aria-label="Redimensionar largura da coluna Resultado"
+                  />
+                </TableHead>
+                <TableHead className="relative">
+                  Resultado
+                  <button
+                    {...getResizeHandleProps("bid")}
+                    aria-label="Redimensionar largura da coluna Nosso lance"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Nosso lance
+                  <button
+                    {...getResizeHandleProps("bids")}
+                    aria-label="Redimensionar largura da coluna Lances"
+                  />
+                </TableHead>
                 <TableHead className="text-right">Lances</TableHead>
               </TableRow>
             </TableHeader>

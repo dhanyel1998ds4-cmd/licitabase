@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandMarks";
 import { InternalPageState } from "@/components/dash2/InternalPageState";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks } from "@/components/dash2/PageHowItWorks";
 import { Panel } from "@/components/dash2/Panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -435,21 +437,36 @@ function EmailTemplatesPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
       <div className="space-y-5 sm:space-y-6">
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[12px] font-bold text-brand-strong">Gestão</p>
-            <h1 className="mt-1 text-[24px] font-extrabold tracking-[-0.02em] text-ink sm:text-[28px]">
-              Templates de e-mail
-            </h1>
-            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-slate-text">
-              Uma biblioteca editorial para revisar cada comunicação antes de ela existir em
-              produção. Nenhum e-mail será enviado nesta etapa.
-            </p>
-          </div>
-          <div className="rounded-xl border border-[#29C454]/20 bg-[#F1FFF5] px-3 py-2 text-[11px] font-semibold text-brand-strong">
-            {emailTemplates.length} comunicações mapeadas · apenas prévias
-          </div>
-        </header>
+        <PageContextHeader
+          context="management"
+          title="Templates de e-mail"
+          description="Uma biblioteca editorial para revisar cada comunicação antes de ela existir em produção. Nenhum e-mail será enviado nesta etapa."
+          className="lg:items-end"
+          actions={
+            <div className="rounded-xl border border-[#29C454]/20 bg-[#F1FFF5] px-3 py-2 text-[11px] font-semibold text-brand-strong">
+              {emailTemplates.length} comunicações mapeadas · apenas prévias
+            </div>
+          }
+        />
+
+        <PageHowItWorks
+          title="Revise a comunicação antes de ela chegar ao cliente"
+          description="Navegue por coleções, abra cada prévia no contexto de uma caixa de entrada e compare tom, dados e chamada para ação antes da implementação técnica."
+          steps={[
+            {
+              title: "Escolha uma coleção",
+              description: "Comece pelo tipo de comunicação que quer revisar.",
+            },
+            {
+              title: "Leia a prévia",
+              description: "Confira assunto, remetente, corpo e chamada para ação.",
+            },
+            {
+              title: "Registre o padrão",
+              description: "Use a referência aprovada na construção do e-mail real.",
+            },
+          ]}
+        />
 
         <Panel className="p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

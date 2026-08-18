@@ -1,6 +1,17 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, Bot, CircleDot, Radio, TrendingDown, Trophy } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Bot,
+  CircleDot,
+  Radio,
+  TrendingDown,
+  Trophy,
+} from "lucide-react";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
+import { ResourceListGridHeader } from "@/components/dash2/ResourceList";
 import { StatusPill, type StatusVisual } from "@/components/bot/StatusPill";
 import {
   Table,
@@ -86,6 +97,15 @@ function DisputeRowContent({ dispute: d, visual }: { dispute: Dispute; visual: S
   );
 }
 
+const overviewDisputeColumns = [
+  { id: "session", width: 104, min: 96, max: 168 },
+  { id: "status", width: 104, min: 96, max: 164 },
+  { id: "items", width: 58, min: 52, max: 104 },
+  { id: "bids", width: 58, min: 52, max: 104 },
+  { id: "value", width: 122, min: 112, max: 220 },
+  { id: "action", width: 36, min: 32, max: 56 },
+];
+
 /** List of disputes. When `linked` is false rows are static (used on the landing page). */
 export function DisputeList({
   items,
@@ -96,27 +116,116 @@ export function DisputeList({
   linked?: boolean;
   visual?: StatusVisual;
 }) {
+  const { gridTemplateColumns, getResizeHandleProps } = useResizableColumns({
+    storageKey: "licitabase.bot-overview-disputes-widths.v1",
+    columns: overviewDisputeColumns,
+    leadingColumn: "minmax(230px, 1fr)",
+  });
+
+  const dashboardList = visual === "dash2";
+
   return (
-    <ul className="divide-y divide-border/50">
+    <div className="divide-y divide-border/50" role="list" aria-label="Últimas disputas do bot">
+      {dashboardList ? (
+        <ResourceListGridHeader
+          gridTemplateColumns={gridTemplateColumns}
+          className="px-4 py-3 sm:px-6"
+        >
+          <span className="relative">
+            Licitação
+            <button {...getResizeHandleProps("session")} aria-label="Redimensionar coluna Sessão" />
+          </span>
+          <span className="relative">
+            Sessão
+            <button {...getResizeHandleProps("status")} aria-label="Redimensionar coluna Status" />
+          </span>
+          <span className="relative">
+            Status
+            <button {...getResizeHandleProps("items")} aria-label="Redimensionar coluna Itens" />
+          </span>
+          <span className="relative text-right">
+            Itens
+            <button {...getResizeHandleProps("bids")} aria-label="Redimensionar coluna Lances" />
+          </span>
+          <span className="relative text-right">
+            Lances
+            <button
+              {...getResizeHandleProps("value")}
+              aria-label="Redimensionar coluna Valor estimado"
+            />
+          </span>
+          <span className="relative text-right">
+            Valor
+            <button {...getResizeHandleProps("action")} aria-label="Redimensionar coluna Ação" />
+          </span>
+          <span className="sr-only">Ação</span>
+        </ResourceListGridHeader>
+      ) : null}
       {items.map((d) => {
-        const inner = <DisputeRowContent dispute={d} visual={visual} />;
+        const inner = dashboardList ? (
+          <>
+            <div className="xl:hidden">
+              <DisputeRowContent dispute={d} visual={visual} />
+            </div>
+            <div className="hidden min-w-0 items-center gap-3 xl:flex">
+              <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand-tint">
+                <Bot className="size-4 text-brand-strong" aria-hidden="true" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[13px] font-bold text-navy">{d.agency}</p>
+                <p className="truncate text-[12px] text-slate-text/90">{d.object}</p>
+              </div>
+            </div>
+            <span className="hidden text-[12px] text-slate-text xl:block">{d.date}</span>
+            <div className="hidden xl:block">
+              <StatusPill tone={disputeStatusTone(d.status)} visual={visual}>
+                {d.status}
+              </StatusPill>
+            </div>
+            <span className="tnum hidden whitespace-nowrap text-right text-[13px] font-semibold text-ink xl:block">
+              {d.items} {d.items === 1 ? "item" : "itens"}
+            </span>
+            <span className="tnum hidden text-right text-[13px] text-ink xl:block">{d.bids}</span>
+            <span className="tnum hidden whitespace-nowrap text-right text-[13px] font-bold text-ink xl:block">
+              {d.estimatedValue}
+            </span>
+            <ArrowRight
+              className="hidden size-4 justify-self-end text-slate-text/70 xl:block"
+              aria-hidden="true"
+            />
+          </>
+        ) : (
+          <DisputeRowContent dispute={d} visual={visual} />
+        );
         return (
-          <li key={d.id}>
+          <div key={d.id} role="listitem">
             {linked ? (
               <Link
                 to="/bot-lances/disputas/$disputeId"
                 params={{ disputeId: d.id }}
-                className="block px-4 py-4 transition-colors hover:bg-[#F8FAFC] sm:px-6"
+                className={cn(
+                  "block px-4 py-4 transition-colors hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454] sm:px-6",
+                  dashboardList && "xl:grid xl:items-center xl:gap-0",
+                )}
+                style={dashboardList ? { gridTemplateColumns } : undefined}
               >
                 {inner}
               </Link>
             ) : (
-              <div className="block px-4 py-4 sm:px-6">{inner}</div>
+              <div
+                className={cn(
+                  "block px-4 py-4 sm:px-6",
+                  dashboardList && "xl:grid xl:items-center xl:gap-0",
+                )}
+                style={dashboardList ? { gridTemplateColumns } : undefined}
+              >
+                {inner}
+              </div>
             )}
-          </li>
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
 }
 

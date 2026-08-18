@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, PanelLeft, PanelLeftDashed } from "lucide-react";
 import { SidebarNavItem, type SidebarNavItemProps } from "./SidebarNavItem";
@@ -122,6 +122,8 @@ export function Sidebar({
 
   const [openGroup, setOpenGroup] = useState<string | null>("Explorar licitações");
   const [activeIndicator, setActiveIndicator] = useState<ActiveIndicatorLayout | null>(null);
+  const surfaceRef = useRef<HTMLElement>(null);
+  const indicatorLayoutVersion = `${currentPath}:${openGroup ?? "none"}:${collapsed ? "compact" : "expanded"}`;
 
   const reportActiveIndicator = useCallback((next: ActiveIndicatorLayout) => {
     setActiveIndicator((current) => {
@@ -150,8 +152,62 @@ export function Sidebar({
   const isDashboardActive =
     currentPath.startsWith("/dash2") || currentPath.startsWith("/bot-lances");
 
+  useLayoutEffect(() => {
+    const surface = surfaceRef.current;
+    if (!surface) return;
+
+    let frame = 0;
+    const sync = () => {
+      const activeTarget = surface.querySelector<HTMLElement>(
+        '[data-sidebar-active-indicator-target="true"]',
+      );
+
+      // Quando o grupo ativo foi fechado, o item deixa de existir visualmente.
+      // Limpar o indicador evita que ele fique sobre outro grupo ou subitem.
+      if (!activeTarget || activeTarget.getClientRects().length === 0) {
+        setActiveIndicator(null);
+        return;
+      }
+
+      const targetRect = activeTarget.getBoundingClientRect();
+      const surfaceRect = surface.getBoundingClientRect();
+      reportActiveIndicator({
+        top: targetRect.top - surfaceRect.top,
+        height: targetRect.height,
+      });
+    };
+
+    const scheduleSync = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(sync);
+    };
+
+    // Sincroniza antes da pintura e uma segunda vez após o layout do
+    // Collapsible estabilizar. Assim o conector não preserva coordenadas antigas.
+    sync();
+    scheduleSync();
+
+    const observer = new MutationObserver(scheduleSync);
+    observer.observe(surface, {
+      attributes: true,
+      attributeFilter: ["data-state"],
+      childList: true,
+      subtree: true,
+    });
+    surface.addEventListener("transitionend", scheduleSync, true);
+    window.addEventListener("resize", scheduleSync);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      surface.removeEventListener("transitionend", scheduleSync, true);
+      window.removeEventListener("resize", scheduleSync);
+    };
+  }, [indicatorLayoutVersion, reportActiveIndicator]);
+
   return (
     <nav
+      ref={surfaceRef}
       aria-label="Navegação principal"
       data-sidebar-surface
       className={cn(
@@ -260,6 +316,7 @@ export function Sidebar({
               inverted
               onActiveLayout={reportActiveIndicator}
               sharedIndicatorReady={Boolean(activeIndicator)}
+              indicatorLayoutVersion={indicatorLayoutVersion}
             />
           ))}
         </ul>
@@ -308,6 +365,7 @@ export function Sidebar({
                           inverted
                           onActiveLayout={reportActiveIndicator}
                           sharedIndicatorReady={Boolean(activeIndicator)}
+                          indicatorLayoutVersion={indicatorLayoutVersion}
                         />
                       ))}
                     </ul>
@@ -362,6 +420,7 @@ export function Sidebar({
                             inverted
                             onActiveLayout={reportActiveIndicator}
                             sharedIndicatorReady={Boolean(activeIndicator)}
+                            indicatorLayoutVersion={indicatorLayoutVersion}
                           />
                         ))}
                       </ul>

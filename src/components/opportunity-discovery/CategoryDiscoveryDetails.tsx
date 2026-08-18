@@ -76,6 +76,123 @@ const categories: Record<string, CategoryDiscovery> = {
 
 const fallbackCategory = categories["ti"]!;
 
+/** Categorias do catálogo que ainda não têm uma curadoria de dados própria nesta demonstração. */
+const standardCategoryDetails: Record<
+  string,
+  Pick<CategoryDiscovery, "name" | "description" | "terms">
+> = {
+  "saude-medicamentos": {
+    name: "Saúde e medicamentos",
+    description: "Editais de medicamentos, insumos e serviços para a área da saúde.",
+    terms: ["medicamento", "insumo", "saúde"],
+  },
+  "manutencao-predial": {
+    name: "Manutenção predial",
+    description: "Editais de conservação, reparos e infraestrutura de edifícios.",
+    terms: ["manutenção", "conservação", "reparo"],
+  },
+  "construcao-civil": {
+    name: "Construção civil",
+    description: "Editais de obras, projetos, materiais e serviços de engenharia.",
+    terms: ["obra", "engenharia", "reforma"],
+  },
+  "veiculos-transporte": {
+    name: "Veículos e transporte",
+    description: "Editais de veículos, peças, logística e transporte especializado.",
+    terms: ["veículo", "transporte", "peça"],
+  },
+  "educacao-capacitacao": {
+    name: "Educação e capacitação",
+    description: "Editais de cursos, formação e materiais pedagógicos.",
+    terms: ["capacitação", "curso", "educação"],
+  },
+  "alimentacao-refeicao": {
+    name: "Alimentação e refeição",
+    description: "Editais de gêneros, merenda, refeições e fornecimento de alimentos.",
+    terms: ["alimentação", "refeição", "gêneros"],
+  },
+  "eventos-producoes-artisticas": {
+    name: "Eventos e produções artísticas",
+    description: "Editais de eventos, locação, produção cultural e serviços artísticos.",
+    terms: ["evento", "produção", "cultural"],
+  },
+  "equipamentos-medico-hospitalares": {
+    name: "Equipamentos médico-hospitalares",
+    description: "Editais de equipamentos e materiais para atendimento em saúde.",
+    terms: ["hospitalar", "equipamento médico", "aparelho"],
+  },
+  "equipamentos-informatica": {
+    name: "Equipamentos de informática",
+    description: "Editais de computadores, monitores, periféricos e infraestrutura de TI.",
+    terms: ["notebook", "monitor", "computador"],
+  },
+  "servicos-limpeza": {
+    name: "Serviços de limpeza",
+    description: "Editais de limpeza, conservação, materiais e apoio operacional.",
+    terms: ["limpeza", "conservação", "higienização"],
+  },
+  "energia-utilidades": {
+    name: "Energia e utilidades",
+    description: "Editais de energia, água, saneamento, iluminação e utilidades públicas.",
+    terms: ["energia", "iluminação", "saneamento"],
+  },
+  consultoria: {
+    name: "Consultoria",
+    description: "Editais de consultoria técnica, gestão e assessoria especializada.",
+    terms: ["consultoria", "assessoria", "diagnóstico"],
+  },
+  "material-escritorio": {
+    name: "Material de escritório",
+    description: "Editais de papelaria, expediente e suprimentos corporativos.",
+    terms: ["papelaria", "expediente", "suprimento"],
+  },
+  mobiliario: {
+    name: "Mobiliário",
+    description: "Editais de móveis corporativos, escolares e equipamentos de apoio.",
+    terms: ["mobiliário", "mesa", "cadeira"],
+  },
+  "meio-ambiente-sustentabilidade": {
+    name: "Meio ambiente e sustentabilidade",
+    description: "Editais de gestão ambiental, resíduos e sustentabilidade.",
+    terms: ["ambiental", "resíduo", "sustentabilidade"],
+  },
+  "aquisicao-licencas": {
+    name: "Aquisição de licenças",
+    description: "Editais de licenças de uso, assinaturas e direitos de acesso.",
+    terms: ["licença", "assinatura", "licenciamento"],
+  },
+  "servicos-ti": {
+    name: "Serviços de TI",
+    description: "Editais de suporte, nuvem, infraestrutura e serviços de tecnologia.",
+    terms: ["suporte técnico", "nuvem", "infraestrutura"],
+  },
+  "agropecuaria-insumos-rurais": {
+    name: "Agropecuária e insumos rurais",
+    description: "Editais de insumos, máquinas e serviços para o setor rural.",
+    terms: ["agropecuária", "semente", "fertilizante"],
+  },
+  telecomunicacoes: {
+    name: "Telecomunicações",
+    description: "Editais de telefonia, conectividade, redes e comunicação de dados.",
+    terms: ["telecom", "internet", "rede"],
+  },
+  "vigilancia-seguranca": {
+    name: "Vigilância e segurança",
+    description: "Editais de vigilância patrimonial, controle de acesso e segurança eletrônica.",
+    terms: ["vigilância", "segurança", "monitoramento"],
+  },
+  "combustiveis-lubrificantes": {
+    name: "Combustíveis e lubrificantes",
+    description: "Editais de combustíveis, abastecimento, óleos e lubrificantes.",
+    terms: ["combustível", "diesel", "lubrificante"],
+  },
+  "desenvolvimento-software": {
+    name: "Desenvolvimento de software",
+    description: "Editais de sistemas sob demanda, plataformas e produtos digitais.",
+    terms: ["software", "desenvolvimento", "sistema"],
+  },
+};
+
 const itemTemplates = [
   {
     id: "pe-845-2026",
@@ -114,7 +231,16 @@ const itemTemplates = [
 ];
 
 function getCategory(categoryId: string) {
-  return categories[categoryId] ?? fallbackCategory;
+  const curated = categories[categoryId];
+  if (curated) return curated;
+
+  const standard = standardCategoryDetails[categoryId];
+  return standard
+    ? {
+        ...fallbackCategory,
+        ...standard,
+      }
+    : fallbackCategory;
 }
 
 function Metric({

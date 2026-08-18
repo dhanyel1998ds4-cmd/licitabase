@@ -45,6 +45,25 @@ function BidBotOverview() {
       <BotPageHeader
         title="Visão geral do Bot de Lances"
         description="Monitoramento em tempo real das disputas automatizadas da sua operação."
+        guide={{
+          title: "Transforme uma estratégia em acompanhamento operacional",
+          description:
+            "Use esta visão para conferir o que está ativo agora, comparar o desempenho e ajustar a estratégia antes de abrir uma sala de disputa.",
+          steps: [
+            {
+              title: "Confira as sessões",
+              description: "Veja quais disputas estão ativas e exigem atenção.",
+            },
+            {
+              title: "Ajuste a estratégia",
+              description: "Revise decrementos, limites e regras do bot.",
+            },
+            {
+              title: "Abra a sala certa",
+              description: "Acompanhe posição, lance e eventos em tempo real.",
+            },
+          ],
+        }}
         actions={
           <>
             <Button variant="outline" size="sm" className={botOutlineButtonClassName}>

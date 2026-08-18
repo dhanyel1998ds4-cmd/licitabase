@@ -18,6 +18,10 @@ import {
 import { toast } from "sonner";
 import { Panel } from "@/components/dash2/Panel";
 import { InternalPageState, InternalStatusNotice } from "@/components/dash2/InternalPageState";
+import { PageContextHeader } from "@/components/dash2/PageContextHeader";
+import { PageHowItWorks } from "@/components/dash2/PageHowItWorks";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
+import { ResourceListGridHeader } from "@/components/dash2/ResourceList";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,6 +51,13 @@ type BidItem = {
   match: number;
   published: string;
 };
+
+const bidItemsResultColumns = [
+  { id: "quantity", width: 116, min: 98, max: 190 },
+  { id: "estimated", width: 142, min: 116, max: 240 },
+  { id: "deadline", width: 126, min: 106, max: 210 },
+  { id: "actions", width: 148, min: 126, max: 210 },
+];
 
 const bidItems: BidItem[] = [
   {
@@ -295,6 +306,11 @@ export function BidItemsPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selected, setSelected] = useState<BidItem | null>(null);
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const { gridTemplateColumns: bidItemsGridTemplateColumns, getResizeHandleProps } =
+    useResizableColumns({
+      storageKey: "licitabase.bid-items-result-widths.v1",
+      columns: bidItemsResultColumns,
+    });
 
   const results = useMemo(() => {
     const normalized = submittedQuery.trim().toLocaleLowerCase("pt-BR");
@@ -320,33 +336,46 @@ export function BidItemsPage() {
 
   return (
     <>
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-brand-strong">
-            Explorar licitações
-          </p>
-          <h1 className="mt-1 text-[24px] font-extrabold tracking-[-0.025em] text-ink sm:text-[28px]">
-            Itens de licitação
-          </h1>
-          <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-slate-text">
-            Pesquise produtos e serviços, compare contexto e abra a licitação certa sem perder sua
-            busca.
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() =>
-            toast.success("Busca salva", {
-              description: "Você receberá alertas quando novos itens atenderem a estes critérios.",
-            })
-          }
-          className="min-h-11 rounded-xl border-hairline text-[12px] font-bold"
-        >
-          <Bookmark className="size-4" />
-          Salvar busca
-        </Button>
-      </header>
+      <PageContextHeader
+        context="explore"
+        title="Itens de licitação"
+        description="Pesquise produtos e serviços, compare contexto e abra a licitação certa sem perder sua busca."
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() =>
+              toast.success("Busca salva", {
+                description:
+                  "Você receberá alertas quando novos itens atenderem a estes critérios.",
+              })
+            }
+            className="min-h-11 rounded-xl border-hairline text-[12px] font-bold"
+          >
+            <Bookmark className="size-4" />
+            Salvar busca
+          </Button>
+        }
+      />
+
+      <PageHowItWorks
+        title="Encontre o item certo antes de abrir o edital"
+        description="Use termos de produto ou serviço para comparar quantidade, preço unitário, órgão e prazo sem perder o contexto da busca."
+        steps={[
+          {
+            title: "Busque o produto",
+            description: "Informe um item, marca, serviço ou especificação.",
+          },
+          {
+            title: "Refine o contexto",
+            description: "Use filtros para reduzir categoria e itens urgentes.",
+          },
+          {
+            title: "Abra a licitação",
+            description: "Compare o resultado e siga para o edital compatível.",
+          },
+        ]}
+      />
 
       <Panel className="overflow-hidden">
         <div className="bg-[linear-gradient(115deg,#F4FCF6_0%,#FFFFFF_52%,#F6FBF7_100%)] p-4 sm:p-5">
@@ -458,13 +487,50 @@ export function BidItemsPage() {
                 Ordenado por aderência
               </span>
             </div>
+            <ResourceListGridHeader
+              gridTemplateColumns={bidItemsGridTemplateColumns}
+              className="px-5 py-3"
+            >
+              <span className="relative">
+                Item / contexto
+                <button
+                  {...getResizeHandleProps("quantity")}
+                  aria-label="Redimensionar largura da coluna Quantidade"
+                />
+              </span>
+              <span className="relative text-right">
+                Quantidade
+                <button
+                  {...getResizeHandleProps("estimated")}
+                  aria-label="Redimensionar largura da coluna Valor estimado"
+                />
+              </span>
+              <span className="relative text-right">
+                Estimado
+                <button
+                  {...getResizeHandleProps("deadline")}
+                  aria-label="Redimensionar largura da coluna Prazo"
+                />
+              </span>
+              <span className="relative text-right">
+                Prazo
+                <button
+                  {...getResizeHandleProps("actions")}
+                  aria-label="Redimensionar largura da coluna Ações"
+                />
+              </span>
+              <span className="text-right">Ações</span>
+            </ResourceListGridHeader>
             <div className="divide-y divide-hairline">
               {results.map((item) => (
                 <article
                   key={item.id}
                   className="group p-4 transition-colors hover:bg-[#FBFDFC] sm:p-5"
                 >
-                  <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
+                  <div
+                    className="flex flex-col gap-4 xl:grid xl:items-center"
+                    style={{ gridTemplateColumns: bidItemsGridTemplateColumns }}
+                  >
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span
@@ -502,7 +568,7 @@ export function BidItemsPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[11px] xl:w-[300px] xl:grid-cols-3">
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[11px] xl:grid-cols-3">
                       <div>
                         <p className="font-bold uppercase tracking-[0.07em] text-slate-text">
                           Quantidade
@@ -527,7 +593,7 @@ export function BidItemsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between gap-2 xl:w-[148px] xl:justify-end">
+                    <div className="flex items-center justify-between gap-2 xl:justify-end">
                       <span className="rounded-full bg-[#E8F8ED] px-2 py-1 text-[10px] font-extrabold text-[#15863a]">
                         {item.match}% aderente
                       </span>

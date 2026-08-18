@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { monitoringMetrics, monitoringWatchers } from "@/lib/bid-bot-fixtures";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
 
 export const Route = createFileRoute("/bot-lances/monitoramento")({
   head: () => ({
@@ -37,12 +38,42 @@ export const Route = createFileRoute("/bot-lances/monitoramento")({
   component: MonitoringPage,
 });
 
+const monitoringTableColumns = [
+  { id: "scope", width: 270, min: 180, max: 440 },
+  { id: "interval", width: 112, min: 92, max: 170 },
+  { id: "checks", width: 124, min: 104, max: 190 },
+  { id: "state", width: 144, min: 118, max: 220 },
+];
+
 function MonitoringPage() {
+  const { getColumnWidth, getResizeHandleProps } = useResizableColumns({
+    storageKey: "licitabase.bot-monitoring-table-widths.v1",
+    columns: monitoringTableColumns,
+  });
   return (
     <>
       <BotPageHeader
         title="Monitoramento"
         description="Sessões acompanhadas em tempo real, com verificações automáticas de preço e posição. Atualizado agora."
+        guide={{
+          title: "Mantenha as verificações sob controle",
+          description:
+            "Acompanhe a leitura de cada portal, identifique qualquer alerta e ajuste o intervalo ou a estratégia quando o cenário pedir.",
+          steps: [
+            {
+              title: "Acompanhe a leitura",
+              description: "Veja a cadência das verificações e o estado de cada sessão.",
+            },
+            {
+              title: "Identifique alertas",
+              description: "Priorize sessões com mudança de preço ou posição.",
+            },
+            {
+              title: "Corrija o contexto",
+              description: "Atualize a configuração antes que a disputa exija uma ação manual.",
+            },
+          ],
+        }}
         actions={
           <Button variant="outline" size="sm" className={botOutlineButtonClassName}>
             <RefreshCcw className="size-4" aria-hidden="true" />
@@ -65,13 +96,44 @@ function MonitoringPage() {
       >
         <MobileMonitoringCards items={monitoringWatchers} />
         <div className="hidden overflow-x-auto lg:block">
-          <Table>
+          <Table className="table-fixed">
+            <colgroup>
+              <col />
+              <col style={{ width: getColumnWidth("scope") }} />
+              <col style={{ width: getColumnWidth("interval") }} />
+              <col style={{ width: getColumnWidth("checks") }} />
+              <col style={{ width: getColumnWidth("state") }} />
+            </colgroup>
             <TableHeader>
               <TableRow>
-                <TableHead>Órgão</TableHead>
-                <TableHead>Escopo</TableHead>
-                <TableHead className="text-right">Intervalo</TableHead>
-                <TableHead className="text-right">Verificações</TableHead>
+                <TableHead className="relative">
+                  Órgão
+                  <button
+                    {...getResizeHandleProps("scope")}
+                    aria-label="Redimensionar largura da coluna Escopo"
+                  />
+                </TableHead>
+                <TableHead className="relative">
+                  Escopo
+                  <button
+                    {...getResizeHandleProps("interval")}
+                    aria-label="Redimensionar largura da coluna Intervalo"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Intervalo
+                  <button
+                    {...getResizeHandleProps("checks")}
+                    aria-label="Redimensionar largura da coluna Verificações"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Verificações
+                  <button
+                    {...getResizeHandleProps("state")}
+                    aria-label="Redimensionar largura da coluna Estado"
+                  />
+                </TableHead>
                 <TableHead className="text-right">Estado</TableHead>
               </TableRow>
             </TableHeader>

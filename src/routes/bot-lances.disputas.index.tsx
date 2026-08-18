@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { disputeCounts, disputes } from "@/lib/bid-bot-fixtures";
 import { disputeStatusTone } from "@/lib/bot-status";
+import { useResizableColumns } from "@/components/dash2/ResizableColumns";
 
 export const Route = createFileRoute("/bot-lances/disputas/")({
   head: () => ({
@@ -52,10 +53,23 @@ const filters = [
   { key: "Finalizada", label: "Finalizadas", count: disputeCounts.finalizadas },
 ] as const;
 
+const disputeTableColumns = [
+  { id: "session", width: 112, min: 96, max: 180 },
+  { id: "status", width: 126, min: 110, max: 184 },
+  { id: "items", width: 88, min: 76, max: 144 },
+  { id: "bids", width: 82, min: 72, max: 132 },
+  { id: "value", width: 154, min: 126, max: 250 },
+  { id: "actions", width: 94, min: 84, max: 150 },
+];
+
 function DisputesPage() {
   const [filter, setFilter] = useState<string>("todas");
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const { getColumnWidth, getResizeHandleProps } = useResizableColumns({
+    storageKey: "licitabase.bot-disputes-table-widths.v1",
+    columns: disputeTableColumns,
+  });
 
   useEffect(() => {
     if (!filtersOpen) return;
@@ -85,6 +99,25 @@ function DisputesPage() {
       <BotPageHeader
         title="Disputas"
         description="Todas as sessões de disputa acompanhadas pelos seus robôs de lance."
+        guide={{
+          title: "Encontre a sessão que precisa da sua decisão",
+          description:
+            "Filtre o estágio da disputa, localize o órgão ou edital e abra a sala para acompanhar o bot com o contexto completo.",
+          steps: [
+            {
+              title: "Filtre o cenário",
+              description: "Separe sessões ativas, aguardando, pausadas e finalizadas.",
+            },
+            {
+              title: "Localize a disputa",
+              description: "Busque pelo órgão, UASG, edital ou objeto.",
+            },
+            {
+              title: "Acompanhe a sala",
+              description: "Abra a sessão e intervenha apenas quando for necessário.",
+            },
+          ],
+        }}
         actions={
           <Button
             type="button"
@@ -134,15 +167,60 @@ function DisputesPage() {
       <CardShell eyebrow="Operacional" title="Sessões de disputa" bodyClassName="p-0">
         <MobileDisputeCards items={rows} />
         <div className="hidden overflow-x-auto lg:block">
-          <Table>
+          <Table className="table-fixed">
+            <colgroup>
+              <col />
+              <col style={{ width: getColumnWidth("session") }} />
+              <col style={{ width: getColumnWidth("status") }} />
+              <col style={{ width: getColumnWidth("items") }} />
+              <col style={{ width: getColumnWidth("bids") }} />
+              <col style={{ width: getColumnWidth("value") }} />
+              <col style={{ width: getColumnWidth("actions") }} />
+            </colgroup>
             <TableHeader>
               <TableRow>
-                <TableHead>Órgão / objeto</TableHead>
-                <TableHead>Sessão</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Itens</TableHead>
-                <TableHead className="text-right">Lances</TableHead>
-                <TableHead className="text-right">Valor estimado</TableHead>
+                <TableHead className="relative">
+                  Órgão / objeto
+                  <button
+                    {...getResizeHandleProps("session")}
+                    aria-label="Redimensionar largura da coluna Sessão"
+                  />
+                </TableHead>
+                <TableHead className="relative">
+                  Sessão
+                  <button
+                    {...getResizeHandleProps("status")}
+                    aria-label="Redimensionar largura da coluna Status"
+                  />
+                </TableHead>
+                <TableHead className="relative">
+                  Status
+                  <button
+                    {...getResizeHandleProps("items")}
+                    aria-label="Redimensionar largura da coluna Itens"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Itens
+                  <button
+                    {...getResizeHandleProps("bids")}
+                    aria-label="Redimensionar largura da coluna Lances"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Lances
+                  <button
+                    {...getResizeHandleProps("value")}
+                    aria-label="Redimensionar largura da coluna Valor estimado"
+                  />
+                </TableHead>
+                <TableHead className="relative text-right">
+                  Valor estimado
+                  <button
+                    {...getResizeHandleProps("actions")}
+                    aria-label="Redimensionar largura da coluna Ações"
+                  />
+                </TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>

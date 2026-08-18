@@ -634,6 +634,25 @@ function DisputeDetail() {
         eyebrow={`UASG ${dispute.uasg} · ${dispute.notice}`}
         title={dispute.agency}
         description={dispute.object}
+        guide={{
+          title: "Acompanhe a sessão sem perder o momento de agir",
+          description:
+            "A sala reúne estratégia, posição, itens e eventos ao vivo. O bot só executa dentro dos limites configurados pela sua operação.",
+          steps: [
+            {
+              title: "Confira a sessão",
+              description: "Leia posição, lance e tempo antes de alterar qualquer decisão.",
+            },
+            {
+              title: "Acompanhe a reação",
+              description: "Use itens, classificação e timeline para entender cada mudança.",
+            },
+            {
+              title: "Aja com controle",
+              description: "Pause, retome ou registre um lance manual somente quando necessário.",
+            },
+          ],
+        }}
         actions={
           <>
             <Button
