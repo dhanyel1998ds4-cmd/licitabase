@@ -90,7 +90,7 @@ export function SidebarNavItem({
   useActiveIndicatorLayout({ active: indicatorActive, element: linkRef, onActiveLayout });
   const activeItemClass =
     inverted && !collapsed && showSubItems
-      ? "z-20 border-transparent bg-transparent font-bold text-[#6cf08f] shadow-none"
+      ? "z-20 border-transparent bg-transparent font-bold text-white/85 shadow-none"
       : inverted && !collapsed
         ? sharedIndicatorReady
           ? "sidebar-nav-item--active z-20 w-[calc(100%+1.25rem)] !overflow-visible rounded-r-none border-transparent bg-transparent font-bold text-ink shadow-none"
@@ -119,9 +119,11 @@ export function SidebarNavItem({
         className={cn(
           "relative z-10 size-[18px] shrink-0",
           active
-            ? inverted && (collapsed || showSubItems)
+            ? inverted && collapsed
               ? "text-[#6cf08f]"
-              : "text-brand-strong"
+              : inverted && showSubItems
+                ? "text-white/65"
+                : "text-brand-strong"
             : inverted
               ? "text-white/65"
               : "text-slate-text",
@@ -132,7 +134,7 @@ export function SidebarNavItem({
       {!collapsed && <span className="relative z-10 truncate">{label}</span>}
       {!collapsed && typeof badge === "number" && (
         <span className="relative z-10">
-          <Badge inverted={inverted && !active}>{badge}</Badge>
+          <Badge inverted={inverted && (!active || showSubItems)}>{badge}</Badge>
         </span>
       )}
     </Link>

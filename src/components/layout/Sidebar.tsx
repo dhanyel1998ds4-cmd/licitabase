@@ -61,7 +61,7 @@ const navGroups: NavGroup[] = [
       navigationItem("bid-bot-home", "/bot-lances", {
         badge: 2,
         subItems: [
-          navigationSubItem("bid-bot-home", "/bot-lances"),
+          { ...navigationSubItem("bid-bot-home", "/bot-lances"), label: "Visão geral" },
           navigationSubItem("bid-bot-disputes", "/bot-lances/disputas"),
           navigationSubItem("bid-bot-monitoring", "/bot-lances/monitoramento"),
           navigationSubItem("bid-bot-reports", "/bot-lances/relatorios"),
@@ -268,6 +268,7 @@ export function Sidebar({
           {navGroups.slice(1).map((group) => {
             const groupLabel = group.label!;
             const groupActive = activeGroupLabel === groupLabel;
+            const groupOpen = isGroupOpen(groupLabel);
             return (
               <div key={groupLabel}>
                 {collapsed ? (
@@ -278,7 +279,7 @@ export function Sidebar({
                           className={cn(
                             "mb-1 flex h-6 w-full items-center justify-center rounded-lg px-2",
                             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                            groupActive ? "bg-white/15" : "bg-white/[0.08]",
+                            groupActive ? "bg-transparent" : "bg-white/[0.08]",
                           )}
                           tabIndex={0}
                           role="separator"
@@ -287,7 +288,7 @@ export function Sidebar({
                           <span
                             className={cn(
                               "h-1.5 w-1.5 rounded-full",
-                              groupActive ? "bg-[#6cf08f]" : "bg-white/55",
+                              groupActive ? "bg-[#18B849]" : "bg-white/55",
                             )}
                           />
                         </div>
@@ -322,46 +323,28 @@ export function Sidebar({
                         className={cn(
                           "sidebar-group-trigger relative mb-1 flex min-h-11 w-full items-center gap-2 overflow-hidden rounded-xl border border-transparent px-3 py-2 text-left transition-all duration-200",
                           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                          groupActive
-                            ? "border-transparent bg-[#eaf3ed]"
-                            : "bg-transparent hover:bg-white/10",
+                          "bg-transparent hover:bg-white/10",
                         )}
-                        aria-expanded={isGroupOpen(groupLabel)}
+                        aria-expanded={groupOpen}
                       >
+                        <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-transparent opacity-0 transition-opacity" />
                         <span
                           className={cn(
-                            "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full transition-opacity",
-                            groupActive ? "bg-[#18B849] opacity-100" : "bg-transparent opacity-0",
+                            "h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200",
+                            groupOpen ? "bg-[#18B849]" : "bg-white/55",
                           )}
                         />
-                        <span
-                          className={cn(
-                            "h-1.5 w-1.5 shrink-0 rounded-full",
-                            groupActive ? "bg-[#18B849]" : "bg-white/55",
-                          )}
-                        />
-                        <span
-                          className={cn(
-                            "flex-1 text-[12px] font-semibold uppercase tracking-[0.08em]",
-                            groupActive ? "text-[#15943a]" : "text-white/85",
-                          )}
-                        >
+                        <span className="flex-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-white/85">
                           {groupLabel}
                         </span>
-                        {isGroupOpen(groupLabel) ? (
+                        {groupOpen ? (
                           <ChevronDown
-                            className={cn(
-                              "size-3.5 shrink-0",
-                              groupActive ? "text-[#15943a]" : "text-white/55",
-                            )}
+                            className="size-3.5 shrink-0 text-white/55"
                             aria-hidden="true"
                           />
                         ) : (
                           <ChevronRight
-                            className={cn(
-                              "size-3.5 shrink-0",
-                              groupActive ? "text-[#15943a]" : "text-white/55",
-                            )}
+                            className="size-3.5 shrink-0 text-white/55"
                             aria-hidden="true"
                           />
                         )}
