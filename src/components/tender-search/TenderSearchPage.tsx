@@ -70,6 +70,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { AnnotationThread } from "@/components/annotations/AnnotationThread";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -1736,6 +1737,14 @@ function TenderDetailPreview({ tender }: { tender: Tender }) {
             </Button>
           </div>
         </section>
+
+        <div className="mt-4 border-t border-hairline pt-4">
+          <AnnotationThread
+            tenderId={tender.id}
+            tenderTitle={`${tender.code} — ${tender.title.replace(/\.$/, "")}`}
+            context={{ type: "tender", label: "Busca de licitações" }}
+          />
+        </div>
       </div>
 
       <div className="grid shrink-0 grid-cols-[0.72fr_0.9fr_1.35fr] gap-1.5 border-t border-hairline bg-white p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] sm:grid-cols-3 sm:gap-2 sm:p-3">

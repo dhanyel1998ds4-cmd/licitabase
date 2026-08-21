@@ -152,5 +152,25 @@ export function useOpportunityTriage() {
     writeTriage(next);
   }, []);
 
-  return { triage, decide, undo, saveProposal, sendProposal };
+  const saveNote = useCallback(
+    (opportunityId: string, note: string, fallbackStage: OpportunityStage = "analysis") => {
+      const current = readTriage()[opportunityId];
+      const next = {
+        ...readTriage(),
+        [opportunityId]: current
+          ? { ...current, note }
+          : {
+              decision: "interested" as const,
+              stage: fallbackStage,
+              note,
+              decidedAt: new Date().toISOString(),
+            },
+      } satisfies OpportunityTriage;
+      setTriage(next);
+      writeTriage(next);
+    },
+    [],
+  );
+
+  return { triage, decide, undo, saveProposal, sendProposal, saveNote };
 }

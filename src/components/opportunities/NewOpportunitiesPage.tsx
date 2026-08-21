@@ -63,6 +63,7 @@ import {
 } from "@/lib/new-opportunities-fixtures";
 import { cn } from "@/lib/utils";
 import { useOpportunityTriage, type OpportunityPriority } from "@/hooks/use-opportunity-triage";
+import { useAnnotations } from "@/hooks/use-annotations";
 
 type Decision = "dismissed" | "later" | "interested";
 type AnalysisStatus = "idle" | "processing" | "done";
@@ -84,6 +85,7 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
   const [stateFilter, setStateFilter] = useState("Todos");
   const [draftStateFilter, setDraftStateFilter] = useState("Todos");
   const { triage, decide, undo } = useOpportunityTriage();
+  const { addAnnotation } = useAnnotations();
   const [queue, setQueue] = useState(() =>
     newOpportunities.filter((opportunity) => !triage[opportunity.id]),
   );
@@ -221,6 +223,14 @@ export function NewOpportunitiesPage({ isLoading = false }: { isLoading?: boolea
       "interested",
       note ? { priority: interestDraft.priority, note } : { priority: interestDraft.priority },
     );
+    if (note) {
+      addAnnotation({
+        tenderId: interestDraft.opportunity.id,
+        tenderTitle: interestDraft.opportunity.title,
+        content: note,
+        context: { type: "pipeline", label: "Oportunidades novas" },
+      });
+    }
     setInterestDraft(null);
   }
 

@@ -53,6 +53,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useAnnotations } from "@/hooks/use-annotations";
 
 type MetricProps = {
   label: string;
@@ -128,6 +129,8 @@ export function TenderXrayPage() {
   const [pipelineStage, setPipelineStage] = useState("Em análise");
   const [responsible, setResponsible] = useState("Jussefer");
   const [completedActions, setCompletedActions] = useState<string[]>([]);
+  const [pipelineNote, setPipelineNote] = useState("");
+  const { addAnnotation } = useAnnotations();
   const tender = tenders.find((item) => item.id === tenderId) ?? tenders[0]!;
 
   const toggleAction = (action: string) => {
@@ -137,6 +140,15 @@ export function TenderXrayPage() {
   };
 
   const addToPipeline = () => {
+    if (pipelineNote.trim()) {
+      addAnnotation({
+        tenderId: tender.id,
+        tenderTitle: tender.title,
+        content: pipelineNote,
+        context: { type: "xray", label: "Raio-X" },
+      });
+    }
+    setPipelineNote("");
     setPipelineOpen(false);
     toast.success("Licitação adicionada ao pipeline", {
       description: `${tender.title} foi encaminhada para ${pipelineStage.toLowerCase()}.`,
@@ -520,6 +532,8 @@ export function TenderXrayPage() {
             </Label>
             <Textarea
               id="xray-note"
+              value={pipelineNote}
+              onChange={(event) => setPipelineNote(event.target.value)}
               placeholder="Ex.: validar certidão estadual antes de iniciar a composição."
               className="min-h-20 rounded-xl border-hairline text-[12px]"
             />
