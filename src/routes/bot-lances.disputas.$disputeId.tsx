@@ -75,6 +75,7 @@ import {
   realtimeDisputeTimeline,
 } from "@/lib/bid-bot-fixtures";
 import { useBotOperationOutcomes } from "@/hooks/use-bot-operation-outcomes";
+import { AnnotationThread } from "@/components/annotations/AnnotationThread";
 
 type SessionState = "active" | "paused" | "finished";
 type ResultDisposition = "review" | "adjudication" | "archived";
@@ -732,11 +733,11 @@ function DisputeDetail() {
           ],
         }}
         actions={
-          <>
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
             <Button
               variant="outline"
               size="sm"
-              className={botOutlineButtonClassName}
+              className={`${botOutlineButtonClassName} w-full sm:w-auto`}
               onClick={() => {
                 setLastSync("agora");
                 setNotice("Dados da sessão atualizados agora.");
@@ -748,16 +749,26 @@ function DisputeDetail() {
             <Button
               variant="outline"
               size="sm"
-              className={botOutlineButtonClassName}
+              className="w-full rounded-xl border-[#29C454]/35 bg-[#29C454]/10 text-[#117633] shadow-[0_1px_2px_rgba(21,148,58,0.1)] hover:bg-[#29C454]/18 hover:text-[#0e6b2d] focus-visible:ring-[#29C454]/25 sm:w-auto"
               onClick={() => setCommunicationsOpen(true)}
+              aria-label="Abrir comunicações internas da equipe"
             >
-              <MessageSquareText className="size-4" aria-hidden="true" />
-              Comunicações
+              <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-[#29C454]/15">
+                <MessageSquareText className="size-3.5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 truncate">Comunicações</span>
+              <span className="hidden rounded-full bg-white/70 px-1.5 py-0.5 text-[10px] font-bold sm:inline">
+                Equipe
+              </span>
             </Button>
             {sessionState === "active" ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm" className={botOutlineButtonClassName}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`${botOutlineButtonClassName} w-full sm:w-auto`}
+                  >
                     <Pause className="size-4" aria-hidden="true" />
                     Pausar bot
                   </Button>
@@ -785,15 +796,21 @@ function DisputeDetail() {
               <Button
                 variant="outline"
                 size="sm"
-                className={botOutlineButtonClassName}
+                className={`${botOutlineButtonClassName} w-full sm:w-auto`}
                 onClick={resumeBot}
               >
                 <Play className="size-4" aria-hidden="true" />
                 Retomar bot
               </Button>
             ) : null}
-            <StatusPill tone={stateCopy.tone}>{stateCopy.label}</StatusPill>
-          </>
+            <StatusPill
+              tone={stateCopy.tone}
+              className="min-h-11 w-full justify-center px-3 text-[12px] sm:min-h-0 sm:w-auto sm:text-[11px]"
+            >
+              <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
+              {stateCopy.label}
+            </StatusPill>
+          </div>
         }
       />
 
@@ -1405,6 +1422,8 @@ function DisputeDetail() {
       <DisputeCommunicationsSheet
         open={communicationsOpen}
         onOpenChange={setCommunicationsOpen}
+        tenderId={dispute.id}
+        tenderTitle={dispute.object}
         messages={teamMessages}
         draft={teamMessageDraft}
         onDraftChange={setTeamMessageDraft}
@@ -1463,6 +1482,8 @@ function ResultDatum({
 function DisputeCommunicationsSheet({
   open,
   onOpenChange,
+  tenderId,
+  tenderTitle,
   messages,
   draft,
   onDraftChange,
@@ -1471,6 +1492,8 @@ function DisputeCommunicationsSheet({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  tenderId: string;
+  tenderTitle: string;
   messages: TeamMessage[];
   draft: string;
   onDraftChange: (value: string) => void;
@@ -1497,9 +1520,12 @@ function DisputeCommunicationsSheet({
         </SheetHeader>
 
         <Tabs defaultValue="equipe" className="flex min-h-0 flex-1 flex-col px-4 pt-4">
-          <TabsList className={`${botTabsListClassName} grid h-11 w-full grid-cols-2`}>
+          <TabsList className={`${botTabsListClassName} grid h-11 w-full grid-cols-3`}>
             <TabsTrigger value="equipe" className={botTabsTriggerClassName}>
               Chat da equipe
+            </TabsTrigger>
+            <TabsTrigger value="anotacoes" className={botTabsTriggerClassName}>
+              Anotações
             </TabsTrigger>
             <TabsTrigger value="portal" className={botTabsTriggerClassName}>
               Portal oficial
@@ -1560,6 +1586,18 @@ function DisputeCommunicationsSheet({
                 Registrar no chat da equipe
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent
+            value="anotacoes"
+            className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4"
+          >
+            <AnnotationThread
+              tenderId={tenderId}
+              tenderTitle={tenderTitle}
+              context={{ type: "dispute", label: "Sala de disputa" }}
+              className="border-0 bg-transparent p-0 shadow-none"
+            />
           </TabsContent>
 
           <TabsContent value="portal" className="mt-4">

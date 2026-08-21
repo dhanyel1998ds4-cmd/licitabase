@@ -57,7 +57,7 @@ const navGroups: NavGroup[] = [
     label: "Minha operação",
     items: [
       navigationItem("my-bids", "/dash2/operacao/minhas-licitacoes"),
-      navigationItem("operation-pipeline", "/pipeline"),
+      navigationItem("operation-annotations", "/dash2/operacao/anotacoes"),
       navigationItem("bid-bot-home", "/bot-lances", {
         badge: 2,
         subItems: [

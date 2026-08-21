@@ -17,6 +17,7 @@ import {
   LockKeyhole,
   Mail,
   Network,
+  NotebookPen,
   Package,
   PanelTop,
   Phone,
@@ -56,6 +57,7 @@ export type GlobalSearchRoute =
   | "/dash2/oportunidades/novas"
   | "/dash2/oportunidades/favoritos"
   | "/dash2/operacao/minhas-licitacoes"
+  | "/dash2/operacao/anotacoes"
   | "/bot-lances"
   | "/bot-lances/disputas"
   | "/bot-lances/monitoramento"
@@ -724,6 +726,21 @@ export const globalSearchCatalog: GlobalSearchItem[] = [
     synonyms: ["licitações acompanhadas", "meus processos"],
     status: "available",
     route: "/dash2/operacao/minhas-licitacoes",
+  },
+  {
+    id: "operation-annotations",
+    title: "Minhas anotações",
+    navigationLabel: "Anotações",
+    description: "Centralize decisões, pendências e observações privadas da equipe",
+    type: "resource",
+    group: "Operação",
+    breadcrumb: ["Minha operação", "Anotações"],
+    icon: NotebookPen,
+    filters: ["Oportunidades", "Operação"],
+    keywords: ["anotação", "nota", "decisão", "pendência", "equipe"],
+    synonyms: ["minhas notas", "observações da equipe", "histórico de decisões"],
+    status: "available",
+    route: "/dash2/operacao/anotacoes",
   },
   {
     id: "monitored-companies",

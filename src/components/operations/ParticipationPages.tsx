@@ -35,11 +35,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { newOpportunities, type NewOpportunity } from "@/lib/new-opportunities-fixtures";
 import { disputes, getLiveDisputeItems } from "@/lib/bid-bot-fixtures";
 import { useOpportunityTriage } from "@/hooks/use-opportunity-triage";
+import { AnnotationThread } from "@/components/annotations/AnnotationThread";
 
 const proposalSteps = ["Dados gerais", "Itens e valores", "Declarações", "Revisão"];
 
 function useParticipation(licitacaoId: string) {
-  const { triage, saveProposal, sendProposal, saveNote } = useOpportunityTriage();
+  const { triage, saveProposal, sendProposal } = useOpportunityTriage();
   const opportunity = useMemo((): NewOpportunity | undefined => {
     const savedOpportunity = newOpportunities.find((item) => item.id === licitacaoId);
     if (savedOpportunity) return savedOpportunity;
@@ -76,7 +77,7 @@ function useParticipation(licitacaoId: string) {
         }
       : undefined);
   const isAvailable = Boolean(opportunity && record?.decision === "interested");
-  return { opportunity, record, isAvailable, saveProposal, sendProposal, saveNote };
+  return { opportunity, record, isAvailable, saveProposal, sendProposal };
 }
 
 function NotFoundParticipation() {
@@ -100,7 +101,7 @@ function NotFoundParticipation() {
 }
 
 export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string }) {
-  const { opportunity, record, isAvailable, saveNote } = useParticipation(licitacaoId);
+  const { opportunity, record, isAvailable } = useParticipation(licitacaoId);
   const [tab, setTab] = useState("visao-geral");
   if (!opportunity || !record || !isAvailable) return <NotFoundParticipation />;
 
@@ -203,9 +204,11 @@ export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string 
               <ParticipationImpugnations />
             </TabsContent>
             <TabsContent value="anotacoes" className="m-0 p-4 sm:p-5">
-              <ParticipationNotes
-                note={record.note}
-                onSave={(note) => saveNote(licitacaoId, note, record.stage ?? "analysis")}
+              <AnnotationThread
+                tenderId={licitacaoId}
+                tenderTitle={opportunity.title}
+                legacyNote={record.note}
+                context={{ type: "tender", label: stageLabel }}
               />
             </TabsContent>
             <TabsContent value="historico" className="m-0 p-4 sm:p-5">
@@ -436,85 +439,6 @@ function ParticipationImpugnations() {
           preparada para mostrar prazos, anexos e respostas sem apresentar dados simulados como se
           fossem oficiais.
         </p>
-      </div>
-    </div>
-  );
-}
-
-function ParticipationNotes({
-  note,
-  onSave,
-}: {
-  note?: string | undefined;
-  onSave: (note: string) => void;
-}) {
-  const [draft, setDraft] = useState(note ?? "");
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    setDraft(note ?? "");
-  }, [note]);
-
-  return (
-    <div className="space-y-5">
-      <div>
-        <p className="text-[12px] font-bold text-brand-strong">Colaboração interna</p>
-        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
-          Anotações da equipe
-        </h2>
-        <p className="mt-2 text-[13px] text-slate-text">
-          Notas privadas, com autoria, data e vínculo à decisão da participação.
-        </p>
-      </div>
-      <div className="rounded-2xl border border-hairline p-4">
-        <div className="flex items-start gap-3">
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-tint text-[12px] font-bold text-brand-strong">
-            JE
-          </span>
-          <div>
-            <p className="text-[13px] font-bold text-ink">Jussefer · agora</p>
-            <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
-              {note ?? "Sem anotações privadas nesta participação."}
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="rounded-2xl border border-hairline bg-slate-50/60 p-4">
-        <label htmlFor="participation-note" className="text-[12px] font-bold text-ink">
-          Registrar anotação interna
-        </label>
-        <Textarea
-          id="participation-note"
-          value={draft}
-          onChange={(event) => {
-            setDraft(event.target.value);
-            setSaved(false);
-          }}
-          placeholder="Ex.: confirmar a certidão estadual com o responsável técnico."
-          className="mt-2 min-h-24 resize-y bg-white text-[13px]"
-        />
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[11px] text-slate-text">
-            Visível apenas para a equipe. A integração com usuários reais será feita pelo backend.
-          </p>
-          <Button
-            type="button"
-            disabled={!draft.trim()}
-            onClick={() => {
-              onSave(draft.trim());
-              setSaved(true);
-            }}
-            className="min-h-11 rounded-xl bg-[#18B849] text-[12px] font-bold text-white hover:bg-[#139e3e]"
-          >
-            <Save className="size-4" />
-            Salvar anotação
-          </Button>
-        </div>
-        {saved ? (
-          <p className="mt-3 text-[11px] font-bold text-brand-strong">
-            Anotação salva nesta demonstração.
-          </p>
-        ) : null}
       </div>
     </div>
   );
