@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -79,13 +79,15 @@ export function ResourceListGridRow({
   children,
   gridTemplateColumns,
   className,
+  ...props
 }: {
   children: ReactNode;
   gridTemplateColumns: string;
   className?: string;
-}) {
+} & Omit<ComponentPropsWithoutRef<"div">, "children" | "className">) {
   return (
     <div
+      {...props}
       className={cn("grid min-w-0 gap-4 xl:items-center", className)}
       style={{ gridTemplateColumns } as CSSProperties}
     >

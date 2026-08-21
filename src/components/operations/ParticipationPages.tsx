@@ -11,7 +11,6 @@ import {
   FileCheck2,
   FileText,
   History,
-  MessageSquareText,
   MapPin,
   PackageCheck,
   Save,
@@ -36,6 +35,7 @@ import { newOpportunities, type NewOpportunity } from "@/lib/new-opportunities-f
 import { disputes, getLiveDisputeItems } from "@/lib/bid-bot-fixtures";
 import { useOpportunityTriage } from "@/hooks/use-opportunity-triage";
 import { AnnotationThread } from "@/components/annotations/AnnotationThread";
+import { OfficialTenderCommunications } from "@/components/communications/OfficialTenderCommunications";
 
 const proposalSteps = ["Dados gerais", "Itens e valores", "Declarações", "Revisão"];
 
@@ -100,9 +100,15 @@ function NotFoundParticipation() {
   );
 }
 
-export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string }) {
+export function ParticipationDetailsPage({
+  licitacaoId,
+  initialTab,
+}: {
+  licitacaoId: string;
+  initialTab?: string;
+}) {
   const { opportunity, record, isAvailable } = useParticipation(licitacaoId);
-  const [tab, setTab] = useState("visao-geral");
+  const [tab, setTab] = useState(initialTab ?? "visao-geral");
   if (!opportunity || !record || !isAvailable) return <NotFoundParticipation />;
 
   const proposalStarted = record.stage === "proposal";
@@ -175,7 +181,7 @@ export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string 
               <ParticipationTab value="edital" label="Edital e documentos" />
               <ParticipationTab value="itens" label="Itens" />
               <ParticipationTab value="proposta" label="Proposta" />
-              <ParticipationTab value="impugnacoes" label="Impugnações" />
+              <ParticipationTab value="comunicacoes" label="Comunicações" />
               <ParticipationTab value="anotacoes" label="Anotações" />
               <ParticipationTab value="historico" label="Histórico" />
             </TabsList>
@@ -200,8 +206,8 @@ export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string 
                 licitacaoId={licitacaoId}
               />
             </TabsContent>
-            <TabsContent value="impugnacoes" className="m-0 p-4 sm:p-5">
-              <ParticipationImpugnations />
+            <TabsContent value="comunicacoes" className="m-0 p-4 sm:p-5">
+              <ParticipationCommunications tenderId={licitacaoId} portal={opportunity.platform} />
             </TabsContent>
             <TabsContent value="anotacoes" className="m-0 p-4 sm:p-5">
               <AnnotationThread
@@ -419,28 +425,9 @@ function ParticipationProposal({
   );
 }
 
-function ParticipationImpugnations() {
+function ParticipationCommunications({ tenderId, portal }: { tenderId: string; portal: string }) {
   return (
-    <div className="space-y-5">
-      <div>
-        <p className="text-[12px] font-bold text-brand-strong">Comunicação oficial</p>
-        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
-          Impugnações e esclarecimentos
-        </h2>
-        <p className="mt-2 text-[13px] text-slate-text">
-          Acompanhe pedidos, respostas e prazos quando a origem disponibilizar esses dados.
-        </p>
-      </div>
-      <div className="rounded-2xl border border-dashed border-hairline bg-slate-50 p-6 text-center">
-        <MessageSquareText className="mx-auto size-6 text-brand-strong" />
-        <h3 className="mt-3 text-[14px] font-bold text-ink">Nenhuma comunicação sincronizada</h3>
-        <p className="mx-auto mt-2 max-w-md text-[12px] leading-relaxed text-slate-text">
-          A leitura e o envio dependerão da integração oficial do portal. Esta área já está
-          preparada para mostrar prazos, anexos e respostas sem apresentar dados simulados como se
-          fossem oficiais.
-        </p>
-      </div>
-    </div>
+    <OfficialTenderCommunications tenderId={tenderId} portal={portal} />
   );
 }
 
