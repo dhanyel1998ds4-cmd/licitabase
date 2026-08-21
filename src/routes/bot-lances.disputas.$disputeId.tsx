@@ -11,6 +11,7 @@ import {
   CircleAlert,
   CircleStop,
   FileCheck2,
+  MessageSquareText,
   Pause,
   Play,
   Radio,
@@ -39,6 +40,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,6 +68,7 @@ import {
   getLiveDisputeSession,
   getLiveDisputeItems,
   type DisputeRankingRow,
+  type LiveDisputeItem,
   disputeRanking,
   disputeTimeline,
   disputes,
@@ -68,6 +78,31 @@ import { useBotOperationOutcomes } from "@/hooks/use-bot-operation-outcomes";
 
 type SessionState = "active" | "paused" | "finished";
 type ResultDisposition = "review" | "adjudication" | "archived";
+type TeamMessage = {
+  id: string;
+  author: string;
+  role: string;
+  time: string;
+  content: string;
+  mine?: boolean;
+};
+
+const initialTeamMessages: TeamMessage[] = [
+  {
+    id: "m-1",
+    author: "Marina Costa",
+    role: "Comercial",
+    time: "há 4 min",
+    content: "Validei a composição. O item 3 é prioritário para a proposta.",
+  },
+  {
+    id: "m-2",
+    author: "Rafael Lima",
+    role: "Operador",
+    time: "há 2 min",
+    content: "Acompanhei a última redução. A estratégia continua dentro do limite aprovado.",
+  },
+];
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -97,6 +132,12 @@ type LiveRankingRow = DisputeRankingRow & { id: string };
 
 function currencyValue(value: string) {
   return Number(value.replace(/[^\d,]/g, "").replace(",", "."));
+}
+
+function proposalTotal(items: LiveDisputeItem[], participatingNumbers: number[]) {
+  return items
+    .filter((item) => participatingNumbers.includes(item.number))
+    .reduce((total, item) => total + currencyValue(item.ourBid) * (item.quantity ?? 1), 0);
 }
 
 function createLiveRankingRows(
@@ -242,6 +283,9 @@ function DisputeDetail() {
   const [lastSync, setLastSync] = useState("há poucos segundos");
   const [notice, setNotice] = useState("");
   const [detailsTab, setDetailsTab] = useState("itens");
+  const [communicationsOpen, setCommunicationsOpen] = useState(false);
+  const [teamMessages, setTeamMessages] = useState<TeamMessage[]>(initialTeamMessages);
+  const [teamMessageDraft, setTeamMessageDraft] = useState("");
   const [timeline, setTimeline] = useState<typeof disputeTimeline>(() =>
     sessionTimeline.slice(0, INITIAL_TIMELINE_EVENTS),
   );
@@ -393,7 +437,7 @@ function DisputeDetail() {
     );
   }, [activeItemNumber, itemFixtures]);
 
-  const liveItems = useMemo<typeof disputeItems>(
+  const liveItems = useMemo<LiveDisputeItem[]>(
     () =>
       itemFixtures.map((item) =>
         item.number === activeItemNumber
@@ -415,8 +459,23 @@ function DisputeDetail() {
   );
   const activeItem = liveItems[activeItemIndex] ?? liveItems[0];
   const itemCount = liveItems.length;
-  const winningItems = liveItems.filter((item) => item.position === "1º").length;
-  const attentionItems = liveItems.filter((item) => item.position !== "1º").length;
+  const participatingItemNumbers = useMemo(() => {
+    const configured = liveItems
+      .filter((item) => item.participating !== false)
+      .map((item) => item.number);
+    return configured.length > 0 ? configured : liveItems.map((item) => item.number);
+  }, [liveItems]);
+  const participatingItems = liveItems.filter((item) =>
+    participatingItemNumbers.includes(item.number),
+  );
+  const activeParticipatingIndex = Math.max(
+    0,
+    participatingItems.findIndex((item) => item.number === activeItemNumber),
+  );
+  const winningItems = participatingItems.filter((item) => item.position === "1º").length;
+  const attentionItems = participatingItems.filter((item) => item.position !== "1º").length;
+  const totalProposalValue = proposalTotal(liveItems, participatingItemNumbers);
+  const isMultiItemProposal = participatingItems.length > 1;
 
   const stateCopy = {
     active: { label: "Ao vivo", tone: "brand" as const, detail: "Monitoramento em tempo real" },
@@ -472,6 +531,25 @@ function DisputeDetail() {
       second: "2-digit",
       hour12: false,
     }).format(new Date());
+  }
+
+  function sendTeamMessage() {
+    const content = teamMessageDraft.trim();
+    if (!content) return;
+
+    setTeamMessages((current) => [
+      ...current,
+      {
+        id: `local-${Date.now()}`,
+        author: "Jussefer",
+        role: "Administrador",
+        time: "agora",
+        content,
+        mine: true,
+      },
+    ]);
+    setTeamMessageDraft("");
+    setNotice("Mensagem adicionada ao chat demonstrativo da equipe.");
   }
 
   function registerBid(value: number, source: "manual" | "assistido") {
@@ -631,7 +709,7 @@ function DisputeDetail() {
       </Link>
 
       <BotPageHeader
-        eyebrow={`UASG ${dispute.uasg} · ${dispute.notice}`}
+        eyebrow={`${liveSession?.portal === "Compras.gov" ? `UASG ${dispute.uasg}` : "Sessão do portal"} · ${dispute.notice}`}
         title={dispute.agency}
         description={dispute.object}
         guide={{
@@ -666,6 +744,15 @@ function DisputeDetail() {
             >
               <RefreshCcw className="size-4" aria-hidden="true" />
               Atualizar
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className={botOutlineButtonClassName}
+              onClick={() => setCommunicationsOpen(true)}
+            >
+              <MessageSquareText className="size-4" aria-hidden="true" />
+              Comunicações
             </Button>
             {sessionState === "active" ? (
               <AlertDialog>
@@ -720,10 +807,16 @@ function DisputeDetail() {
           tone={position === "1º" ? "brand" : "warn"}
         />
         <MetricCard
-          value={currency.format(ourBid)}
-          label="Nosso lance"
+          value={currency.format(isMultiItemProposal ? totalProposalValue : ourBid)}
+          label={
+            isMultiItemProposal ? "Valor total da proposta atual" : "Nosso melhor lance no item"
+          }
           hint={
-            position === "1º" ? "Melhor valor na sessão" : `Líder: ${currency.format(marketBid)}`
+            isMultiItemProposal
+              ? `${participatingItems.length} de ${itemCount} itens da sua participação`
+              : position === "1º"
+                ? "Melhor valor no item em acompanhamento"
+                : `Líder: ${currency.format(marketBid)}`
           }
           tone="navy"
         />
@@ -777,7 +870,10 @@ function DisputeDetail() {
               </ol>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <ResultDatum label="Posição final" value={position} emphasize={resultWon} />
-                <ResultDatum label="Último lance" value={currency.format(ourBid)} />
+                <ResultDatum
+                  label={isMultiItemProposal ? "Valor total da proposta" : "Último lance"}
+                  value={currency.format(isMultiItemProposal ? totalProposalValue : ourBid)}
+                />
                 <ResultDatum label="Lances registrados" value={String(bidCount)} />
               </div>
             </div>
@@ -939,7 +1035,9 @@ function DisputeDetail() {
             {itemCount > 1 ? (
               <div className="mb-4 flex flex-col gap-3 rounded-xl border border-[#29C454]/15 bg-[#29C454]/[0.055] px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
-                  <span className="font-bold text-ink">{itemCount} itens ativos</span>
+                  <span className="font-bold text-ink">
+                    {participatingItems.length} de {itemCount} itens na proposta
+                  </span>
                   <span className="text-[#15943a]">{winningItems} ganhando</span>
                   {attentionItems > 0 ? (
                     <span className="text-amber-700">{attentionItems} com atenção</span>
@@ -954,22 +1052,26 @@ function DisputeDetail() {
                     variant="outline"
                     size="icon"
                     className={`${botOutlineButtonClassName} size-9 rounded-lg`}
-                    disabled={activeItemIndex === 0}
-                    onClick={() => setActiveItemNumber(liveItems[activeItemIndex - 1]!.number)}
+                    disabled={activeParticipatingIndex === 0}
+                    onClick={() =>
+                      setActiveItemNumber(participatingItems[activeParticipatingIndex - 1]!.number)
+                    }
                     aria-label="Item anterior"
                   >
                     <ChevronLeft className="size-4" aria-hidden="true" />
                   </Button>
                   <span className="tnum min-w-16 text-center text-[12px] font-bold text-ink">
-                    Item {activeItemIndex + 1}/{itemCount}
+                    Item {activeParticipatingIndex + 1}/{participatingItems.length}
                   </span>
                   <Button
                     type="button"
                     variant="outline"
                     size="icon"
                     className={`${botOutlineButtonClassName} size-9 rounded-lg`}
-                    disabled={activeItemIndex === itemCount - 1}
-                    onClick={() => setActiveItemNumber(liveItems[activeItemIndex + 1]!.number)}
+                    disabled={activeParticipatingIndex === participatingItems.length - 1}
+                    onClick={() =>
+                      setActiveItemNumber(participatingItems[activeParticipatingIndex + 1]!.number)
+                    }
                     aria-label="Próximo item"
                   >
                     <ChevronRight className="size-4" aria-hidden="true" />
@@ -983,9 +1085,9 @@ function DisputeDetail() {
                   <Wifi className="size-4" aria-hidden="true" />
                 </span>
                 <div>
-                  <p className="text-[12px] font-bold text-ink">Leitura do portal conectada</p>
+                  <p className="text-[12px] font-bold text-ink">Leitura demonstrativa do portal</p>
                   <p className="text-[11px] text-slate-text">
-                    {liveSession?.portal ?? "Compras.gov"} · última leitura {lastSync}
+                    {liveSession?.portal ?? "Compras.gov"} · dados fictícios atualizados {lastSync}
                   </p>
                 </div>
               </div>
@@ -1199,7 +1301,8 @@ function DisputeDetail() {
                   items={liveItems}
                   visual="dash2"
                   activeItemNumber={activeItemNumber}
-                  {...(itemCount > 1 ? { onItemSelect: setActiveItemNumber } : {})}
+                  participatingItemNumbers={participatingItemNumbers}
+                  {...(participatingItems.length > 1 ? { onItemSelect: setActiveItemNumber } : {})}
                 />
               </CardShell>
             </TabsContent>
@@ -1298,6 +1401,16 @@ function DisputeDetail() {
           </Tabs>
         </div>
       </div>
+
+      <DisputeCommunicationsSheet
+        open={communicationsOpen}
+        onOpenChange={setCommunicationsOpen}
+        messages={teamMessages}
+        draft={teamMessageDraft}
+        onDraftChange={setTeamMessageDraft}
+        onSend={sendTeamMessage}
+        portal={liveSession?.portal ?? "Portal de compras"}
+      />
     </>
   );
 }
@@ -1344,5 +1457,132 @@ function ResultDatum({
         {value}
       </p>
     </div>
+  );
+}
+
+function DisputeCommunicationsSheet({
+  open,
+  onOpenChange,
+  messages,
+  draft,
+  onDraftChange,
+  onSend,
+  portal,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  messages: TeamMessage[];
+  draft: string;
+  onDraftChange: (value: string) => void;
+  onSend: () => void;
+  portal: string;
+}) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 border-hairline bg-white p-0 sm:w-[29rem] sm:max-w-[29rem]"
+      >
+        <SheetHeader className="border-b border-hairline px-5 py-5 pr-12 text-left">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#15943a]">
+            Colaboração da disputa
+          </p>
+          <SheetTitle className="text-[18px] font-bold tracking-[-0.02em] text-ink">
+            Comunicações
+          </SheetTitle>
+          <SheetDescription className="text-[12px] leading-relaxed text-slate-text">
+            O chat interno apoia decisões da equipe. A comunicação oficial do portal fica separada e
+            nunca é enviada pela LicitaBase.
+          </SheetDescription>
+        </SheetHeader>
+
+        <Tabs defaultValue="equipe" className="flex min-h-0 flex-1 flex-col px-4 pt-4">
+          <TabsList className={`${botTabsListClassName} grid h-11 w-full grid-cols-2`}>
+            <TabsTrigger value="equipe" className={botTabsTriggerClassName}>
+              Chat da equipe
+            </TabsTrigger>
+            <TabsTrigger value="portal" className={botTabsTriggerClassName}>
+              Portal oficial
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="equipe" className="mt-4 flex min-h-0 flex-1 flex-col">
+            <div className="mb-3 rounded-xl border border-[#29C454]/20 bg-[#29C454]/[0.055] px-3 py-2.5">
+              <p className="text-[12px] font-bold text-ink">Canal interno da operação</p>
+              <p className="mt-0.5 text-[11px] leading-relaxed text-slate-text">
+                Registre contexto e decisões. Esta demonstração não envia mensagens para canais
+                externos.
+              </p>
+            </div>
+            <div
+              className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain pb-4 pr-1"
+              role="log"
+              aria-label="Mensagens do chat da equipe"
+              aria-live="polite"
+            >
+              {messages.map((message) => (
+                <article
+                  key={message.id}
+                  className={`rounded-xl border p-3 ${message.mine ? "ml-8 border-[#29C454]/25 bg-[#29C454]/[0.07]" : "mr-5 border-hairline bg-slate-50/70"}`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[12px] font-bold text-ink">{message.author}</p>
+                    <time className="shrink-0 text-[10px] font-medium text-slate-text">
+                      {message.time}
+                    </time>
+                  </div>
+                  <p className="mt-0.5 text-[10px] font-semibold text-[#15943a]">{message.role}</p>
+                  <p className="mt-2 text-[12px] leading-relaxed text-slate-text">
+                    {message.content}
+                  </p>
+                </article>
+              ))}
+            </div>
+            <div className="border-t border-hairline py-4">
+              <label className="grid gap-2">
+                <span className="text-[12px] font-bold text-ink">
+                  Registrar decisão ou contexto
+                </span>
+                <Textarea
+                  value={draft}
+                  onChange={(event) => onDraftChange(event.target.value)}
+                  placeholder="Ex.: validação comercial concluída; seguir com o item 3."
+                  className="min-h-20 resize-none rounded-xl border-hairline text-[12px]"
+                />
+              </label>
+              <Button
+                type="button"
+                disabled={!draft.trim()}
+                onClick={onSend}
+                className="mt-3 min-h-11 w-full rounded-xl bg-[#18B849] text-[12px] font-bold text-white hover:bg-[#139e3e]"
+              >
+                <Send className="size-4" aria-hidden="true" />
+                Registrar no chat da equipe
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="portal" className="mt-4">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+              <p className="text-[13px] font-bold text-amber-950">
+                Leitura oficial ainda não conectada
+              </p>
+              <p className="mt-2 text-[12px] leading-relaxed text-amber-900/80">
+                Mensagens do pregoeiro e esclarecimentos precisam vir diretamente do {portal}.
+                Quando a integração for disponibilizada pelo backend, elas aparecerão aqui com
+                origem, horário e vínculo com a sessão.
+              </p>
+            </div>
+            <div className="mt-4 rounded-xl border border-dashed border-hairline bg-slate-50/70 p-4">
+              <p className="text-[12px] font-bold text-ink">Sem mensagens oficiais para exibir</p>
+              <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
+                Nenhum conteúdo é inventado nesta área. Use o portal oficial até a integração estar
+                ativa.
+              </p>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </SheetContent>
+    </Sheet>
   );
 }

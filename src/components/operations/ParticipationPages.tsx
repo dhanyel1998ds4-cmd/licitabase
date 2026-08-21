@@ -6,9 +6,16 @@ import {
   CalendarDays,
   CheckCircle2,
   CircleAlert,
+  ClipboardList,
+  Clock3,
+  FileCheck2,
   FileText,
+  History,
+  MessageSquareText,
   MapPin,
+  PackageCheck,
   Save,
+  ShieldAlert,
   UserRound,
 } from "lucide-react";
 import { Panel } from "@/components/dash2/Panel";
@@ -23,20 +30,53 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { newOpportunities } from "@/lib/new-opportunities-fixtures";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { newOpportunities, type NewOpportunity } from "@/lib/new-opportunities-fixtures";
+import { disputes, getLiveDisputeItems } from "@/lib/bid-bot-fixtures";
 import { useOpportunityTriage } from "@/hooks/use-opportunity-triage";
 
 const proposalSteps = ["Dados gerais", "Itens e valores", "Declarações", "Revisão"];
 
 function useParticipation(licitacaoId: string) {
-  const { triage, saveProposal, sendProposal } = useOpportunityTriage();
-  const opportunity = useMemo(
-    () => newOpportunities.find((item) => item.id === licitacaoId),
-    [licitacaoId],
-  );
-  const record = triage[licitacaoId];
+  const { triage, saveProposal, sendProposal, saveNote } = useOpportunityTriage();
+  const opportunity = useMemo((): NewOpportunity | undefined => {
+    const savedOpportunity = newOpportunities.find((item) => item.id === licitacaoId);
+    if (savedOpportunity) return savedOpportunity;
+
+    const botDispute = disputes.find((item) => item.id === licitacaoId);
+    if (!botDispute) return undefined;
+
+    const stateMatch = botDispute.agency.match(
+      /\b(AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO)\b/,
+    );
+    return {
+      id: botDispute.id,
+      title: `${botDispute.notice} — ${botDispute.object}`,
+      agency: botDispute.agency,
+      openingDate: botDispute.date,
+      estimatedValue: botDispute.estimatedValue,
+      platform: "ComprasNet",
+      state: stateMatch?.[1] ?? "—",
+      category: "Tecnologia",
+      description: botDispute.object,
+      items: getLiveDisputeItems(botDispute.id).map((item) => item.description),
+      matchScore: 84,
+      isDemo: true,
+    };
+  }, [licitacaoId]);
+  const botDispute = disputes.find((item) => item.id === licitacaoId);
+  const record =
+    triage[licitacaoId] ??
+    (botDispute
+      ? {
+          decision: "interested" as const,
+          stage: botDispute.status === "Ativa" ? "dispute" : ("analysis" as const),
+          decidedAt: "2026-08-21T09:00:00.000Z",
+        }
+      : undefined);
   const isAvailable = Boolean(opportunity && record?.decision === "interested");
-  return { opportunity, record, isAvailable, saveProposal, sendProposal };
+  return { opportunity, record, isAvailable, saveProposal, sendProposal, saveNote };
 }
 
 function NotFoundParticipation() {
@@ -60,11 +100,19 @@ function NotFoundParticipation() {
 }
 
 export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string }) {
-  const { opportunity, record, isAvailable } = useParticipation(licitacaoId);
+  const { opportunity, record, isAvailable, saveNote } = useParticipation(licitacaoId);
+  const [tab, setTab] = useState("visao-geral");
   if (!opportunity || !record || !isAvailable) return <NotFoundParticipation />;
 
   const proposalStarted = record.stage === "proposal";
   const inDispute = record.stage === "dispute";
+  const portalIdentifier =
+    opportunity.platform === "ComprasNet" ? "UASG 986477" : "Processo do portal";
+  const stageLabel = inDispute
+    ? "Em disputa"
+    : proposalStarted
+      ? "Proposta em preparação"
+      : "Em análise";
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
@@ -81,11 +129,7 @@ export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-700">
-                {inDispute
-                  ? "Em disputa"
-                  : proposalStarted
-                    ? "Proposta em preparação"
-                    : "Em análise"}
+                {stageLabel}
               </span>
               <span className="text-[11px] font-bold text-brand-strong">
                 {opportunity.matchScore ?? "—"}% aderência
@@ -96,7 +140,7 @@ export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string 
             </h1>
             <p className="mt-3 flex items-center gap-2 text-[13px] text-slate-text">
               <MapPin className="size-4 shrink-0" />
-              {opportunity.agency} · {opportunity.state}
+              {opportunity.agency} · {opportunity.state} · {portalIdentifier}
             </p>
           </div>
           <Button
@@ -123,74 +167,401 @@ export function ParticipationDetailsPage({ licitacaoId }: { licitacaoId: string 
           </Button>
         </header>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.8fr)]">
-          <div className="space-y-5">
-            <Panel className="p-4 sm:p-5">
-              <h2 className="text-[15px] font-extrabold text-ink">Resumo da participação</h2>
-              <p className="mt-3 text-[13px] leading-relaxed text-slate-text">
-                {opportunity.description}
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <Datum label="Valor estimado" value={opportunity.estimatedValue} />
-                <Datum label="Plataforma" value={opportunity.platform} />
-                <Datum label="Itens" value={String(opportunity.items.length)} />
-              </div>
-            </Panel>
+        <Panel className="overflow-hidden p-0">
+          <Tabs value={tab} onValueChange={setTab}>
+            <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto rounded-none border-b border-hairline bg-white p-2">
+              <ParticipationTab value="visao-geral" label="Visão geral" />
+              <ParticipationTab value="edital" label="Edital e documentos" />
+              <ParticipationTab value="itens" label="Itens" />
+              <ParticipationTab value="proposta" label="Proposta" />
+              <ParticipationTab value="impugnacoes" label="Impugnações" />
+              <ParticipationTab value="anotacoes" label="Anotações" />
+              <ParticipationTab value="historico" label="Histórico" />
+            </TabsList>
 
-            <Panel className="p-4 sm:p-5">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[15px] font-extrabold text-ink">
-                  Pendências antes da proposta
-                </h2>
-                <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-700">
-                  1 atenção
-                </span>
-              </div>
-              <div className="mt-4 divide-y divide-hairline">
-                <CheckRow
-                  done
-                  label="Dados da empresa revisados"
-                  detail="CNPJ e representante responsáveis pela proposta."
-                />
-                <CheckRow
-                  done={Boolean(record.note)}
-                  label="Anotação de análise"
-                  detail={record.note ?? "Registre orientações para a equipe antes de avançar."}
-                />
-                <CheckRow
-                  label="Revisar requisitos técnicos"
-                  detail="Confirmar a garantia e os quantitativos do edital."
-                />
-              </div>
-            </Panel>
+            <TabsContent value="visao-geral" className="m-0 p-4 sm:p-5">
+              <ParticipationOverview
+                opportunity={opportunity}
+                note={record.note}
+                stageLabel={stageLabel}
+              />
+            </TabsContent>
+            <TabsContent value="edital" className="m-0 p-4 sm:p-5">
+              <ParticipationDocuments opportunity={opportunity} />
+            </TabsContent>
+            <TabsContent value="itens" className="m-0 p-4 sm:p-5">
+              <ParticipationItems items={opportunity.items} />
+            </TabsContent>
+            <TabsContent value="proposta" className="m-0 p-4 sm:p-5">
+              <ParticipationProposal
+                proposal={record.proposal}
+                receipt={record.submission?.receipt}
+                licitacaoId={licitacaoId}
+              />
+            </TabsContent>
+            <TabsContent value="impugnacoes" className="m-0 p-4 sm:p-5">
+              <ParticipationImpugnations />
+            </TabsContent>
+            <TabsContent value="anotacoes" className="m-0 p-4 sm:p-5">
+              <ParticipationNotes
+                note={record.note}
+                onSave={(note) => saveNote(licitacaoId, note, record.stage ?? "analysis")}
+              />
+            </TabsContent>
+            <TabsContent value="historico" className="m-0 p-4 sm:p-5">
+              <ParticipationHistory stageLabel={stageLabel} openingDate={opportunity.openingDate} />
+            </TabsContent>
+          </Tabs>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function ParticipationTab({ value, label }: { value: string; label: string }) {
+  return (
+    <TabsTrigger value={value} className="min-h-10 shrink-0 px-3 text-[12px] font-bold">
+      {label}
+    </TabsTrigger>
+  );
+}
+
+function ParticipationOverview({
+  opportunity,
+  note,
+  stageLabel,
+}: {
+  opportunity: NonNullable<ReturnType<typeof useParticipation>["opportunity"]>;
+  note?: string | undefined;
+  stageLabel: string;
+}) {
+  return (
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.8fr)]">
+      <div className="space-y-5">
+        <div>
+          <p className="text-[12px] font-bold text-brand-strong">Visão geral</p>
+          <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+            Contexto e próximos passos
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-slate-text">
+            {opportunity.description}
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Datum label="Valor estimado" value={opportunity.estimatedValue} />
+          <Datum label="Plataforma" value={opportunity.platform} />
+          <Datum label="Itens" value={String(opportunity.items.length)} />
+        </div>
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-700" />
+            <div>
+              <p className="text-[13px] font-bold text-ink">Pendência que exige revisão</p>
+              <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
+                Confirme os requisitos técnicos e a validade da certidão estadual antes de enviar a
+                proposta.
+              </p>
+            </div>
           </div>
-
-          <aside className="space-y-5">
-            <Panel className="p-4 sm:p-5">
-              <div className="flex items-center gap-2 text-ink">
-                <CalendarDays className="size-4 text-brand-strong" />
-                <h2 className="text-[14px] font-extrabold">Próximo prazo</h2>
-              </div>
-              <p className="mt-4 text-[22px] font-extrabold tracking-[-0.025em] text-ink">
-                {opportunity.openingDate}
-              </p>
-              <p className="mt-1 text-[12px] text-slate-text">
-                {opportunity.openingTime
-                  ? `Disputa às ${opportunity.openingTime}`
-                  : "Horário a confirmar"}
-              </p>
-            </Panel>
-            <Panel className="p-4 sm:p-5">
-              <div className="flex items-center gap-2 text-ink">
-                <UserRound className="size-4 text-brand-strong" />
-                <h2 className="text-[14px] font-extrabold">Responsável</h2>
-              </div>
-              <p className="mt-3 text-[13px] font-bold text-ink">Você</p>
-              <p className="mt-1 text-[12px] text-slate-text">Preparação e revisão da proposta</p>
-            </Panel>
-          </aside>
         </div>
       </div>
+      <aside className="space-y-4">
+        <Datum label="Etapa atual" value={stageLabel} />
+        <Datum label="Próximo prazo" value={opportunity.openingDate} />
+        <Datum label="Responsável" value="Você · preparação e revisão" />
+        <div className="rounded-xl border border-hairline bg-slate-50 p-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-slate-text">
+            Última anotação
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-ink">
+            {note ?? "Nenhuma orientação interna registrada."}
+          </p>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function ParticipationDocuments({ opportunity }: { opportunity: { platform: string } }) {
+  const groups = [
+    {
+      title: "Edital e anexos do órgão",
+      icon: FileText,
+      description: "Edital, termo de referência e anexos publicados no portal.",
+      count: "4 arquivos",
+    },
+    {
+      title: "Documentos da empresa",
+      icon: FileCheck2,
+      description: "Certidões e comprovações vinculadas à habilitação.",
+      count: "3 vinculados",
+    },
+    {
+      title: "Anexos da proposta",
+      icon: ClipboardList,
+      description: "Arquivos que serão enviados ou já foram enviados na proposta.",
+      count: "0 anexos",
+    },
+  ];
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-[12px] font-bold text-brand-strong">Documentação</p>
+        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+          Documentos com origem identificada
+        </h2>
+        <p className="mt-2 text-[13px] text-slate-text">
+          Os arquivos do órgão, da empresa e da proposta ficam separados para evitar uso indevido.
+        </p>
+      </div>
+      <div className="grid gap-3 lg:grid-cols-3">
+        {groups.map(({ title, icon: Icon, description, count }) => (
+          <div key={title} className="rounded-2xl border border-hairline bg-white p-4 shadow-sm">
+            <span className="grid size-9 place-items-center rounded-xl bg-brand-tint text-brand-strong">
+              <Icon className="size-4" />
+            </span>
+            <h3 className="mt-4 text-[13px] font-bold text-ink">{title}</h3>
+            <p className="mt-1 text-[12px] leading-relaxed text-slate-text">{description}</p>
+            <p className="mt-4 text-[12px] font-bold text-brand-strong">{count}</p>
+          </div>
+        ))}
+      </div>
+      <p className="rounded-xl border border-dashed border-hairline bg-slate-50 p-3 text-[12px] text-slate-text">
+        Origem demonstrativa: {opportunity.platform}. A sincronização de anexos reais será conectada
+        pelo backend.
+      </p>
+    </div>
+  );
+}
+
+function ParticipationItems({ items }: { items: string[] }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-[12px] font-bold text-brand-strong">Itens e lotes</p>
+        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+          Escopo da participação
+        </h2>
+        <p className="mt-2 text-[13px] text-slate-text">
+          Confirme o que será cotado antes de compor a proposta.
+        </p>
+      </div>
+      <div className="divide-y divide-hairline overflow-hidden rounded-2xl border border-hairline">
+        {items.map((item, index) => (
+          <div
+            key={item}
+            className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex min-w-0 gap-3">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand-tint text-[12px] font-bold text-brand-strong">
+                {index + 1}
+              </span>
+              <p className="text-[13px] font-semibold leading-relaxed text-ink">{item}</p>
+            </div>
+            <span className="inline-flex w-fit shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">
+              <PackageCheck className="size-3" />
+              Participando
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ParticipationProposal({
+  proposal,
+  receipt,
+  licitacaoId,
+}: {
+  proposal?:
+    | { companyName: string; totalValue: string; validityDays: string; updatedAt: string }
+    | undefined;
+  receipt?: string | undefined;
+  licitacaoId: string;
+}) {
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[12px] font-bold text-brand-strong">Proposta</p>
+          <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+            Registro consultável da proposta
+          </h2>
+          <p className="mt-2 text-[13px] text-slate-text">
+            A edição acontece em um fluxo próprio; aqui fica o registro para consulta.
+          </p>
+        </div>
+        <Button asChild variant="outline" className="min-h-11 rounded-xl text-[12px] font-bold">
+          <Link
+            to="/dash2/operacao/minhas-licitacoes/$licitacaoId/proposta"
+            params={{ licitacaoId }}
+          >
+            Abrir proposta
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Datum label="Empresa" value={proposal?.companyName ?? "Rascunho não iniciado"} />
+        <Datum label="Valor informado" value={proposal?.totalValue ?? "A compor"} />
+        <Datum label="Validade" value={proposal ? `${proposal.validityDays} dias` : "A definir"} />
+      </div>
+      <div className="rounded-xl border border-hairline bg-slate-50 p-4 text-[12px] text-slate-text">
+        {receipt
+          ? `Proposta enviada. Comprovante: ${receipt}.`
+          : "Nenhuma proposta enviada ao portal nesta demonstração."}
+      </div>
+    </div>
+  );
+}
+
+function ParticipationImpugnations() {
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-[12px] font-bold text-brand-strong">Comunicação oficial</p>
+        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+          Impugnações e esclarecimentos
+        </h2>
+        <p className="mt-2 text-[13px] text-slate-text">
+          Acompanhe pedidos, respostas e prazos quando a origem disponibilizar esses dados.
+        </p>
+      </div>
+      <div className="rounded-2xl border border-dashed border-hairline bg-slate-50 p-6 text-center">
+        <MessageSquareText className="mx-auto size-6 text-brand-strong" />
+        <h3 className="mt-3 text-[14px] font-bold text-ink">Nenhuma comunicação sincronizada</h3>
+        <p className="mx-auto mt-2 max-w-md text-[12px] leading-relaxed text-slate-text">
+          A leitura e o envio dependerão da integração oficial do portal. Esta área já está
+          preparada para mostrar prazos, anexos e respostas sem apresentar dados simulados como se
+          fossem oficiais.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ParticipationNotes({
+  note,
+  onSave,
+}: {
+  note?: string | undefined;
+  onSave: (note: string) => void;
+}) {
+  const [draft, setDraft] = useState(note ?? "");
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setDraft(note ?? "");
+  }, [note]);
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-[12px] font-bold text-brand-strong">Colaboração interna</p>
+        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+          Anotações da equipe
+        </h2>
+        <p className="mt-2 text-[13px] text-slate-text">
+          Notas privadas, com autoria, data e vínculo à decisão da participação.
+        </p>
+      </div>
+      <div className="rounded-2xl border border-hairline p-4">
+        <div className="flex items-start gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-tint text-[12px] font-bold text-brand-strong">
+            JE
+          </span>
+          <div>
+            <p className="text-[13px] font-bold text-ink">Jussefer · agora</p>
+            <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
+              {note ?? "Sem anotações privadas nesta participação."}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="rounded-2xl border border-hairline bg-slate-50/60 p-4">
+        <label htmlFor="participation-note" className="text-[12px] font-bold text-ink">
+          Registrar anotação interna
+        </label>
+        <Textarea
+          id="participation-note"
+          value={draft}
+          onChange={(event) => {
+            setDraft(event.target.value);
+            setSaved(false);
+          }}
+          placeholder="Ex.: confirmar a certidão estadual com o responsável técnico."
+          className="mt-2 min-h-24 resize-y bg-white text-[13px]"
+        />
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[11px] text-slate-text">
+            Visível apenas para a equipe. A integração com usuários reais será feita pelo backend.
+          </p>
+          <Button
+            type="button"
+            disabled={!draft.trim()}
+            onClick={() => {
+              onSave(draft.trim());
+              setSaved(true);
+            }}
+            className="min-h-11 rounded-xl bg-[#18B849] text-[12px] font-bold text-white hover:bg-[#139e3e]"
+          >
+            <Save className="size-4" />
+            Salvar anotação
+          </Button>
+        </div>
+        {saved ? (
+          <p className="mt-3 text-[11px] font-bold text-brand-strong">
+            Anotação salva nesta demonstração.
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function ParticipationHistory({
+  stageLabel,
+  openingDate,
+}: {
+  stageLabel: string;
+  openingDate: string;
+}) {
+  const entries = [
+    ["Oportunidade adicionada à operação", "Aderência e contexto registrados."],
+    ["Análise iniciada", "Responsável definido para a participação."],
+    [stageLabel, `Próximo marco previsto para ${openingDate}.`],
+  ];
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-[12px] font-bold text-brand-strong">Rastreabilidade</p>
+        <h2 className="mt-1 text-[20px] font-bold tracking-[-0.02em] text-ink">
+          Histórico da participação
+        </h2>
+        <p className="mt-2 text-[13px] text-slate-text">
+          Eventos que explicam como a oportunidade avançou dentro da sua operação.
+        </p>
+      </div>
+      <ol className="space-y-0">
+        {entries.map(([title, detail], index) => (
+          <li
+            key={title}
+            className="relative flex gap-3 border-l border-hairline pb-5 pl-5 last:pb-0"
+          >
+            <span className="absolute -left-2 top-0 grid size-4 place-items-center rounded-full bg-brand-tint text-brand-strong">
+              <History className="size-2.5" />
+            </span>
+            <div>
+              <p className="text-[13px] font-bold text-ink">{title}</p>
+              <p className="mt-1 text-[12px] text-slate-text">{detail}</p>
+              <p className="mt-1 text-[11px] text-slate-text">
+                Evento {index + 1} · dados demonstrativos
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }

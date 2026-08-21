@@ -234,11 +234,13 @@ export function DisputeItemsTable({
   visual = "legacy",
   activeItemNumber,
   onItemSelect,
+  participatingItemNumbers,
 }: {
-  items?: typeof disputeItems;
+  items?: (typeof disputeItems)[number][];
   visual?: StatusVisual;
   activeItemNumber?: number;
   onItemSelect?: (itemNumber: number) => void;
+  participatingItemNumbers?: number[];
 }) {
   const compactOnly = visual === "dash2";
   const selectable = Boolean(onItemSelect) && items.length > 1;
@@ -251,82 +253,97 @@ export function DisputeItemsTable({
           compactOnly ? "min-[1680px]:hidden" : "md:hidden",
         )}
       >
-        {items.map((item) => (
-          <li
-            key={item.number}
-            className={cn(
-              "px-4 py-4 transition-colors sm:px-5",
-              selectable &&
-                "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
-              activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
-            )}
-            role={selectable ? "button" : undefined}
-            tabIndex={selectable ? 0 : undefined}
-            aria-current={activeItemNumber === item.number ? "true" : undefined}
-            onClick={selectable ? () => onItemSelect?.(item.number) : undefined}
-            onKeyDown={
-              selectable
-                ? (event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      onItemSelect?.(item.number);
+        {items.map((item) => {
+          const participating = participatingItemNumbers?.includes(item.number) ?? true;
+          return (
+            <li
+              key={item.number}
+              className={cn(
+                "px-4 py-4 transition-colors sm:px-5",
+                !participating && "bg-slate-50/55 opacity-65",
+                selectable &&
+                  participating &&
+                  "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
+                activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
+              )}
+              role={selectable && participating ? "button" : undefined}
+              tabIndex={selectable && participating ? 0 : undefined}
+              aria-current={activeItemNumber === item.number ? "true" : undefined}
+              aria-disabled={!participating || undefined}
+              onClick={selectable && participating ? () => onItemSelect?.(item.number) : undefined}
+              onKeyDown={
+                selectable && participating
+                  ? (event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onItemSelect?.(item.number);
+                      }
                     }
-                  }
-                : undefined
-            }
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[14px] font-bold text-navy">Item {item.number}</p>
-                <p
-                  className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-slate-text"
-                  title={item.description}
-                >
-                  {item.description}
-                </p>
+                  : undefined
+              }
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-[14px] font-bold text-navy">Item {item.number}</p>
+                    {!participating ? (
+                      <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-text">
+                        Fora da participação
+                      </span>
+                    ) : null}
+                  </div>
+                  <p
+                    className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-slate-text"
+                    title={item.description}
+                  >
+                    {item.description}
+                  </p>
+                </div>
+                <StatusPill tone="brand" visual={visual} className="shrink-0 text-[11px]">
+                  {item.position}
+                </StatusPill>
               </div>
-              <StatusPill tone="brand" visual={visual} className="shrink-0 text-[11px]">
-                {item.position}
-              </StatusPill>
-            </div>
-            <dl className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3">
-              <div>
-                <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
-                  Nosso lance
-                </dt>
-                <dd className="tnum mt-1 whitespace-nowrap text-[14px] font-bold text-navy">
-                  {keepCurrencyTogether(item.ourBid)}
-                </dd>
-                <dd className="whitespace-nowrap text-[11px] text-slate-text">{item.ourBidAt}</dd>
-              </div>
-              <div className="text-right">
-                <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
-                  Melhor lance
-                </dt>
-                <dd className="tnum mt-1 whitespace-nowrap text-[14px] font-bold text-navy">
-                  {keepCurrencyTogether(item.bestBid)}
-                </dd>
-                <dd className="whitespace-nowrap text-[11px] text-slate-text">{item.bestBidAt}</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
-                  Desconto
-                </dt>
-                <dd className="tnum mt-1 whitespace-nowrap text-[13px] font-bold text-warn">
-                  {item.discount}
-                </dd>
-              </div>
-              <div className="text-right">
-                <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
-                  Atividade
-                </dt>
-                <dd className="mt-1 whitespace-nowrap text-[13px] font-semibold text-navy">
-                  {item.bids} lances · {item.checks}
-                </dd>
-              </div>
-            </dl>
-          </li>
-        ))}
+              <dl className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3">
+                <div>
+                  <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
+                    Nosso lance
+                  </dt>
+                  <dd className="tnum mt-1 whitespace-nowrap text-[14px] font-bold text-navy">
+                    {keepCurrencyTogether(item.ourBid)}
+                  </dd>
+                  <dd className="whitespace-nowrap text-[11px] text-slate-text">{item.ourBidAt}</dd>
+                </div>
+                <div className="text-right">
+                  <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
+                    Melhor lance
+                  </dt>
+                  <dd className="tnum mt-1 whitespace-nowrap text-[14px] font-bold text-navy">
+                    {keepCurrencyTogether(item.bestBid)}
+                  </dd>
+                  <dd className="whitespace-nowrap text-[11px] text-slate-text">
+                    {item.bestBidAt}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
+                    Desconto
+                  </dt>
+                  <dd className="tnum mt-1 whitespace-nowrap text-[13px] font-bold text-warn">
+                    {item.discount}
+                  </dd>
+                </div>
+                <div className="text-right">
+                  <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-text">
+                    Atividade
+                  </dt>
+                  <dd className="mt-1 whitespace-nowrap text-[13px] font-semibold text-navy">
+                    {item.bids} lances · {item.checks}
+                  </dd>
+                </div>
+              </dl>
+            </li>
+          );
+        })}
       </ul>
       <div
         className={cn(
@@ -352,68 +369,83 @@ export function DisputeItemsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item) => (
-              <TableRow
-                key={item.number}
-                className={cn(
-                  selectable &&
-                    "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
-                  activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
-                )}
-                tabIndex={selectable ? 0 : undefined}
-                aria-current={activeItemNumber === item.number ? "true" : undefined}
-                onClick={selectable ? () => onItemSelect?.(item.number) : undefined}
-                onKeyDown={
-                  selectable
-                    ? (event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          onItemSelect?.(item.number);
+            {items.map((item) => {
+              const participating = participatingItemNumbers?.includes(item.number) ?? true;
+              return (
+                <TableRow
+                  key={item.number}
+                  className={cn(
+                    !participating && "bg-slate-50/55 text-slate-text",
+                    selectable &&
+                      participating &&
+                      "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
+                    activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
+                  )}
+                  tabIndex={selectable && participating ? 0 : undefined}
+                  aria-current={activeItemNumber === item.number ? "true" : undefined}
+                  aria-disabled={!participating || undefined}
+                  onClick={
+                    selectable && participating ? () => onItemSelect?.(item.number) : undefined
+                  }
+                  onKeyDown={
+                    selectable && participating
+                      ? (event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            onItemSelect?.(item.number);
+                          }
                         }
-                      }
-                    : undefined
-                }
-              >
-                <TableCell className="w-[34%] max-w-[200px] md:max-w-[360px]">
-                  <p className="text-[12px] md:text-[13px] font-bold text-navy">
-                    Item {item.number}
-                  </p>
-                  <p className="text-[11px] md:text-[12px] text-slate-text/90 line-clamp-1">
-                    {item.description}
-                  </p>
-                  <p className="mt-1 text-[10px] md:text-[11px] text-slate-text/70 hidden sm:block">
-                    {item.checks}
-                  </p>
-                </TableCell>
-                <TableCell className="tnum whitespace-nowrap text-right text-[12px] font-bold text-navy md:text-[13px]">
-                  {keepCurrencyTogether(item.ourBid)}
-                  <span className="block whitespace-nowrap text-[10px] font-medium text-slate-text/70 md:text-[11px]">
-                    {item.ourBidAt}
-                  </span>
-                </TableCell>
-                <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-navy md:table-cell md:text-[13px]">
-                  {keepCurrencyTogether(item.bestBid)}
-                  <span className="block whitespace-nowrap text-[10px] text-slate-text/70 md:text-[11px]">
-                    {item.bestBidAt}
-                  </span>
-                </TableCell>
-                <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-warn md:table-cell md:text-[13px]">
-                  {item.discount}
-                </TableCell>
-                <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-navy md:table-cell md:text-[13px]">
-                  {item.bids}
-                </TableCell>
-                <TableCell className="text-right">
-                  <StatusPill
-                    tone="brand"
-                    visual={visual}
-                    className="px-2 py-0.5 text-[10px] md:text-[12px]"
-                  >
-                    {item.position}
-                  </StatusPill>
-                </TableCell>
-              </TableRow>
-            ))}
+                      : undefined
+                  }
+                >
+                  <TableCell className="w-[34%] max-w-[200px] md:max-w-[360px]">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[12px] font-bold text-navy md:text-[13px]">
+                        Item {item.number}
+                      </p>
+                      {!participating ? (
+                        <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[9px] font-bold text-slate-text">
+                          Fora
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="text-[11px] md:text-[12px] text-slate-text/90 line-clamp-1">
+                      {item.description}
+                    </p>
+                    <p className="mt-1 text-[10px] md:text-[11px] text-slate-text/70 hidden sm:block">
+                      {item.checks}
+                    </p>
+                  </TableCell>
+                  <TableCell className="tnum whitespace-nowrap text-right text-[12px] font-bold text-navy md:text-[13px]">
+                    {keepCurrencyTogether(item.ourBid)}
+                    <span className="block whitespace-nowrap text-[10px] font-medium text-slate-text/70 md:text-[11px]">
+                      {item.ourBidAt}
+                    </span>
+                  </TableCell>
+                  <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-navy md:table-cell md:text-[13px]">
+                    {keepCurrencyTogether(item.bestBid)}
+                    <span className="block whitespace-nowrap text-[10px] text-slate-text/70 md:text-[11px]">
+                      {item.bestBidAt}
+                    </span>
+                  </TableCell>
+                  <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-warn md:table-cell md:text-[13px]">
+                    {item.discount}
+                  </TableCell>
+                  <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-navy md:table-cell md:text-[13px]">
+                    {item.bids}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <StatusPill
+                      tone="brand"
+                      visual={visual}
+                      className="px-2 py-0.5 text-[10px] md:text-[12px]"
+                    >
+                      {item.position}
+                    </StatusPill>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

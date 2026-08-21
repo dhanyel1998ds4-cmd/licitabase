@@ -229,7 +229,7 @@ export type LiveDisputeSession = {
   marketBid: number;
   position: "1º" | "2º";
   bids: number;
-  item: (typeof disputeItems)[number];
+  item: LiveDisputeItem;
 };
 
 export const liveDisputeSessions: Record<string, LiveDisputeSession> = {
@@ -308,7 +308,12 @@ export const liveDisputeSessions: Record<string, LiveDisputeSession> = {
  * número na listagem: ela determina a fila de trabalho da sala, o seletor do
  * item atual e o volume que a aba de itens precisa comportar.
  */
-type LiveDisputeItem = (typeof disputeItems)[number];
+export type LiveDisputeItem = (typeof disputeItems)[number] & {
+  /** Quantidade considerada para a composição atual da proposta. */
+  quantity?: number;
+  /** Itens fora da participação continuam visíveis, mas não compõem o total. */
+  participating?: boolean;
+};
 
 function buildItem(
   number: number,
@@ -316,6 +321,8 @@ function buildItem(
   amount: number,
   position: "1º" | "2º" | "3º" = "1º",
   bids = 8,
+  quantity = 1,
+  participating = true,
 ): LiveDisputeItem {
   const ourBid = Math.max(amount - (position === "1º" ? 0 : 0.2), 0);
   const bestBid = position === "1º" ? ourBid : Math.max(amount - 0.35, 0);
@@ -331,6 +338,8 @@ function buildItem(
     position,
     nextEvent: "13:01",
     checks: `${8 + number * 3}x verificações`,
+    quantity,
+    participating,
   };
 }
 
@@ -350,6 +359,8 @@ const guarulhosItems = Array.from({ length: 30 }, (_, index) => {
     42496.67 + number * 173.42,
     position,
     6 + number,
+    number % 5 === 0 ? 4 : number % 3 === 0 ? 2 : 1,
+    [1, 3, 7, 12, 18].includes(number),
   );
 });
 
