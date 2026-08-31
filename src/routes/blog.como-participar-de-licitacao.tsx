@@ -49,8 +49,8 @@ const relatedArticles = [
 
 export const Route = createFileRoute("/blog/como-participar-de-licitacao")({
   head: () => ({
-    title: "Como participar de licitação: guia prático para empresas | LicitaBase",
     meta: [
+      { title: "Como participar de licitação: guia prático para empresas | LicitaBase" },
       {
         name: "description",
         content:
