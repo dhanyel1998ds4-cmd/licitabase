@@ -1,5 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/2",
+      "destination": "/2/",
+      "permanent": false
+    },
+    {
+      "source": "/2/planos/comparar",
+      "destination": "/2/planos/comparar/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/2",
