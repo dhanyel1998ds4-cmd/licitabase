@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/2",
+      "destination": "/2/index.html"
+    },
+    {
+      "source": "/2/",
+      "destination": "/2/index.html"
+    },
+    {
+      "source": "/2/planos/comparar",
+      "destination": "/2/planos/comparar/index.html"
+    },
+    {
+      "source": "/2/planos/comparar/",
+      "destination": "/2/planos/comparar/index.html"
+    }
+  ]
+}
