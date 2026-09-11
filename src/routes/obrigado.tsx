@@ -1,15 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Check, Radar, Settings2, Sparkles } from "lucide-react";
-import { z } from "zod";
 import { Header } from "@/components/lp/Header";
 import { pricingPlans } from "@/lib/pricing-data";
-
-const thankYouSearchSchema = z.object({
-  plano: z.string().optional().catch(undefined),
-  plan: z.string().optional().catch(undefined),
-  ciclo: z.string().optional().catch(undefined),
-  billing: z.string().optional().catch(undefined),
-});
+import { type ThankYouSearch, thankYouSearchSchema } from "@/lib/thank-you-search";
 
 export const Route = createFileRoute("/obrigado")({
   validateSearch: thankYouSearchSchema,
@@ -28,7 +21,7 @@ export const Route = createFileRoute("/obrigado")({
       },
     ],
   }),
-  component: ThankYouPage,
+  component: ObrigadoPage,
 });
 
 const planAliases: Record<string, string> = {
@@ -57,8 +50,12 @@ const nextSteps = [
   },
 ];
 
-function ThankYouPage() {
-  const { plano, plan, ciclo, billing } = Route.useSearch();
+function ObrigadoPage() {
+  return <ThankYouPage search={Route.useSearch()} />;
+}
+
+export function ThankYouPage({ search }: { search: ThankYouSearch }) {
+  const { plano, plan, ciclo, billing } = search;
   const requestedPlan = (plano ?? plan ?? "professional").trim().toLowerCase();
   const planId = planAliases[requestedPlan] ?? requestedPlan;
   const activePlan =
