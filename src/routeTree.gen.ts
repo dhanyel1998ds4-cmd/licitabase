@@ -20,6 +20,7 @@ import { Route as IntegracoesRouteImport } from './routes/integracoes'
 import { Route as ItensRouteImport } from './routes/itens'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LpRouteImport } from './routes/lp'
+import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as RaioXRouteImport } from './routes/raio-x'
@@ -115,6 +116,11 @@ const LoginRoute = LoginRouteImport.update({
 const LpRoute = LpRouteImport.update({
   id: '/lp',
   path: '/lp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObrigadoRoute = ObrigadoRouteImport.update({
+  id: '/obrigado',
+  path: '/obrigado',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
+  '/obrigado': typeof ObrigadoRoute
   '/onboarding': typeof OnboardingRoute
   '/pipeline': typeof PipelineRoute
   '/raio-x': typeof RaioXRoute
@@ -403,6 +410,7 @@ export interface FileRoutesByTo {
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
+  '/obrigado': typeof ObrigadoRoute
   '/onboarding': typeof OnboardingRoute
   '/pipeline': typeof PipelineRoute
   '/raio-x': typeof RaioXRoute
@@ -458,6 +466,7 @@ export interface FileRoutesById {
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
+  '/obrigado': typeof ObrigadoRoute
   '/onboarding': typeof OnboardingRoute
   '/pipeline': typeof PipelineRoute
   '/raio-x': typeof RaioXRoute
@@ -514,6 +523,7 @@ export interface FileRouteTypes {
     | '/itens'
     | '/login'
     | '/lp'
+    | '/obrigado'
     | '/onboarding'
     | '/pipeline'
     | '/raio-x'
@@ -565,6 +575,7 @@ export interface FileRouteTypes {
     | '/itens'
     | '/login'
     | '/lp'
+    | '/obrigado'
     | '/onboarding'
     | '/pipeline'
     | '/raio-x'
@@ -619,6 +630,7 @@ export interface FileRouteTypes {
     | '/itens'
     | '/login'
     | '/lp'
+    | '/obrigado'
     | '/onboarding'
     | '/pipeline'
     | '/raio-x'
@@ -674,6 +686,7 @@ export interface RootRouteChildren {
   ItensRoute: typeof ItensRoute
   LoginRoute: typeof LoginRoute
   LpRoute: typeof LpRoute
+  ObrigadoRoute: typeof ObrigadoRoute
   OnboardingRoute: typeof OnboardingRoute
   PipelineRoute: typeof PipelineRoute
   RaioXRoute: typeof RaioXRoute
@@ -762,6 +775,13 @@ declare module '@tanstack/react-router' {
       path: '/lp'
       fullPath: '/lp'
       preLoaderRoute: typeof LpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/obrigado': {
+      id: '/obrigado'
+      path: '/obrigado'
+      fullPath: '/obrigado'
+      preLoaderRoute: typeof ObrigadoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -1219,6 +1239,7 @@ const rootRouteChildren: RootRouteChildren = {
   ItensRoute: ItensRoute,
   LoginRoute: LoginRoute,
   LpRoute: LpRoute,
+  ObrigadoRoute: ObrigadoRoute,
   OnboardingRoute: OnboardingRoute,
   PipelineRoute: PipelineRoute,
   RaioXRoute: RaioXRoute,
