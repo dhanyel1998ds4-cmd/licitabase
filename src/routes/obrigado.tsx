@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, MailCheck, Radar, Settings2, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Radar, Settings2, Sparkles } from "lucide-react";
 import { z } from "zod";
 import { Header } from "@/components/lp/Header";
 import { pricingPlans } from "@/lib/pricing-data";
@@ -67,6 +67,9 @@ function ThankYouPage() {
   const isAnnual = ["annual", "anual", "yearly"].includes(requestedBilling);
   const price = activePlan.prices[isAnnual ? "annual" : "monthly"];
   const formattedPrice = new Intl.NumberFormat("pt-BR").format(price.amount);
+  const chargedTotal = isAnnual ? (price.billedTotal ?? price.amount * 12) : price.amount;
+  const formattedChargedTotal = new Intl.NumberFormat("pt-BR").format(chargedTotal);
+  const chargePeriod = isAnnual ? "/ano" : "/mês";
 
   return (
     <div className="min-h-screen bg-[#f5f8f6] font-manrope text-[#10281d]">
@@ -123,44 +126,107 @@ function ThankYouPage() {
               </div>
             </div>
 
-            <aside className="m-5 flex flex-col justify-between rounded-[1.45rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.11),rgba(255,255,255,0.035))] p-6 sm:m-7 sm:p-7 lg:m-8 lg:p-8">
-              <div>
-                <div className="flex items-center justify-between gap-3 text-xs font-bold text-[#d3e3d8]">
-                  <span>Resumo da contratação</span>
-                  <span className="rounded-full border border-[#5ee27e]/30 bg-[#44d96a]/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-[#74eb90]">
-                    Aprovado
-                  </span>
-                </div>
-
-                <div className="mt-10">
-                  <p className="text-xs font-medium text-[#a6bbae]">Plano contratado</p>
-                  <h2 className="mt-1 text-3xl font-extrabold tracking-[-0.055em] text-white">
-                    {activePlan.name}
-                  </h2>
-                  <p className="mt-2 max-w-xs text-sm leading-6 text-[#b0c5b8]">
-                    {activePlan.subtitle}
-                  </p>
-                </div>
-
-                <dl className="mt-9 grid grid-cols-2 gap-4 border-y border-white/12 py-5">
-                  <div>
-                    <dt className="text-[11px] font-medium text-[#9db3a5]">Valor</dt>
-                    <dd className="mt-1 text-base font-extrabold tracking-[-0.03em] text-white">
-                      R$ {formattedPrice}/mês
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[11px] font-medium text-[#9db3a5]">Cobrança</dt>
-                    <dd className="mt-1 text-base font-extrabold tracking-[-0.03em] text-white">
-                      {isAnnual ? "Anual" : "Mensal"}
-                    </dd>
-                  </div>
-                </dl>
+            <aside
+              className="relative mx-auto my-8 w-[calc(100%_-_2.5rem)] max-w-[390px] self-center bg-[#f7f3e8] px-7 py-9 font-mono text-[#17251c] shadow-[0_28px_48px_rgba(0,0,0,0.3)] sm:my-10 sm:px-8 sm:py-10 lg:my-12"
+              aria-label="Recibo da assinatura"
+            >
+              <div
+                className="absolute -top-1 left-1 right-1 flex justify-between"
+                aria-hidden="true"
+              >
+                {Array.from({ length: 28 }, (_, index) => (
+                  <span key={index} className="size-2 rounded-full bg-[#062d20]" />
+                ))}
+              </div>
+              <div
+                className="absolute -bottom-1 left-1 right-1 flex justify-between"
+                aria-hidden="true"
+              >
+                {Array.from({ length: 28 }, (_, index) => (
+                  <span key={index} className="size-2 rounded-full bg-[#062d20]" />
+                ))}
               </div>
 
-              <p className="mt-7 flex items-start gap-2 text-xs leading-5 text-[#acc2b4]">
-                <MailCheck className="mt-0.5 size-4 shrink-0 text-[#71e990]" aria-hidden="true" />
-                Você receberá os detalhes da assinatura no e-mail informado na compra.
+              <header className="text-center">
+                <p className="text-[10px] font-bold uppercase tracking-[0.23em] text-[#506055]">
+                  LicitaBase
+                </p>
+                <h2 className="mt-2 text-xl font-black uppercase tracking-[0.12em] text-[#17251c]">
+                  Recibo
+                </h2>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-[#66756b]">
+                  Confirmação de assinatura
+                </p>
+              </header>
+
+              <div className="my-5 border-t-2 border-dashed border-[#859188]" />
+
+              <div className="flex items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.08em] text-[#526157]">
+                <span>Descrição</span>
+                <span>Valor</span>
+              </div>
+              <div className="mt-3 space-y-2.5 text-[12px] leading-5 text-[#35443a]">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="max-w-[13rem]">Assinatura {activePlan.name}</span>
+                  <span className="shrink-0 font-bold">R$ {formattedPrice}</span>
+                </div>
+                <div className="flex items-start justify-between gap-3">
+                  <span>Cobrança {isAnnual ? "anual" : "mensal"}</span>
+                  <span className="shrink-0">{chargePeriod}</span>
+                </div>
+                <div className="flex items-start justify-between gap-3">
+                  <span>Acesso à plataforma</span>
+                  <span className="shrink-0 font-bold text-[#198546]">Liberado</span>
+                </div>
+              </div>
+
+              <div className="my-5 border-t-2 border-dashed border-[#859188]" />
+
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.09em] text-[#536259]">
+                    Total cobrado
+                  </p>
+                  <p className="mt-1 text-[10px] font-medium text-[#6a786e]">
+                    {isAnnual ? "Cobrado anualmente" : "Cobrança mensal"}
+                  </p>
+                </div>
+                <p className="text-2xl font-black tracking-[-0.09em] text-[#17251c]">
+                  R$ {formattedChargedTotal}
+                </p>
+              </div>
+
+              <div className="my-5 border-t-2 border-dashed border-[#859188]" />
+
+              <div className="space-y-1 text-[10px] font-semibold uppercase tracking-[0.055em] text-[#56645b]">
+                <div className="flex justify-between gap-3">
+                  <span>Status do pagamento</span>
+                  <span className="font-black text-[#168542]">Aprovado</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span>Plano</span>
+                  <span>{activePlan.name}</span>
+                </div>
+              </div>
+
+              <div className="my-5 border-t-2 border-dashed border-[#859188]" />
+
+              <p className="text-center text-[10px] font-black uppercase tracking-[0.12em] text-[#26362b]">
+                Obrigado por escolher a LicitaBase
+              </p>
+              <div
+                className="mt-5 flex h-10 items-stretch justify-center gap-px"
+                aria-hidden="true"
+              >
+                {[
+                  2, 1, 3, 1, 1, 4, 2, 1, 3, 2, 4, 1, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3, 2, 1, 4, 2, 1,
+                  3, 1, 2,
+                ].map((width, index) => (
+                  <span key={index} className="bg-[#17251c]" style={{ width: `${width}px` }} />
+                ))}
+              </div>
+              <p className="mt-2 text-center text-[9px] font-semibold tracking-[0.18em] text-[#65736a]">
+                LICITABASE · ASSINATURA ATIVA
               </p>
             </aside>
           </section>
