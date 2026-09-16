@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { thankYouSearchSchema } from "@/lib/thank-you-search";
+import { noIndexNoFollow } from "@/lib/seo";
 import { ThankYouPage } from "./obrigado";
 
 export const Route = createFileRoute("/obrigado-assinatura")({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/obrigado-assinatura")({
         property: "og:description",
         content: "Sua assinatura foi confirmada. Configure sua operação na LicitaBase.",
       },
+      noIndexNoFollow,
     ],
   }),
   component: ThankYouSubscriptionPage,

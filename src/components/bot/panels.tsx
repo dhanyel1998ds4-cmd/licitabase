@@ -11,7 +11,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useResizableColumns } from "@/components/dash2/ResizableColumns";
-import { ResourceListGridHeader } from "@/components/dash2/ResourceList";
+import { ResourceListGridHeader, ResourceListGridRow } from "@/components/dash2/ResourceList";
 import { StatusPill, type StatusVisual } from "@/components/bot/StatusPill";
 import {
   Table,
@@ -105,6 +105,21 @@ const overviewDisputeColumns = [
   { id: "value", width: 122, min: 112, max: 220 },
   { id: "action", width: 36, min: 32, max: 56 },
 ];
+
+/**
+ * A aba de itens vive dentro de uma coluna mais estreita da sala de disputa.
+ * Por isso o item mantém uma largura mínima maior e os dados numéricos ocupam
+ * trilhos compactos e estáveis, redimensionáveis no desktop amplo.
+ */
+const disputeItemColumns = [
+  { id: "ourBid", width: 100, min: 86, max: 190 },
+  { id: "bestBid", width: 100, min: 86, max: 190 },
+  { id: "discount", width: 68, min: 58, max: 128 },
+  { id: "bids", width: 52, min: 42, max: 100 },
+  { id: "position", width: 52, min: 42, max: 104 },
+];
+
+const disputeItemLeadingColumn = { id: "item", width: 180, min: 156, max: 280 };
 
 /** List of disputes. When `linked` is false rows are static (used on the landing page). */
 export function DisputeList({
@@ -244,13 +259,25 @@ export function DisputeItemsTable({
 }) {
   const compactOnly = visual === "dash2";
   const selectable = Boolean(onItemSelect) && items.length > 1;
+  // A terceira coluna da sala tem 320 px como mínimo. Só há espaço para uma
+  // tabela de seis colunas em monitores ultrawide; abaixo disso, os cards
+  // preservam o contexto de cada item sem criar rolagem horizontal.
+  const desktopGridClassName = compactOnly ? "min-[2240px]:grid" : "md:grid";
+  const desktopHiddenClassName = compactOnly ? "min-[2240px]:hidden" : "md:hidden";
+  const { gridTemplateColumns, getResizeHandleProps } = useResizableColumns({
+    // A tabela anterior não compartilhava a mesma grade entre cabeçalho e
+    // linhas. A nova chave descarta larguras persistidas daquele layout.
+    storageKey: `licitabase.bot-dispute-items-${visual}-widths.v2`,
+    columns: disputeItemColumns,
+    leadingColumn: disputeItemLeadingColumn,
+  });
 
   return (
     <>
       <ul
         className={cn(
           "divide-y divide-border/60",
-          compactOnly ? "min-[1680px]:hidden" : "md:hidden",
+          desktopHiddenClassName,
         )}
       >
         {items.map((item) => {
@@ -345,109 +372,110 @@ export function DisputeItemsTable({
           );
         })}
       </ul>
-      <div
-        className={cn(
-          "hidden w-full overflow-x-auto",
-          compactOnly ? "min-[1680px]:block" : "md:block",
-        )}
-      >
-        <Table className="min-w-full table-fixed">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-[11px] md:text-[12px]">Item</TableHead>
-              <TableHead className="text-right text-[11px] md:text-[12px]">Nosso lance</TableHead>
-              <TableHead className="text-right text-[11px] md:text-[12px] hidden sm:table-cell">
-                Melhor lance
-              </TableHead>
-              <TableHead className="text-right text-[11px] md:text-[12px] hidden md:table-cell">
-                Desconto
-              </TableHead>
-              <TableHead className="text-right text-[11px] md:text-[12px] hidden md:table-cell">
-                Lances
-              </TableHead>
-              <TableHead className="text-right text-[11px] md:text-[12px]">Posição</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item) => {
-              const participating = participatingItemNumbers?.includes(item.number) ?? true;
-              return (
-                <TableRow
-                  key={item.number}
-                  className={cn(
-                    !participating && "bg-slate-50/55 text-slate-text",
-                    selectable &&
-                      participating &&
-                      "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
-                    activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
-                  )}
-                  tabIndex={selectable && participating ? 0 : undefined}
-                  aria-current={activeItemNumber === item.number ? "true" : undefined}
-                  aria-disabled={!participating || undefined}
-                  onClick={
-                    selectable && participating ? () => onItemSelect?.(item.number) : undefined
-                  }
-                  onKeyDown={
-                    selectable && participating
-                      ? (event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            onItemSelect?.(item.number);
-                          }
+      <div className={cn("hidden", desktopGridClassName)} role="table" aria-label="Itens em disputa">
+        <ResourceListGridHeader
+          gridTemplateColumns={gridTemplateColumns}
+          className={cn("gap-2 px-4 py-3 sm:px-5", !compactOnly && "md:!grid")}
+        >
+          <span className="relative">
+            Item
+            <button {...getResizeHandleProps("item")} aria-label="Redimensionar coluna Item" />
+          </span>
+          <span className="relative text-right">
+            Nosso lance
+            <button {...getResizeHandleProps("ourBid")} aria-label="Redimensionar coluna Nosso lance" />
+          </span>
+          <span className="relative text-right">
+            Melhor lance
+            <button {...getResizeHandleProps("bestBid")} aria-label="Redimensionar coluna Melhor lance" />
+          </span>
+          <span className="relative text-right">
+            Desconto
+            <button {...getResizeHandleProps("discount")} aria-label="Redimensionar coluna Desconto" />
+          </span>
+          <span className="relative text-right">
+            Lances
+            <button {...getResizeHandleProps("bids")} aria-label="Redimensionar coluna Lances" />
+          </span>
+          <span className="text-right">Posição</span>
+        </ResourceListGridHeader>
+        <div className="divide-y divide-border/60" role="rowgroup">
+          {items.map((item) => {
+            const participating = participatingItemNumbers?.includes(item.number) ?? true;
+            return (
+              <ResourceListGridRow
+                key={item.number}
+                gridTemplateColumns={gridTemplateColumns}
+                className={cn(
+                  "min-h-[78px] gap-2 px-4 py-3.5 sm:px-5",
+                  !participating && "bg-slate-50/55 text-slate-text",
+                  selectable &&
+                    participating &&
+                    "cursor-pointer hover:bg-[#29C454]/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29C454]",
+                  activeItemNumber === item.number && "bg-[#29C454]/[0.07]",
+                )}
+                role="row"
+                tabIndex={selectable && participating ? 0 : undefined}
+                aria-current={activeItemNumber === item.number ? "true" : undefined}
+                aria-disabled={!participating || undefined}
+                onClick={
+                  selectable && participating ? () => onItemSelect?.(item.number) : undefined
+                }
+                onKeyDown={
+                  selectable && participating
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onItemSelect?.(item.number);
                         }
-                      : undefined
-                  }
-                >
-                  <TableCell className="w-[34%] max-w-[200px] md:max-w-[360px]">
-                    <div className="flex items-center gap-2">
-                      <p className="text-[12px] font-bold text-navy md:text-[13px]">
-                        Item {item.number}
-                      </p>
-                      {!participating ? (
-                        <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[9px] font-bold text-slate-text">
-                          Fora
-                        </span>
-                      ) : null}
-                    </div>
-                    <p className="text-[11px] md:text-[12px] text-slate-text/90 line-clamp-1">
-                      {item.description}
-                    </p>
-                    <p className="mt-1 text-[10px] md:text-[11px] text-slate-text/70 hidden sm:block">
-                      {item.checks}
-                    </p>
-                  </TableCell>
-                  <TableCell className="tnum whitespace-nowrap text-right text-[12px] font-bold text-navy md:text-[13px]">
-                    {keepCurrencyTogether(item.ourBid)}
-                    <span className="block whitespace-nowrap text-[10px] font-medium text-slate-text/70 md:text-[11px]">
-                      {item.ourBidAt}
-                    </span>
-                  </TableCell>
-                  <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-navy md:table-cell md:text-[13px]">
-                    {keepCurrencyTogether(item.bestBid)}
-                    <span className="block whitespace-nowrap text-[10px] text-slate-text/70 md:text-[11px]">
-                      {item.bestBidAt}
-                    </span>
-                  </TableCell>
-                  <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-warn md:table-cell md:text-[13px]">
-                    {item.discount}
-                  </TableCell>
-                  <TableCell className="tnum hidden whitespace-nowrap text-right text-[12px] text-navy md:table-cell md:text-[13px]">
-                    {item.bids}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <StatusPill
-                      tone="brand"
-                      visual={visual}
-                      className="px-2 py-0.5 text-[10px] md:text-[12px]"
-                    >
-                      {item.position}
-                    </StatusPill>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                      }
+                    : undefined
+                }
+              >
+                <div className="min-w-0 pr-2" role="cell">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-[12px] font-bold text-navy md:text-[13px]">Item {item.number}</p>
+                    {!participating ? (
+                      <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[9px] font-bold text-slate-text">
+                        Fora da participação
+                      </span>
+                    ) : null}
+                  </div>
+                  <p
+                    className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-slate-text/90 md:text-[12px]"
+                    title={item.description}
+                  >
+                    {item.description}
+                  </p>
+                  <p className="mt-1 text-[10px] text-slate-text/70 md:text-[11px]">{item.checks}</p>
+                </div>
+                <div className="tnum min-w-0 whitespace-nowrap text-right text-[12px] font-bold text-navy md:text-[13px]" role="cell">
+                  {keepCurrencyTogether(item.ourBid)}
+                  <span className="block whitespace-nowrap text-[10px] font-medium text-slate-text/70 md:text-[11px]">
+                    {item.ourBidAt}
+                  </span>
+                </div>
+                <div className="tnum min-w-0 whitespace-nowrap text-right text-[12px] text-navy md:text-[13px]" role="cell">
+                  {keepCurrencyTogether(item.bestBid)}
+                  <span className="block whitespace-nowrap text-[10px] text-slate-text/70 md:text-[11px]">
+                    {item.bestBidAt}
+                  </span>
+                </div>
+                <div className="tnum min-w-0 whitespace-nowrap text-right text-[12px] text-warn md:text-[13px]" role="cell">
+                  {item.discount}
+                </div>
+                <div className="tnum min-w-0 whitespace-nowrap text-right text-[12px] text-navy md:text-[13px]" role="cell">
+                  {item.bids}
+                </div>
+                <div className="text-right" role="cell">
+                  <StatusPill tone="brand" visual={visual} className="px-2 py-0.5 text-[10px] md:text-[12px]">
+                    {item.position}
+                  </StatusPill>
+                </div>
+              </ResourceListGridRow>
+            );
+          })}
+        </div>
       </div>
     </>
   );

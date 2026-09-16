@@ -29,15 +29,23 @@ export function useResizableColumns({
 }: {
   storageKey: string;
   columns: ResizableColumn[];
-  leadingColumn?: string;
+  /**
+   * Pode ser uma faixa fluida (o padrão) ou uma primeira coluna que também
+   * aceita arraste, necessária em tabelas onde o título é o dado principal.
+   */
+  leadingColumn?: string | ResizableColumn;
 }) {
+  const adjustableColumns = useMemo(
+    () => (typeof leadingColumn === "string" ? columns : [leadingColumn, ...columns]),
+    [columns, leadingColumn],
+  );
   const defaults = useMemo(
     () =>
-      Object.fromEntries(columns.map((column) => [column.id, column.width])) as Record<
+      Object.fromEntries(adjustableColumns.map((column) => [column.id, column.width])) as Record<
         string,
         number
       >,
-    [columns],
+    [adjustableColumns],
   );
   const [widths, setWidths] = useState<Record<string, number>>(defaults);
   const [hasLoadedStoredWidths, setHasLoadedStoredWidths] = useState(false);
@@ -49,7 +57,7 @@ export function useResizableColumns({
       if (!stored) return;
       const parsed = JSON.parse(stored) as Record<string, number>;
       const next = Object.fromEntries(
-        columns.map((column) => {
+        adjustableColumns.map((column) => {
           const candidate = parsed[column.id];
           const width = typeof candidate === "number" ? candidate : column.width;
           return [column.id, Math.min(column.max, Math.max(column.min, width))];
@@ -61,7 +69,7 @@ export function useResizableColumns({
     } finally {
       setHasLoadedStoredWidths(true);
     }
-  }, [columns, defaults, storageKey]);
+  }, [adjustableColumns, defaults, storageKey]);
 
   useEffect(() => {
     if (!hasLoadedStoredWidths) return;
@@ -70,14 +78,14 @@ export function useResizableColumns({
 
   const updateWidth = useCallback(
     (id: string, nextWidth: number) => {
-      const column = columns.find((item) => item.id === id);
+      const column = adjustableColumns.find((item) => item.id === id);
       if (!column) return;
       setWidths((current) => ({
         ...current,
         [id]: Math.min(column.max, Math.max(column.min, Math.round(nextWidth))),
       }));
     },
-    [columns],
+    [adjustableColumns],
   );
 
   const getResizeHandleProps = useCallback(
@@ -124,9 +132,12 @@ export function useResizableColumns({
   );
 
   return {
-    gridTemplateColumns: `${leadingColumn} ${columns.map((column) => `${widths[column.id] ?? column.width}px`).join(" ")}`,
+    gridTemplateColumns:
+      typeof leadingColumn === "string"
+        ? `${leadingColumn} ${columns.map((column) => `${widths[column.id] ?? column.width}px`).join(" ")}`
+        : adjustableColumns.map((column) => `${widths[column.id] ?? column.width}px`).join(" "),
     getColumnWidth: (id: string) =>
-      widths[id] ?? columns.find((column) => column.id === id)?.width ?? 0,
+      widths[id] ?? adjustableColumns.find((column) => column.id === id)?.width ?? 0,
     getResizeHandleProps,
   };
 }

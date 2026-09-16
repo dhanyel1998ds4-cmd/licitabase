@@ -9,6 +9,16 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
+<!-- SEO:BEGIN -->
+## Regras persistentes de SEO público
+
+- A especificação operacional e a auditoria vivem em `docs/SEO_IMPLEMENTATION_PLAN.md` e `docs/SEO_GAP_ANALYSIS.md`; leia ambas antes de alterações amplas em rotas públicas, blog, sitemap, robots ou metadata.
+- Preserve URLs publicadas; alterações de slug exigem redirect permanente registrado. Não edite `src/routeTree.gen.ts` manualmente.
+- Todo URL público indexável precisa de título/H1 únicos, canonical absoluto, política de robots, links internos rastreáveis e sitemap coerente. Rotas privadas, tokens, buscas internas e filtros arbitrários não podem ser indexados por acidente.
+- Não implementar keyword stuffing, doorway pages, conteúdo em escala sem valor próprio, datas falsas, links manipulativos ou dados estruturados enganosos. IA pode rascunhar; publicação exige validação de intenção, fontes e revisão humana.
+- Execute os checks de SEO quando forem criadas ou alteradas rotas públicas. Não alegue ranking, indexação ou dados de Google Search Console sem verificação real.
+<!-- SEO:END -->
+
 <!-- INTERNAL-UI-STANDARD:BEGIN -->
 ## Regra obrigatória — telas internas da LicitaBase
 

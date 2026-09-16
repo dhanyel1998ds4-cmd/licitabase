@@ -3,6 +3,7 @@ import { ArrowRight, Check, Radar, Settings2, Sparkles } from "lucide-react";
 import { Header } from "@/components/lp/Header";
 import { pricingPlans } from "@/lib/pricing-data";
 import { type ThankYouSearch, thankYouSearchSchema } from "@/lib/thank-you-search";
+import { noIndexNoFollow } from "@/lib/seo";
 
 export const Route = createFileRoute("/obrigado")({
   validateSearch: thankYouSearchSchema,
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/obrigado")({
         property: "og:description",
         content: "Sua assinatura foi confirmada. Configure sua operação na LicitaBase.",
       },
+      noIndexNoFollow,
     ],
   }),
   component: ObrigadoPage,

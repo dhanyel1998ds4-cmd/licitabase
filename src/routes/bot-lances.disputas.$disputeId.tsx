@@ -76,6 +76,7 @@ import {
 } from "@/lib/bid-bot-fixtures";
 import { useBotOperationOutcomes } from "@/hooks/use-bot-operation-outcomes";
 import { AnnotationThread } from "@/components/annotations/AnnotationThread";
+import { OfficialTenderCommunications } from "@/components/communications/OfficialTenderCommunications";
 
 type SessionState = "active" | "paused" | "finished";
 type ResultDisposition = "review" | "adjudication" | "archived";
@@ -751,14 +752,14 @@ function DisputeDetail() {
               size="sm"
               className="w-full rounded-xl border-[#29C454]/35 bg-[#29C454]/10 text-[#117633] shadow-[0_1px_2px_rgba(21,148,58,0.1)] hover:bg-[#29C454]/18 hover:text-[#0e6b2d] focus-visible:ring-[#29C454]/25 sm:w-auto"
               onClick={() => setCommunicationsOpen(true)}
-              aria-label="Abrir comunicações internas da equipe"
+              aria-label="Abrir comunicações da disputa"
             >
               <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-[#29C454]/15">
                 <MessageSquareText className="size-3.5" aria-hidden="true" />
               </span>
               <span className="min-w-0 truncate">Comunicações</span>
               <span className="hidden rounded-full bg-white/70 px-1.5 py-0.5 text-[10px] font-bold sm:inline">
-                Equipe
+                Equipe + portal
               </span>
             </Button>
             {sessionState === "active" ? (
@@ -1600,24 +1601,11 @@ function DisputeCommunicationsSheet({
             />
           </TabsContent>
 
-          <TabsContent value="portal" className="mt-4">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
-              <p className="text-[13px] font-bold text-amber-950">
-                Leitura oficial ainda não conectada
-              </p>
-              <p className="mt-2 text-[12px] leading-relaxed text-amber-900/80">
-                Mensagens do pregoeiro e esclarecimentos precisam vir diretamente do {portal}.
-                Quando a integração for disponibilizada pelo backend, elas aparecerão aqui com
-                origem, horário e vínculo com a sessão.
-              </p>
-            </div>
-            <div className="mt-4 rounded-xl border border-dashed border-hairline bg-slate-50/70 p-4">
-              <p className="text-[12px] font-bold text-ink">Sem mensagens oficiais para exibir</p>
-              <p className="mt-1 text-[12px] leading-relaxed text-slate-text">
-                Nenhum conteúdo é inventado nesta área. Use o portal oficial até a integração estar
-                ativa.
-              </p>
-            </div>
+          <TabsContent
+            value="portal"
+            className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4"
+          >
+            <OfficialTenderCommunications tenderId={tenderId} portal={portal} compact />
           </TabsContent>
         </Tabs>
       </SheetContent>

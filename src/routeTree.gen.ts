@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R2RouteImport } from './routes/2'
 import { Route as BotLancesRouteImport } from './routes/bot-lances'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as CategoriasRouteImport } from './routes/categorias'
@@ -29,6 +30,9 @@ import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as ScoreOrgaosRouteImport } from './routes/score-orgaos'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BlogComoParticiparDeLicitacaoRouteImport } from './routes/blog.como-participar-de-licitacao'
 import { Route as BotLancesIndexRouteImport } from './routes/bot-lances.index'
 import { Route as BotLancesConfiguracoesRouteImport } from './routes/bot-lances.configuracoes'
 import { Route as BotLancesHistoricoRouteImport } from './routes/bot-lances.historico'
@@ -41,6 +45,7 @@ import { Route as ConcorrentesCategoryIdRouteImport } from './routes/concorrente
 import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as Dash2AjudaRouteImport } from './routes/dash2.ajuda'
 import { Route as PlanosCompararRouteImport } from './routes/planos.comparar'
+import { Route as R2PlanosCompararRouteImport } from './routes/2.planos.comparar'
 import { Route as BotLancesDisputasIndexRouteImport } from './routes/bot-lances.disputas.index'
 import { Route as BotLancesDisputasDisputeIdRouteImport } from './routes/bot-lances.disputas.$disputeId'
 import { Route as ConcorrentesCategoryIdCompanyIdRouteImport } from './routes/concorrentes.$categoryId.$companyId'
@@ -67,6 +72,11 @@ import { Route as Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRouteImport } 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R2Route = R2RouteImport.update({
+  id: '/2',
+  path: '/2',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BotLancesRoute = BotLancesRouteImport.update({
@@ -164,6 +174,22 @@ const ScoreOrgaosRoute = ScoreOrgaosRouteImport.update({
   path: '/score-orgaos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogComoParticiparDeLicitacaoRoute =
+  BlogComoParticiparDeLicitacaoRouteImport.update({
+    id: '/blog/como-participar-de-licitacao',
+    path: '/blog/como-participar-de-licitacao',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BotLancesIndexRoute = BotLancesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -223,6 +249,11 @@ const PlanosCompararRoute = PlanosCompararRouteImport.update({
   id: '/planos/comparar',
   path: '/planos/comparar',
   getParentRoute: () => rootRouteImport,
+} as any)
+const R2PlanosCompararRoute = R2PlanosCompararRouteImport.update({
+  id: '/planos/comparar',
+  path: '/planos/comparar',
+  getParentRoute: () => R2Route,
 } as any)
 const BotLancesDisputasIndexRoute = BotLancesDisputasIndexRouteImport.update({
   id: '/disputas/',
@@ -354,6 +385,7 @@ const Dash2OperacaoMinhasLicitacoesLicitacaoIdPropostaRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/2': typeof R2RouteWithChildren
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/categorias': typeof CategoriasRouteWithChildren
@@ -373,6 +405,8 @@ export interface FileRoutesByFullPath {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/relatorios': typeof RelatoriosRoute
   '/score-orgaos': typeof ScoreOrgaosRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/como-participar-de-licitacao': typeof BlogComoParticiparDeLicitacaoRoute
   '/bot-lances/configuracoes': typeof BotLancesConfiguracoesRoute
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
@@ -382,9 +416,11 @@ export interface FileRoutesByFullPath {
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
+  '/blog/': typeof BlogIndexRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/categorias/': typeof CategoriasIndexRoute
   '/concorrentes/': typeof ConcorrentesIndexRoute
+  '/2/planos/comparar': typeof R2PlanosCompararRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
   '/concorrentes/$categoryId/$companyId': typeof ConcorrentesCategoryIdCompanyIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
@@ -410,6 +446,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/2': typeof R2RouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/dash2': typeof Dash2RouteWithChildren
   '/documentos': typeof DocumentosRoute
@@ -426,6 +463,8 @@ export interface FileRoutesByTo {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/relatorios': typeof RelatoriosRoute
   '/score-orgaos': typeof ScoreOrgaosRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/como-participar-de-licitacao': typeof BlogComoParticiparDeLicitacaoRoute
   '/bot-lances/configuracoes': typeof BotLancesConfiguracoesRoute
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
@@ -435,9 +474,11 @@ export interface FileRoutesByTo {
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
+  '/blog': typeof BlogIndexRoute
   '/bot-lances': typeof BotLancesIndexRoute
   '/categorias': typeof CategoriasIndexRoute
   '/concorrentes': typeof ConcorrentesIndexRoute
+  '/2/planos/comparar': typeof R2PlanosCompararRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
   '/concorrentes/$categoryId/$companyId': typeof ConcorrentesCategoryIdCompanyIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
@@ -464,6 +505,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/2': typeof R2RouteWithChildren
   '/bot-lances': typeof BotLancesRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/categorias': typeof CategoriasRouteWithChildren
@@ -483,6 +525,8 @@ export interface FileRoutesById {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/relatorios': typeof RelatoriosRoute
   '/score-orgaos': typeof ScoreOrgaosRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/como-participar-de-licitacao': typeof BlogComoParticiparDeLicitacaoRoute
   '/bot-lances/configuracoes': typeof BotLancesConfiguracoesRoute
   '/bot-lances/historico': typeof BotLancesHistoricoRoute
   '/bot-lances/monitoramento': typeof BotLancesMonitoramentoRoute
@@ -492,9 +536,11 @@ export interface FileRoutesById {
   '/convite/$token': typeof ConviteTokenRoute
   '/dash2/ajuda': typeof Dash2AjudaRoute
   '/planos/comparar': typeof PlanosCompararRoute
+  '/blog/': typeof BlogIndexRoute
   '/bot-lances/': typeof BotLancesIndexRoute
   '/categorias/': typeof CategoriasIndexRoute
   '/concorrentes/': typeof ConcorrentesIndexRoute
+  '/2/planos/comparar': typeof R2PlanosCompararRoute
   '/bot-lances/disputas/$disputeId': typeof BotLancesDisputasDisputeIdRoute
   '/concorrentes/$categoryId/$companyId': typeof ConcorrentesCategoryIdCompanyIdRoute
   '/dash2/configuracoes/empresa': typeof Dash2ConfiguracoesEmpresaRoute
@@ -522,6 +568,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/2'
     | '/bot-lances'
     | '/cadastro'
     | '/categorias'
@@ -541,6 +588,8 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/relatorios'
     | '/score-orgaos'
+    | '/blog/$slug'
+    | '/blog/como-participar-de-licitacao'
     | '/bot-lances/configuracoes'
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
@@ -550,9 +599,11 @@ export interface FileRouteTypes {
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
+    | '/blog/'
     | '/bot-lances/'
     | '/categorias/'
     | '/concorrentes/'
+    | '/2/planos/comparar'
     | '/bot-lances/disputas/$disputeId'
     | '/concorrentes/$categoryId/$companyId'
     | '/dash2/configuracoes/empresa'
@@ -578,6 +629,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/2'
     | '/cadastro'
     | '/dash2'
     | '/documentos'
@@ -594,6 +646,8 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/relatorios'
     | '/score-orgaos'
+    | '/blog/$slug'
+    | '/blog/como-participar-de-licitacao'
     | '/bot-lances/configuracoes'
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
@@ -603,9 +657,11 @@ export interface FileRouteTypes {
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
+    | '/blog'
     | '/bot-lances'
     | '/categorias'
     | '/concorrentes'
+    | '/2/planos/comparar'
     | '/bot-lances/disputas/$disputeId'
     | '/concorrentes/$categoryId/$companyId'
     | '/dash2/configuracoes/empresa'
@@ -631,6 +687,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/2'
     | '/bot-lances'
     | '/cadastro'
     | '/categorias'
@@ -650,6 +707,8 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/relatorios'
     | '/score-orgaos'
+    | '/blog/$slug'
+    | '/blog/como-participar-de-licitacao'
     | '/bot-lances/configuracoes'
     | '/bot-lances/historico'
     | '/bot-lances/monitoramento'
@@ -659,9 +718,11 @@ export interface FileRouteTypes {
     | '/convite/$token'
     | '/dash2/ajuda'
     | '/planos/comparar'
+    | '/blog/'
     | '/bot-lances/'
     | '/categorias/'
     | '/concorrentes/'
+    | '/2/planos/comparar'
     | '/bot-lances/disputas/$disputeId'
     | '/concorrentes/$categoryId/$companyId'
     | '/dash2/configuracoes/empresa'
@@ -688,6 +749,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R2Route: typeof R2RouteWithChildren
   BotLancesRoute: typeof BotLancesRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   CategoriasRoute: typeof CategoriasRouteWithChildren
@@ -707,8 +769,11 @@ export interface RootRouteChildren {
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   RelatoriosRoute: typeof RelatoriosRoute
   ScoreOrgaosRoute: typeof ScoreOrgaosRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogComoParticiparDeLicitacaoRoute: typeof BlogComoParticiparDeLicitacaoRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
   PlanosCompararRoute: typeof PlanosCompararRoute
+  BlogIndexRoute: typeof BlogIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -718,6 +783,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/2': {
+      id: '/2'
+      path: '/2'
+      fullPath: '/2'
+      preLoaderRoute: typeof R2RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bot-lances': {
@@ -853,6 +925,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScoreOrgaosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/como-participar-de-licitacao': {
+      id: '/blog/como-participar-de-licitacao'
+      path: '/blog/como-participar-de-licitacao'
+      fullPath: '/blog/como-participar-de-licitacao'
+      preLoaderRoute: typeof BlogComoParticiparDeLicitacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bot-lances/': {
       id: '/bot-lances/'
       path: '/'
@@ -936,6 +1029,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/planos/comparar'
       preLoaderRoute: typeof PlanosCompararRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/2/planos/comparar': {
+      id: '/2/planos/comparar'
+      path: '/planos/comparar'
+      fullPath: '/2/planos/comparar'
+      preLoaderRoute: typeof R2PlanosCompararRouteImport
+      parentRoute: typeof R2Route
     }
     '/bot-lances/disputas/': {
       id: '/bot-lances/disputas/'
@@ -1094,6 +1194,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface R2RouteChildren {
+  R2PlanosCompararRoute: typeof R2PlanosCompararRoute
+}
+
+const R2RouteChildren: R2RouteChildren = {
+  R2PlanosCompararRoute: R2PlanosCompararRoute,
+}
+
+const R2RouteWithChildren = R2Route._addFileChildren(R2RouteChildren)
+
 interface BotLancesRouteChildren {
   BotLancesConfiguracoesRoute: typeof BotLancesConfiguracoesRoute
   BotLancesHistoricoRoute: typeof BotLancesHistoricoRoute
@@ -1249,6 +1359,7 @@ const Dash2RouteWithChildren = Dash2Route._addFileChildren(Dash2RouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R2Route: R2RouteWithChildren,
   BotLancesRoute: BotLancesRouteWithChildren,
   CadastroRoute: CadastroRoute,
   CategoriasRoute: CategoriasRouteWithChildren,
@@ -1268,8 +1379,11 @@ const rootRouteChildren: RootRouteChildren = {
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   RelatoriosRoute: RelatoriosRoute,
   ScoreOrgaosRoute: ScoreOrgaosRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  BlogComoParticiparDeLicitacaoRoute: BlogComoParticiparDeLicitacaoRoute,
   ConviteTokenRoute: ConviteTokenRoute,
   PlanosCompararRoute: PlanosCompararRoute,
+  BlogIndexRoute: BlogIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

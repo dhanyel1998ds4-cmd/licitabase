@@ -53,10 +53,11 @@ type BidItem = {
 };
 
 const bidItemsResultColumns = [
-  { id: "quantity", width: 116, min: 98, max: 190 },
-  { id: "estimated", width: 142, min: 116, max: 240 },
-  { id: "deadline", width: 126, min: 106, max: 210 },
-  { id: "actions", width: 148, min: 126, max: 210 },
+  { id: "quantity", width: 118, min: 104, max: 190 },
+  { id: "estimated", width: 152, min: 132, max: 240 },
+  { id: "deadline", width: 136, min: 116, max: 210 },
+  { id: "match", width: 116, min: 102, max: 180 },
+  { id: "actions", width: 108, min: 100, max: 132 },
 ];
 
 const bidItems: BidItem[] = [
@@ -308,7 +309,9 @@ export function BidItemsPage() {
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const { gridTemplateColumns: bidItemsGridTemplateColumns, getResizeHandleProps } =
     useResizableColumns({
-      storageKey: "licitabase.bid-items-result-widths.v1",
+      // A versão anterior agrupava três dados na coluna de quantidade. Uma nova
+      // chave evita reutilizar larguras persistidas daquele layout incorreto.
+      storageKey: "licitabase.bid-items-result-widths.v2",
       columns: bidItemsResultColumns,
     });
 
@@ -515,6 +518,13 @@ export function BidItemsPage() {
               <span className="relative text-right">
                 Prazo
                 <button
+                  {...getResizeHandleProps("match")}
+                  aria-label="Redimensionar largura da coluna Aderência"
+                />
+              </span>
+              <span className="relative text-right">
+                Aderência
+                <button
                   {...getResizeHandleProps("actions")}
                   aria-label="Redimensionar largura da coluna Ações"
                 />
@@ -568,35 +578,38 @@ export function BidItemsPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[11px] xl:grid-cols-3">
-                      <div>
-                        <p className="font-bold uppercase tracking-[0.07em] text-slate-text">
-                          Quantidade
-                        </p>
-                        <p className="mt-1 font-extrabold text-ink">{item.quantity}</p>
-                      </div>
-                      <div>
-                        <p className="font-bold uppercase tracking-[0.07em] text-slate-text">
-                          Estimado
-                        </p>
-                        <p className="mt-1 whitespace-nowrap font-extrabold tabular-nums text-ink">
-                          {item.total}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="font-bold uppercase tracking-[0.07em] text-slate-text">
-                          Prazo
-                        </p>
-                        <p className="mt-1 inline-flex items-center gap-1 whitespace-nowrap font-extrabold text-amber-700">
-                          <Clock3 className="size-3.5" />
-                          {item.deadline}
-                        </p>
-                      </div>
+                    <div className="min-w-0 text-[11px] xl:text-right">
+                      <p className="font-bold uppercase tracking-[0.07em] text-slate-text xl:hidden">
+                        Quantidade
+                      </p>
+                      <p className="mt-1 font-extrabold text-ink xl:mt-0">{item.quantity}</p>
                     </div>
-                    <div className="flex items-center justify-between gap-2 xl:justify-end">
+                    <div className="min-w-0 text-[11px] xl:text-right">
+                      <p className="font-bold uppercase tracking-[0.07em] text-slate-text xl:hidden">
+                        Estimado
+                      </p>
+                      <p className="mt-1 whitespace-nowrap font-extrabold tabular-nums text-ink xl:mt-0">
+                        {item.total}
+                      </p>
+                    </div>
+                    <div className="min-w-0 text-[11px] xl:text-right">
+                      <p className="font-bold uppercase tracking-[0.07em] text-slate-text xl:hidden">
+                        Prazo
+                      </p>
+                      <p className="mt-1 inline-flex items-center gap-1 whitespace-nowrap font-extrabold text-amber-700 xl:mt-0">
+                        <Clock3 className="size-3.5" />
+                        {item.deadline}
+                      </p>
+                    </div>
+                    <div className="min-w-0 xl:text-right">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-slate-text xl:hidden">
+                        Aderência
+                      </p>
                       <span className="rounded-full bg-[#E8F8ED] px-2 py-1 text-[10px] font-extrabold text-[#15863a]">
                         {item.match}% aderente
                       </span>
+                    </div>
+                    <div className="flex items-center justify-start gap-2 xl:justify-end">
                       <button
                         type="button"
                         aria-label={`${savedIds.includes(item.id) ? "Remover" : "Salvar"} ${item.name}`}

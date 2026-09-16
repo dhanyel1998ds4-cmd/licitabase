@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "npm run check:internal-ui && vite build",
+    "build": "npm run seo:generate && npm run check:internal-ui && vite build && npm run seo:check",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
     "check:internal-ui": "node scripts/check-internal-ui.cjs",
-    "verify:internal-ui": "node scripts/verify-internal-density.cjs"
+    "verify:internal-ui": "node scripts/verify-internal-density.cjs",
+    "seo:generate": "node scripts/generate-seo-artifacts.cjs",
+    "seo:check": "node scripts/check-seo.cjs",
+    "seo:smoke": "node scripts/seo-smoke.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
