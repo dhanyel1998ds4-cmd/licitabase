@@ -163,7 +163,7 @@ export function EditorialBackofficePrototype() {
             </span>
             <div className="min-w-0">
               <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#9ed5af]">
-                LicitaBase · ambiente interno
+                LicitaBase · demonstração navegável
               </p>
               <h1 className="truncate text-[16px] font-extrabold tracking-[-0.02em] text-white sm:text-[18px]">
                 Backoffice editorial
@@ -172,7 +172,7 @@ export function EditorialBackofficePrototype() {
           </div>
           <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-[11px] font-bold text-[#d8f6e0]">
             <LockKeyhole className="size-3.5" aria-hidden="true" />
-            <span>Protótipo local · indisponível em produção</span>
+            <span>Protótipo · dados demonstrativos</span>
           </div>
         </div>
       </header>
@@ -190,12 +190,13 @@ export function EditorialBackofficePrototype() {
                   Briefing, revisão e publicação com controle humano.
                 </h2>
                 <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-slate-text sm:text-[14px]">
-                  Centralize a decisão editorial antes de um conteúdo chegar ao blog. Este ambiente
-                  demonstra a arquitetura do CMS futuro — sem IA, dados ou publicação real.
+                  Centralize a decisão editorial antes de um conteúdo chegar ao blog. Esta
+                  referência demonstra a arquitetura do CMS futuro — sem IA, dados persistidos ou
+                  publicação real.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="rounded-lg border border-hairline bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-text">
-                    Apenas equipe LicitaBase
+                    Dados demonstrativos
                   </span>
                   <span className="rounded-lg border border-hairline bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-text">
                     Publicação sempre revisada
@@ -876,35 +877,35 @@ function SecurityBoundaryPanel() {
     <Panel className="min-w-0">
       <PanelHeader
         icon={<LockKeyhole className="size-4" />}
-        title="Escopo seguro do protótipo"
-        subtitle="O que esta referência demonstra — e o que ainda não executa."
+        title="Escopo desta demonstração"
+        subtitle="O que é simulado nesta referência navegável."
       />
       <div className="space-y-4 border-t border-hairline p-4 sm:p-5 text-[12px] leading-relaxed text-slate-text">
         <div className="rounded-xl border border-[#ccefd5] bg-[#f3fcf5] p-3">
           <p className="flex items-center gap-2 font-extrabold text-[#16823b]">
             <LockKeyhole className="size-3.5" aria-hidden="true" />
-            Nenhuma ação pública é executada
+            Nenhuma integração está conectada
           </p>
           <p className="mt-1 text-[11px] leading-relaxed">
             Não há sessão, banco, provedor de IA, CMS ou publicação conectados aqui.
           </p>
         </div>
         <p>
-          A rota existe somente no desenvolvimento local e retorna 404 em builds de preview ou
-          produção.
+          A interface pode ser navegada para validação visual, mas seus estados voltam ao padrão ao
+          atualizar a página.
         </p>
         <ul className="space-y-2 text-[11px]">
           <li className="flex gap-2">
-            <Check className="mt-0.5 size-3 shrink-0 text-[#18B849]" /> Guard de servidor por cargo
-            da equipe LicitaBase.
+            <Check className="mt-0.5 size-3 shrink-0 text-[#18B849]" /> Artigos, métricas e fila são
+            fixtures carregadas no navegador.
           </li>
           <li className="flex gap-2">
-            <Check className="mt-0.5 size-3 shrink-0 text-[#18B849]" /> APIs privadas para rascunho,
-            revisão, aprovação e agendamento.
+            <Check className="mt-0.5 size-3 shrink-0 text-[#18B849]" /> A geração de rascunho é uma
+            simulação; nenhuma IA ou chave de API é utilizada.
           </li>
           <li className="flex gap-2">
-            <Check className="mt-0.5 size-3 shrink-0 text-[#18B849]" /> Auditoria de alterações e
-            publicação no servidor.
+            <Check className="mt-0.5 size-3 shrink-0 text-[#18B849]" /> Aprovar no mock altera
+            somente o estado da tela até o próximo reload.
           </li>
         </ul>
       </div>

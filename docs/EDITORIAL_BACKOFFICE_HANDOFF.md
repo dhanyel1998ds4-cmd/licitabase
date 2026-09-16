@@ -2,12 +2,12 @@
 
 ## Finalidade e limite atual
 
-Este módulo é uma referência local para o backoffice editorial da equipe da LicitaBase. Ele não é um CMS em produção e não fornece acesso a clientes.
+Este módulo é uma referência navegável para o futuro backoffice editorial da LicitaBase. Ele não é um CMS em produção e não fornece acesso a dados de clientes.
 
-- A rota `/editorial-preview` existe apenas em desenvolvimento (`import.meta.env.DEV`).
-- Em preview e produção, a rota responde como `404`.
+- A rota `/editorial-preview` pode ser aberta para validação visual enquanto o protótipo não está conectado a dados reais.
+- Ela continua com `noindex, nofollow` e não aparece na navegação do produto.
 - Os dados são fixtures em memória; não existe banco, chave de IA, API ou publicação.
-- A rota não aparece na navegação da área do cliente, não entra no sitemap e possui `noindex, nofollow` quando aberta localmente.
+- A rota não aparece na navegação da área do cliente e não entra no sitemap.
 
 ## O que pode ser reaproveitado
 
@@ -27,18 +27,18 @@ src/features/editorial/EditorialBackofficePrototype.tsx
 
 ## Segurança do admin definitivo
 
-O CMS real deve ficar em uma rota ou aplicação administrativa separada, por exemplo `/admin/editorial`. Não basta esconder links na interface.
+Quando o CMS real receber autenticação, banco ou IA, ele deve ficar em uma rota ou aplicação administrativa separada, por exemplo `/admin/editorial`. Não basta esconder links na interface.
 
 1. O servidor autentica a sessão.
 2. O servidor consulta a função do membro da equipe.
 3. Apenas os cargos abaixo recebem dados ou podem executar ações.
 
-| Papel | Pode fazer |
-| --- | --- |
-| `editorial_admin` | configurar provedores, publicar, agendar, gerenciar permissões e reverter publicação |
-| `editor` | criar briefing, gerar rascunho e editar conteúdo |
-| `reviewer` | revisar, aprovar ou devolver conteúdo |
-| `customer` / usuário LicitaBase | nenhum acesso; API deve responder `403` |
+| Papel                           | Pode fazer                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------ |
+| `editorial_admin`               | configurar provedores, publicar, agendar, gerenciar permissões e reverter publicação |
+| `editor`                        | criar briefing, gerar rascunho e editar conteúdo                                     |
+| `reviewer`                      | revisar, aprovar ou devolver conteúdo                                                |
+| `customer` / usuário LicitaBase | nenhum acesso; API deve responder `403`                                              |
 
 Todas as permissões precisam ser verificadas em funções de servidor e na camada de banco. Um guard somente no frontend não é suficiente.
 
@@ -137,4 +137,4 @@ class ProductionEditorialRepository implements EditorialRepository {}
 class OpenAiDraftProvider implements DraftProvider {}
 ```
 
-Depois, mover a tela para o admin autenticado real e remover a rota `/editorial-preview`. Antes da primeira publicação, configurar Search Console, sitemap de produção, analytics e um processo de revisão editorial.
+Depois, mover a tela para o admin autenticado real e restringir ou remover a rota `/editorial-preview`. Antes da primeira publicação, configurar Search Console, sitemap de produção, analytics e um processo de revisão editorial.
