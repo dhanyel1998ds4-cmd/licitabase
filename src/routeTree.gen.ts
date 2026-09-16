@@ -17,6 +17,7 @@ import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as ConcorrentesRouteImport } from './routes/concorrentes'
 import { Route as Dash2RouteImport } from './routes/dash2'
 import { Route as DocumentosRouteImport } from './routes/documentos'
+import { Route as EditorialPreviewRouteImport } from './routes/editorial-preview'
 import { Route as IntegracoesRouteImport } from './routes/integracoes'
 import { Route as ItensRouteImport } from './routes/itens'
 import { Route as LoginRouteImport } from './routes/login'
@@ -107,6 +108,11 @@ const Dash2Route = Dash2RouteImport.update({
 const DocumentosRoute = DocumentosRouteImport.update({
   id: '/documentos',
   path: '/documentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialPreviewRoute = EditorialPreviewRouteImport.update({
+  id: '/editorial-preview',
+  path: '/editorial-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntegracoesRoute = IntegracoesRouteImport.update({
@@ -392,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/concorrentes': typeof ConcorrentesRouteWithChildren
   '/dash2': typeof Dash2RouteWithChildren
   '/documentos': typeof DocumentosRoute
+  '/editorial-preview': typeof EditorialPreviewRoute
   '/integracoes': typeof IntegracoesRoute
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
@@ -450,6 +457,7 @@ export interface FileRoutesByTo {
   '/cadastro': typeof CadastroRoute
   '/dash2': typeof Dash2RouteWithChildren
   '/documentos': typeof DocumentosRoute
+  '/editorial-preview': typeof EditorialPreviewRoute
   '/integracoes': typeof IntegracoesRoute
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
@@ -512,6 +520,7 @@ export interface FileRoutesById {
   '/concorrentes': typeof ConcorrentesRouteWithChildren
   '/dash2': typeof Dash2RouteWithChildren
   '/documentos': typeof DocumentosRoute
+  '/editorial-preview': typeof EditorialPreviewRoute
   '/integracoes': typeof IntegracoesRoute
   '/itens': typeof ItensRoute
   '/login': typeof LoginRoute
@@ -575,6 +584,7 @@ export interface FileRouteTypes {
     | '/concorrentes'
     | '/dash2'
     | '/documentos'
+    | '/editorial-preview'
     | '/integracoes'
     | '/itens'
     | '/login'
@@ -633,6 +643,7 @@ export interface FileRouteTypes {
     | '/cadastro'
     | '/dash2'
     | '/documentos'
+    | '/editorial-preview'
     | '/integracoes'
     | '/itens'
     | '/login'
@@ -694,6 +705,7 @@ export interface FileRouteTypes {
     | '/concorrentes'
     | '/dash2'
     | '/documentos'
+    | '/editorial-preview'
     | '/integracoes'
     | '/itens'
     | '/login'
@@ -756,6 +768,7 @@ export interface RootRouteChildren {
   ConcorrentesRoute: typeof ConcorrentesRouteWithChildren
   Dash2Route: typeof Dash2RouteWithChildren
   DocumentosRoute: typeof DocumentosRoute
+  EditorialPreviewRoute: typeof EditorialPreviewRoute
   IntegracoesRoute: typeof IntegracoesRoute
   ItensRoute: typeof ItensRoute
   LoginRoute: typeof LoginRoute
@@ -832,6 +845,13 @@ declare module '@tanstack/react-router' {
       path: '/documentos'
       fullPath: '/documentos'
       preLoaderRoute: typeof DocumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial-preview': {
+      id: '/editorial-preview'
+      path: '/editorial-preview'
+      fullPath: '/editorial-preview'
+      preLoaderRoute: typeof EditorialPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integracoes': {
@@ -1366,6 +1386,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConcorrentesRoute: ConcorrentesRouteWithChildren,
   Dash2Route: Dash2RouteWithChildren,
   DocumentosRoute: DocumentosRoute,
+  EditorialPreviewRoute: EditorialPreviewRoute,
   IntegracoesRoute: IntegracoesRoute,
   ItensRoute: ItensRoute,
   LoginRoute: LoginRoute,

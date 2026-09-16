@@ -65,4 +65,8 @@ module.exports = [
     path: "/dash2/gestao/templates-emails",
     file: "src/routes/dash2.gestao.templates-emails.tsx",
   },
+  {
+    path: "/editorial-preview",
+    file: "src/routes/editorial-preview.tsx",
+  },
 ];
