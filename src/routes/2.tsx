@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { noIndexNoFollow } from "@/lib/seo";
 
 export const Route = createFileRoute("/2")({
   head: () => ({
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/2")({
           "Encontre, analise e organize licitações públicas em todo o Brasil com dados oficiais, inteligência e automação.",
       },
       { property: "og:type", content: "website" },
+      noIndexNoFollow,
     ],
   }),
   component: AlternativeLandingRedirect,

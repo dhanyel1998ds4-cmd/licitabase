@@ -16,6 +16,7 @@ import { PortalStatusCard } from "@/components/dash2/PortalStatusCard";
 import { newOpportunitiesSummary } from "@/lib/new-opportunities-fixtures";
 import { useCurrentDate } from "@/hooks/use-current-date";
 import { useGreeting } from "@/hooks/use-greeting";
+import { noIndexNoFollow } from "@/lib/seo";
 
 export const Route = createFileRoute("/dash2")({
   head: () => ({
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/dash2")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      noIndexNoFollow,
     ],
   }),
   component: Dash2Page,

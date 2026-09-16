@@ -2,8 +2,10 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { BotSubnav } from "@/components/bot/BotSubnav";
 import { Topbar } from "@/components/dash2/Topbar";
+import { noIndexNoFollow } from "@/lib/seo";
 
 export const Route = createFileRoute("/bot-lances")({
+  head: () => ({ meta: [noIndexNoFollow] }),
   component: BotLancesLayout,
 });
 

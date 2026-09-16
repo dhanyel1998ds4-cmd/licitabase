@@ -13,29 +13,16 @@ import { Categories } from "@/components/lp/Categories";
 import { FAQ } from "@/components/lp/FAQ";
 
 import { Footer } from "@/components/lp/Footer";
+import { createPageSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/lp")({
-  head: () => ({
-    title: "Licitabase | Encontre, analise e monitore licitações públicas",
-    meta: [
-      {
-        name: "description",
-        content:
-          "Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.",
-      },
-      {
-        property: "og:title",
-        content: "Licitabase | Encontre, analise e monitore licitações públicas",
-      },
-      {
-        property: "og:description",
-        content:
-          "Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    createPageSeo({
+      title: "Licitabase | Encontre, analise e monitore licitações públicas",
+      description:
+        "Encontre licitações públicas em todo o Brasil, receba alertas, analise editais, compare preços, acompanhe concorrentes e automatize lances com o Licitabase.",
+      canonicalPath: "/lp",
+    }),
   component: LandingPage,
 });
 
