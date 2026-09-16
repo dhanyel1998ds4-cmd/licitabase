@@ -22,6 +22,7 @@ import { Route as ItensRouteImport } from './routes/itens'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LpRouteImport } from './routes/lp'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
+import { Route as ObrigadoAssinaturaRouteImport } from './routes/obrigado-assinatura'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as RaioXRouteImport } from './routes/raio-x'
@@ -131,6 +132,11 @@ const LpRoute = LpRouteImport.update({
 const ObrigadoRoute = ObrigadoRouteImport.update({
   id: '/obrigado',
   path: '/obrigado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObrigadoAssinaturaRoute = ObrigadoAssinaturaRouteImport.update({
+  id: '/obrigado-assinatura',
+  path: '/obrigado-assinatura',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -391,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/obrigado': typeof ObrigadoRoute
+  '/obrigado-assinatura': typeof ObrigadoAssinaturaRoute
   '/onboarding': typeof OnboardingRoute
   '/pipeline': typeof PipelineRoute
   '/raio-x': typeof RaioXRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/obrigado': typeof ObrigadoRoute
+  '/obrigado-assinatura': typeof ObrigadoAssinaturaRoute
   '/onboarding': typeof OnboardingRoute
   '/pipeline': typeof PipelineRoute
   '/raio-x': typeof RaioXRoute
@@ -509,6 +517,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/lp': typeof LpRoute
   '/obrigado': typeof ObrigadoRoute
+  '/obrigado-assinatura': typeof ObrigadoAssinaturaRoute
   '/onboarding': typeof OnboardingRoute
   '/pipeline': typeof PipelineRoute
   '/raio-x': typeof RaioXRoute
@@ -571,6 +580,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/lp'
     | '/obrigado'
+    | '/obrigado-assinatura'
     | '/onboarding'
     | '/pipeline'
     | '/raio-x'
@@ -628,6 +638,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/lp'
     | '/obrigado'
+    | '/obrigado-assinatura'
     | '/onboarding'
     | '/pipeline'
     | '/raio-x'
@@ -688,6 +699,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/lp'
     | '/obrigado'
+    | '/obrigado-assinatura'
     | '/onboarding'
     | '/pipeline'
     | '/raio-x'
@@ -749,6 +761,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   LpRoute: typeof LpRoute
   ObrigadoRoute: typeof ObrigadoRoute
+  ObrigadoAssinaturaRoute: typeof ObrigadoAssinaturaRoute
   OnboardingRoute: typeof OnboardingRoute
   PipelineRoute: typeof PipelineRoute
   RaioXRoute: typeof RaioXRoute
@@ -854,6 +867,13 @@ declare module '@tanstack/react-router' {
       path: '/obrigado'
       fullPath: '/obrigado'
       preLoaderRoute: typeof ObrigadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/obrigado-assinatura': {
+      id: '/obrigado-assinatura'
+      path: '/obrigado-assinatura'
+      fullPath: '/obrigado-assinatura'
+      preLoaderRoute: typeof ObrigadoAssinaturaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -1351,6 +1371,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   LpRoute: LpRoute,
   ObrigadoRoute: ObrigadoRoute,
+  ObrigadoAssinaturaRoute: ObrigadoAssinaturaRoute,
   OnboardingRoute: OnboardingRoute,
   PipelineRoute: PipelineRoute,
   RaioXRoute: RaioXRoute,

@@ -19,6 +19,7 @@ const checks = [
   { path: "/dash2", status: 200, robots: "noindex, nofollow" },
   { path: "/bot-lances", status: 200, robots: "noindex, nofollow" },
   { path: "/obrigado", status: 200, robots: "noindex, nofollow" },
+  { path: "/obrigado-assinatura", status: 200, robots: "noindex, nofollow" },
   { path: "/2", status: 200, robots: "noindex, nofollow" },
   { path: "/2/index.html", status: 200, robots: "noindex, nofollow" },
   { path: "/robots.txt", status: 200, contains: "Sitemap:" },
